@@ -33,6 +33,7 @@ class AudioManager {
         void start();
         void stop();
         void togglePlay();
+        void setBpm(const float&);
 
 		friend int jackCallback(jack_nframes_t , void *);
         void process(const int&);
@@ -46,6 +47,11 @@ class AudioManager {
         AudioInputTuile* addAudioInputTuile(const std::string& input);
         AudioOutputTuile* addAudioOutputTuile(const std::string& output);
 
+        bool isPlaying();
+        const float& getPlayPosition();
+        const float& getPlayPositionInBeats();
+        const float& getBpm(){return m_bpm;}
+
     protected:
 
 	private:
@@ -54,8 +60,11 @@ class AudioManager {
 		jack_client_t *m_jackClient;
 		unsigned int m_sampleRate;	
 		unsigned int m_bufferSize;	
+        float m_bpm;
+        float m_playPosInBeats;
 
-        std::vector<AudioTuile*> m_audioTuiles;
+        std::vector<AudioTuile*> m_procAudioTuiles;
+        float m_procStep;
 
 		static const char MIDI_NOTE_ON=0x90;
 		static const char MIDI_NOTE_OFF=0x80;

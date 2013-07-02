@@ -16,7 +16,7 @@
 
 using namespace std;
 
-AudioManager::AudioManager() {}
+AudioManager::AudioManager(): m_bpm(120) {}
 
 AudioManager::~AudioManager() {
     jack_deactivate(m_jackClient);
@@ -80,6 +80,17 @@ void AudioManager::update() {
 
 }
 
+void AudioManager::setBpm(const float& bpm) {
+    m_bpm=bpm;
+
+    //TODO set step in proc
+
+}
+
+bool AudioManager::isPlaying() {
+    return TuilesManager::getInstance()->isPlaying();
+}
+
 void AudioManager::togglePlay() {
     TuilesManager* man = TuilesManager::getInstance();
     if(man->isPlaying()) {
@@ -88,6 +99,17 @@ void AudioManager::togglePlay() {
     else {
         man->startTrees();
     }
+}
+
+const float& AudioManager::getPlayPosition() {
+    return TuilesManager::getInstance()->getPlayingPos();
+}
+
+const float& AudioManager::getPlayPositionInBeats() {
+    m_playPosInBeats = 
+        (TuilesManager::getInstance()->getPlayingPos()/float(m_sampleRate))
+        *(m_bpm/60.0);
+    return m_playPosInBeats;
 }
 
 void AudioManager::process(const int& nbFrames) {

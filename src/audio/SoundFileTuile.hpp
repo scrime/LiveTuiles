@@ -40,6 +40,7 @@ class SoundFileTuile : public AudioTuile {
 		unsigned int m_sampleRate;
 		unsigned long m_framesCount; 
 		float m_floatFramesCount;
+        unsigned int m_filePosition;
 
 		std::list<Grain> m_grains;
 
