@@ -1,24 +1,24 @@
 /***************************************************************************
- *  FaustWidget.cpp
+ *  MonitorWidget.cpp
  *  2012- Florent Berthaut
  *  ANR INEDIT Project
  *  This file is part of LiveTuiles
  ****************************************************************************/
 
-#include "FaustWidget.hpp"
+#include "MonitorWidget.hpp"
 
 #include <iostream>
 #include <math.h>
 #include <cassert>
 
-#include "../audio/FaustTuile.hpp"
+#include "../audio/MidiOscMonitorTuile.hpp"
 
 using namespace std;
 
-FaustWidget::FaustWidget(const std::string& name, 
-                        FaustTuile* tuile): TuileWidget(name, tuile){}
+MonitorWidget::MonitorWidget(const std::string& name, 
+                        MidiOscMonitorTuile* tuile): TuileWidget(name, tuile){}
 
-FaustWidget::~FaustWidget() {}
+MonitorWidget::~MonitorWidget() {}
 
 
 

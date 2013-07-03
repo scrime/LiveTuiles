@@ -1,24 +1,25 @@
 /***************************************************************************
- *  FaustWidget.cpp
+ *  LoopWidget.cpp
  *  2012- Florent Berthaut
  *  ANR INEDIT Project
  *  This file is part of LiveTuiles
  ****************************************************************************/
 
-#include "FaustWidget.hpp"
+#include "LoopWidget.hpp"
 
 #include <iostream>
 #include <math.h>
 #include <cassert>
 
-#include "../audio/FaustTuile.hpp"
+#include <tuiles/LoopTuile.hpp>
 
 using namespace std;
+using namespace tuiles;
 
-FaustWidget::FaustWidget(const std::string& name, 
-                        FaustTuile* tuile): TuileWidget(name, tuile){}
+LoopWidget::LoopWidget(const std::string& name, 
+                        LoopTuile* tuile): TuileWidget(name, tuile){}
 
-FaustWidget::~FaustWidget() {}
+LoopWidget::~LoopWidget() {}
 
 
 

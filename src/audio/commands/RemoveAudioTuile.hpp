@@ -8,22 +8,22 @@
 #ifndef RemoveAudioTuile_h
 #define RemoveAudioTuile_h
 
-#include "Command.hpp"
+#include <tuiles/Command.hpp>
 #include "../AudioManager.hpp"
 
-class RemoveAudioTuile: public Command {
+class RemoveAudioTuile: public tuiles::Command {
 	public:
-		inline RemoveAudioTuile(){}
+		inline RemoveAudioTuile(){m_name="RemoveAudioTuile";}
 		inline virtual ~RemoveAudioTuile(){};
 		virtual void run() {
-            vector<AudioTuile*>::iterator itTui
-                    =m_audioManager->m_audioTuiles.begin();
-            for(; itTui!=m_audioManager->m_audioTuiles.end(); ) {
-                if((*itChild)->getID()==child->getID()) {
-                    itChild=m_audioTuile->m_audioTuiles.erase(itChild);
+            std::vector<AudioTuile*>::iterator itTui
+                    =m_audioManager->m_procAudioTuiles.begin();
+            for(; itTui!=m_audioManager->m_procAudioTuiles.end(); ) {
+                if((*itTui)->getID()==m_audioTuile->getID()) {
+                    itTui=m_audioManager->m_procAudioTuiles.erase(itTui);
                 }
                 else {
-                    itChild++;
+                    itTui++;
                 }
             }
         }
@@ -33,7 +33,7 @@ class RemoveAudioTuile: public Command {
                 m_clones.back()->setModel(this);
             }
         }
-        inline void setTuile(Tuile* tuile){m_tuile=tuile;}
+        inline void setTuile(AudioTuile* tuile){m_audioTuile=tuile;}
 
 	protected:
         AudioTuile* m_audioTuile;

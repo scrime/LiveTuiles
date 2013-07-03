@@ -70,7 +70,6 @@ void FaustTuile::unload() {
 
 void FaustTuile::activate() {
     if(m_loaded) {
-        m_position=0;
         m_active=true;
         m_activateAsked=true;
     }

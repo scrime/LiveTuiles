@@ -11,12 +11,12 @@
 #include <tuiles/Command.hpp>
 #include "../AudioManager.hpp"
 
-class AddAudioTuile: public Command {
+class AddAudioTuile: public tuiles::Command {
 	public:
-		inline AddAudioTuile(){}
+		inline AddAudioTuile(){m_name="AddAudioTuile";}
 		inline virtual ~AddAudioTuile(){};
 		virtual void run() {
-            m_audioManager->m_audioTuiles.push_back(m_audioTuile);
+            m_audioManager->m_procAudioTuiles.push_back(m_audioTuile);
         }
         virtual void createClones(const unsigned int& nbClones) {
             for(unsigned int c=0; c<nbClones; ++c) {

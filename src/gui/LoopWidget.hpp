@@ -1,22 +1,22 @@
 /***************************************************************************
- *  FaustWidget.h
+ *  LoopWidget.h
  *  2012- Florent Berthaut
  *  ANR INEDIT Project
  *  This file is part of LiveTuiles
  ****************************************************************************/
  
  
-#ifndef _FaustWidget_H
-#define _FaustWidget_H
+#ifndef _LoopWidget_H
+#define _LoopWidget_H
 
 #include "TuileWidget.hpp"
 
-class FaustTuile;
+namespace tuiles{class LoopTuile;}
 
-class FaustWidget: public TuileWidget {
+class LoopWidget: public TuileWidget {
   public:
-	FaustWidget(const std::string& name, FaustTuile*);
-	~FaustWidget();
+	LoopWidget(const std::string& name, tuiles::LoopTuile*);
+	~LoopWidget();
 
   private:
     

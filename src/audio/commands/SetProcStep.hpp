@@ -8,11 +8,12 @@
 #ifndef SetProcStep_h
 #define SetProcStep_h
 
-#include "Command.hpp"
+#include <tuiles/Command.hpp>
+#include "../AudioManager.hpp"
 
-class SetProcStep: public Command {
+class SetProcStep: public tuiles::Command {
 	public:
-		inline SetProcStep(){}
+		inline SetProcStep(){m_name="SetProcStep";}
 		inline virtual ~SetProcStep(){};
 		virtual void run() {
             m_audioManager->m_procStep=m_step;

@@ -16,11 +16,22 @@
 #include <jack/types.h>
 #include <jack/midiport.h>
 
+namespace tuiles {
+    class SeqTuile;
+    class LoopTuile;
+}
+
 class AudioTuile;
 class FaustTuile;
 class SoundFileTuile;
 class AudioInputTuile;
 class AudioOutputTuile;
+class MidiOscSwitchTuile;
+class MidiOscMonitorTuile;
+
+class AddAudioTuile;
+class RemoveAudioTuile;
+class SetProcStep;
 
 class AudioManager {	
 	public:
@@ -46,6 +57,10 @@ class AudioManager {
         SoundFileTuile* addSoundFileTuile(const std::string& fileName);
         AudioInputTuile* addAudioInputTuile(const std::string& input);
         AudioOutputTuile* addAudioOutputTuile(const std::string& output);
+        tuiles::SeqTuile* addSeqTuile();
+        tuiles::LoopTuile* addLoopTuile();
+        MidiOscMonitorTuile* addMidiOscMonitorTuile();
+        MidiOscSwitchTuile* addMidiOscSwitchTuile();
 
         bool isPlaying();
         const float& getPlayPosition();
@@ -53,6 +68,12 @@ class AudioManager {
         const float& getBpm(){return m_bpm;}
 
     protected:
+        friend class AddAudioTuile;
+        AddAudioTuile* m_protoAddAudioTuile;
+        friend class RemoveAudioTuile;
+        RemoveAudioTuile* m_protoRemoveAudioTuile;
+        friend class SetProcStep;
+        SetProcStep* m_protoSetProcStep;
 
 	private:
 		AudioManager();

@@ -1,24 +1,24 @@
 /***************************************************************************
- *  FaustWidget.cpp
+ *  SwitchWidget.cpp
  *  2012- Florent Berthaut
  *  ANR INEDIT Project
  *  This file is part of LiveTuiles
  ****************************************************************************/
 
-#include "FaustWidget.hpp"
+#include "SwitchWidget.hpp"
 
 #include <iostream>
 #include <math.h>
 #include <cassert>
 
-#include "../audio/FaustTuile.hpp"
+#include "../audio/MidiOscSwitchTuile.hpp"
 
 using namespace std;
 
-FaustWidget::FaustWidget(const std::string& name, 
-                        FaustTuile* tuile): TuileWidget(name, tuile){}
+SwitchWidget::SwitchWidget(const std::string& name, 
+                        MidiOscSwitchTuile* tuile): TuileWidget(name, tuile){}
 
-FaustWidget::~FaustWidget() {}
+SwitchWidget::~SwitchWidget() {}
 
 
 

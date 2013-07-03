@@ -1,22 +1,22 @@
 /***************************************************************************
- *  FaustWidget.h
+ *  MonitorWidget.h
  *  2012- Florent Berthaut
  *  ANR INEDIT Project
  *  This file is part of LiveTuiles
  ****************************************************************************/
  
  
-#ifndef _FaustWidget_H
-#define _FaustWidget_H
+#ifndef _MonitorWidget_H
+#define _MonitorWidget_H
 
 #include "TuileWidget.hpp"
 
-class FaustTuile;
+class MidiOscMonitorTuile;
 
-class FaustWidget: public TuileWidget {
+class MonitorWidget: public TuileWidget {
   public:
-	FaustWidget(const std::string& name, FaustTuile*);
-	~FaustWidget();
+	MonitorWidget(const std::string& name, MidiOscMonitorTuile*);
+	~MonitorWidget();
 
   private:
     

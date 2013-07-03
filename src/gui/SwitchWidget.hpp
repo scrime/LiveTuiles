@@ -1,22 +1,22 @@
 /***************************************************************************
- *  FaustWidget.h
+ *  SwitchWidget.h
  *  2012- Florent Berthaut
  *  ANR INEDIT Project
  *  This file is part of LiveTuiles
  ****************************************************************************/
  
  
-#ifndef _FaustWidget_H
-#define _FaustWidget_H
+#ifndef _SwitchWidget_H
+#define _SwitchWidget_H
 
 #include "TuileWidget.hpp"
 
-class FaustTuile;
+class MidiOscSwitchTuile;
 
-class FaustWidget: public TuileWidget {
+class SwitchWidget: public TuileWidget {
   public:
-	FaustWidget(const std::string& name, FaustTuile*);
-	~FaustWidget();
+	SwitchWidget(const std::string& name, MidiOscSwitchTuile*);
+	~SwitchWidget();
 
   private:
     

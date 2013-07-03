@@ -13,7 +13,7 @@
 #include <tuiles/LeafTuile.hpp>
 #include <jack/types.h>
 
-class AudioTuile: public LeafTuile {
+class AudioTuile: public tuiles::LeafTuile {
     public:
         AudioTuile();
         virtual ~AudioTuile();

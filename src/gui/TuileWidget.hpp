@@ -11,19 +11,22 @@
 #include <FL/Fl_Widget.H>
 #include <string>
 
+#include "TuileWidgetNode.hpp"
+
 class TuileParamWidget;
 class TuileParamGroup;
-class Tuile;
+namespace tuiles {class Tuile;}
 
-class TuileWidget : public Fl_Widget {
+class TuileWidget: public TuileWidgetNode, public Fl_Widget  {
   public:
-	TuileWidget(const std::string& name, Tuile* tuile=NULL);
+	TuileWidget(const std::string& name, tuiles::Tuile* tuile=NULL);
 	~TuileWidget();
 
     void update();
 
     int handle(int event);
 	void draw();
+    void drawConnections();
     void drag(const int&, const int&);
 
     inline const std::string& getName(){return m_name;}
@@ -31,11 +34,6 @@ class TuileWidget : public Fl_Widget {
 
     void select();
     void deselect();
-    inline void setParamWidgetAndGroup(TuileParamWidget* paramWidget, 
-                                        TuileParamGroup* paramGroup) {
-        m_paramWidget=paramWidget;
-        m_paramGroup=paramGroup;
-    }
 
 	void refresh(const int&, const int&, const float& zoom, const int& pos);
 
@@ -51,8 +49,13 @@ class TuileWidget : public Fl_Widget {
 
     inline TuileParamWidget* getParamWidget(){return m_paramWidget;}
 
+    virtual void tryForkWithTuile(const std::string& tuileName);
+    virtual void trySeqWithTuile(const std::string& tuileName);
+    virtual void tryJoinWithTuile(const std::string& tuileName);
+    virtual void tryLeftSeqWithTuile(const std::string& tuileName);
+    inline virtual void tryAddTuileChild(const std::string& tuileName){}
+
   protected:
-    Tuile* m_tuile;
     unsigned int m_id;
 	std::string m_name;
     bool m_muted;
@@ -72,13 +75,17 @@ class TuileWidget : public Fl_Widget {
 	bool m_clickedEnd;
 	bool m_clickedMiddle;
 
-	int m_dragPosition;
+	int m_dragPosX;
+	int m_dragPosY;
 	int m_magnetSize;
 	int m_measureDiv;
+    bool m_tmpConnectionActive;
 
 	unsigned int m_state;
 	Fl_Color m_backgroundColor;
     bool m_selected;
+
+    std::vector<TuileWidget*> m_inputWidgets;
 
     TuileParamWidget* m_paramWidget; 
     TuileParamGroup* m_paramGroup;

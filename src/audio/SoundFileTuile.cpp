@@ -12,6 +12,10 @@
 #include <math.h>
 #include <stdexcept>
 
+#include <tuiles/CommandsHandler.hpp>
+
+#include "commands/SetSoundFileProperties.hpp"
+
 using namespace std;
 
 SoundFileTuile::SoundFileTuile():   AudioTuile(),
@@ -31,6 +35,9 @@ SoundFileTuile::SoundFileTuile():   AudioTuile(),
 		m_envelopes[m_grainSize][i]=0.5*(1.0 - cos((2.0*M_PI*float(i))
                                                         /(m_grainSize-1)));
 	}
+
+    m_protoSetSFProps = new SetSoundFileProperties();
+    m_protoSetSFProps->createClones(m_nbCommands);
 }
 
 SoundFileTuile::~SoundFileTuile(){}
@@ -147,8 +154,25 @@ void SoundFileTuile::deactivate() {
 }
 
 void SoundFileTuile::setLength(const long& length) {
-    m_length=length;
+    LeafTuile::setLength(length);
     m_speed= float(m_framesCount)/float(m_length);
+    updateSoundFileProperties();
+}
+
+void SoundFileTuile::setVolume(const float& vol) {
+    m_volume=vol;
+    updateSoundFileProperties();
+}
+
+void SoundFileTuile::updateSoundFileProperties() {
+    SetSoundFileProperties* com = static_cast<SetSoundFileProperties*>
+                                                (m_protoSetSFProps->popClone());
+    if(com) {
+        com->setSoundFileTuile(this);
+        com->setVolume(m_volume);
+        com->setSpeed(m_speed);
+        m_commandsToProc->runCommand(com);
+    }
 }
 
 void SoundFileTuile::processBuffers(const int& nbFrames) {
@@ -172,7 +196,8 @@ void SoundFileTuile::processBuffers(const int& nbFrames) {
                     m_windowSize=1;
                     m_grainDistance = m_grainSize/2.0;
                 }
-                m_grains.push_back(Grain(m_grainVolume*m_volume, m_grainSize, 
+                m_grains.push_back(Grain(m_grainVolume*m_procVolume, 
+                                            m_grainSize, 
                                             rand()%m_windowSize+m_position,
                                             m_envelopes[m_grainSize],
                                             m_buffers, m_framesCount, 

@@ -1,24 +1,24 @@
 /***************************************************************************
- *  AudioInputWidget.cpp
+ *  AudioOutputWidget.cpp
  *  2012- Florent Berthaut
  *  ANR INEDIT Project
  *  This file is part of LiveTuiles
  ****************************************************************************/
 
-#include "AudioInputWidget.hpp"
+#include "AudioOutputWidget.hpp"
 
 #include <iostream>
 #include <math.h>
 #include <cassert>
 
-#include "../audio/AudioInputTuile.hpp"
+#include "../audio/AudioOutputTuile.hpp"
 
 using namespace std;
 
-AudioInputWidget::AudioInputWidget(const std::string& name, 
-                        AudioInputTuile* tuile): TuileWidget(name, tuile){}
+AudioOutputWidget::AudioOutputWidget(const std::string& name, 
+                        AudioOutputTuile* tuile): TuileWidget(name, tuile){}
 
-AudioInputWidget::~AudioInputWidget() {}
+AudioOutputWidget::~AudioOutputWidget() {}
 
 
 

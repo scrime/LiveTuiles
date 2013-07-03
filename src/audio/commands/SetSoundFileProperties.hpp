@@ -8,14 +8,16 @@
 #ifndef SetSoundFileProperties_h
 #define SetSoundFileProperties_h
 
-#include "Command.hpp"
+#include <tuiles/Command.hpp>
+#include "../SoundFileTuile.hpp"
 
-class SetSoundFileProperties: public Command {
+class SetSoundFileProperties: public tuiles::Command {
 	public:
-		inline SetSoundFileProperties(){}
+		inline SetSoundFileProperties(){m_name="SetSoundFileProperties";}
 		inline virtual ~SetSoundFileProperties(){};
 		virtual void run() {
             m_tuile->m_procVolume=m_volume;
+            m_tuile->m_procSpeed=m_speed;
         }
         virtual void createClones(const unsigned int& nbClones) {
             for(unsigned int c=0; c<nbClones; ++c) {
@@ -23,11 +25,14 @@ class SetSoundFileProperties: public Command {
                 m_clones.back()->setModel(this);
             }
         }
-        inline void setSoundFileTuile(Tuile* tuile){m_tuile=tuile;}
+        inline void setSoundFileTuile(SoundFileTuile* tuile){m_tuile=tuile;}
+        inline void setVolume(const float& vol){m_volume=vol;}
+        inline void setSpeed(const float& speed){m_speed=speed;}
 
 	protected:
         SoundFileTuile* m_tuile; 
-        float m_volume
+        float m_volume;
+        float m_speed;
 };
 
 #endif

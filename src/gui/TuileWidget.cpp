@@ -12,18 +12,22 @@
 #include <cassert>
 
 #include <Fl/fl_draw.H>
-#include <tuiles/Tuile.hpp>
 
 #include "TuileParamWidget.hpp"
 #include "TuileParamGroup.hpp"
+#include "TreeWidget.hpp"
+#include "SeqWidget.hpp"
+
+#include <tuiles/SeqTuile.hpp>
+#include "../audio/AudioTuile.hpp"
 
 using namespace std;
-
+using namespace tuiles;
 
 TuileWidget::TuileWidget(const std::string& name, 
-                        Tuile* tuile):
+                            Tuile* tuile):
 								Fl_Widget(0, 0, 100, 20, ""), 
-                                m_tuile(tuile),
+                                TuileWidgetNode(tuile),
                                 m_name(name),
                                 m_muted(false),
 								m_height(20),
@@ -32,12 +36,17 @@ TuileWidget::TuileWidget(const std::string& name,
                                 m_sync2Color(FL_FOREGROUND_COLOR), 
                                 m_rectColor(FL_FOREGROUND_COLOR), 
                                 m_realColor(fl_darker(FL_BACKGROUND_COLOR)),
-								m_clickedBegin(false),m_clickedEnd(false),
-								m_clickedMiddle(false),m_magnetSize(5),
-								m_measureDiv(32),
+								m_clickedBegin(false), m_clickedEnd(false),
+								m_clickedMiddle(false), m_magnetSize(5),
+								m_measureDiv(32), m_tmpConnectionActive(false),
 								m_backgroundColor(FL_BACKGROUND_COLOR),
                                 m_selected(false),
-                                m_paramWidget(NULL){}
+                                m_paramWidget(NULL) {
+    if(m_tuile) {
+        m_id=m_tuile->getID();
+        DEBUG("in TuileWidget constructor called of "<<name<<" with id "<<m_id);
+    }
+}
 
 TuileWidget::~TuileWidget() {}
 
@@ -111,8 +120,83 @@ void TuileWidget::draw() {
 	fl_draw(m_name.c_str(), x()+2, y()+h()-2);
 }
 
-int TuileWidget::handle(int event) {
+void TuileWidget::drawConnections() {
+    fl_color(FL_BLUE);
+    if(m_tmpConnectionActive) {
+        fl_begin_line();
+        fl_curve(x()+w()/2, y()+h(),
+                    x()+w()/2, y()+h()*2,
+                    m_dragPosX, m_dragPosY-h(),
+                    m_dragPosX, m_dragPosY);
+        fl_end_line();
+    }
 
+    vector<TuileWidget*>::iterator itWid=m_inputWidgets.begin();
+    for(; itWid!=m_inputWidgets.end(); ++itWid) {
+        fl_begin_line();
+        fl_curve((*itWid)->x()+(*itWid)->w()/2, (*itWid)->y()+(*itWid)->h(), 
+                (*itWid)->x()+(*itWid)->w()/2, (*itWid)->y()+(*itWid)->h()*2,
+                x()+w()/2, y()-h(),
+                x()+w()/2, y());
+        fl_end_line();
+    }
+}
+
+int TuileWidget::handle(int event) {
+    switch(event) { 
+        case FL_MOVE: { 
+            if(Fl::event_x()<x()+m_magnetSize) {
+                //m_overWidget=*itWidget;
+                //m_overWidgetPart=0;
+                highlightSyncInLine();
+                return 1;
+            }
+            else if(Fl::event_x()>x()+w()-m_magnetSize) {
+                //m_overWidget=*itWidget;
+                //m_overWidgetPart=2;
+                highlightSyncOutLine();
+                return 1;
+            }
+            else {
+                //m_overWidget=*itWidget;
+                //m_overWidgetPart=1;
+                highlightReal();
+                return 1;
+            }
+        }break;
+        case FL_DRAG: {
+            if(!m_tmpConnectionActive) {
+                position(x(), y()+(Fl::event_y()-m_dragPosY));
+            }
+            m_dragPosX=Fl::event_x();
+            m_dragPosY=Fl::event_y();
+            return 1;
+        }break;
+        case FL_PUSH: {
+            if(Fl::event_state(FL_CTRL|FL_COMMAND)) {
+                m_tmpConnectionActive=true;
+            }
+            else {
+                m_tmpConnectionActive=false;
+            }
+            m_dragPosX=Fl::event_x();
+            m_dragPosY=Fl::event_y();
+            return 1;
+        }break;
+        case FL_RELEASE: {
+            m_tmpConnectionActive=false;
+        }break;
+        case FL_ENTER:
+        case FL_FOCUS: {
+            return 1;
+        }
+        case FL_LEAVE: 
+        case FL_UNFOCUS: {
+            resetHighlight();
+            return 1;
+        }break;
+        default:break;
+    }
     return Fl_Widget::handle(event);
 }
 
@@ -123,6 +207,7 @@ void TuileWidget::drag(const int& dragX, const int& dragY) {
 
 void TuileWidget::refresh(const int& baseX, const int& baseY, 
 							const float& pixelsPerBeat, const int& yPos) {
+/*
 	if(m_tuile) {
 		float pos = float(m_tuile->getAbsolutePosition());
         cout<<"tuile "<<m_id<<" pos "<<pos<<endl;
@@ -136,6 +221,7 @@ void TuileWidget::refresh(const int& baseX, const int& baseY,
         highlightReal(m_selected);
 	}
 	this->redraw();
+*/
 }
 
 void TuileWidget::select() {
@@ -149,5 +235,54 @@ void TuileWidget::select() {
 void TuileWidget::deselect() {
     m_selected=false;
     resetHighlight();
+}
+
+void TuileWidget::tryForkWithTuile(const std::string& tuileName) {
+    TreeWidget* tree = TreeWidget::getInstance();
+    TuileWidget* newWidget = tree->createTuileWidget(tuileName);
+    SeqWidget* seqWidget = tree->createSeqWidget();
+    if(newWidget && seqWidget) {
+        m_parent->replaceChildWidget(this, seqWidget);
+        seqWidget->setFirstChildWidget(this);
+        seqWidget->setSecondChildWidget(newWidget);
+    }
+}
+
+void TuileWidget::trySeqWithTuile(const std::string& tuileName) {
+    DEBUG("in TuileWidget "<<m_name<<" try seq with "<<tuileName);
+    TreeWidget* tree = TreeWidget::getInstance();
+    TuileWidget* newWidget = tree->createTuileWidget(tuileName);
+    SeqWidget* seqWidget = tree->createSeqWidget();
+    if(newWidget && seqWidget) {
+        DEBUG("in TuileWidget "<<m_name<<" seq with "<<tuileName<<" worked");
+        m_parent->replaceChildWidget(this, seqWidget);
+        seqWidget->setFirstChildWidget(this);
+        seqWidget->setSecondChildWidget(newWidget);
+    }
+
+}
+
+void TuileWidget::tryJoinWithTuile(const std::string& tuileName) {
+    TreeWidget* tree = TreeWidget::getInstance();
+    TuileWidget* newWidget = tree->createTuileWidget(tuileName);
+    SeqWidget* seqWidget = tree->createSeqWidget();
+    if(newWidget && seqWidget) {
+        m_parent->replaceChildWidget(this, seqWidget);
+        seqWidget->setFirstChildWidget(this);
+        seqWidget->setSecondChildWidget(newWidget);
+    }
+
+}
+
+void TuileWidget::tryLeftSeqWithTuile(const std::string& tuileName) {
+    TreeWidget* tree = TreeWidget::getInstance();
+    TuileWidget* newWidget = tree->createTuileWidget(tuileName);
+    SeqWidget* seqWidget = tree->createSeqWidget();
+    if(newWidget && seqWidget) {
+        m_parent->replaceChildWidget(this, seqWidget);
+        seqWidget->setFirstChildWidget(newWidget);
+        seqWidget->setSecondChildWidget(this);
+    }
+
 }
 

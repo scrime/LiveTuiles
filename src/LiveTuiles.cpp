@@ -31,7 +31,7 @@ void LiveTuiles::start() {
     AudioManager* man = AudioManager::getInstance();
     man->init();
 
-    //initialize the main window
+    //initialize the main window and run fltk
     MainWindow* win = MainWindow::getInstance();
     win->init();
 	Fl::run();

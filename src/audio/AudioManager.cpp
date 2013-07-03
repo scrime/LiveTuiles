@@ -7,16 +7,35 @@
 
 #include "AudioManager.hpp"
 
+#include <iostream>
+
 #include <tuiles/TuilesManager.hpp>
+#include <tuiles/SeqTuile.hpp>
+#include <tuiles/LoopTuile.hpp>
 
 #include "FaustTuile.hpp"
 #include "SoundFileTuile.hpp"
 #include "AudioInputTuile.hpp"
 #include "AudioOutputTuile.hpp"
+#include "MidiOscSwitchTuile.hpp"
+#include "MidiOscMonitorTuile.hpp"
+
+#include "commands/AddAudioTuile.hpp"
+#include "commands/RemoveAudioTuile.hpp"
+#include "commands/SetProcStep.hpp"
 
 using namespace std;
+using namespace tuiles;
 
-AudioManager::AudioManager(): m_bpm(120) {}
+AudioManager::AudioManager(): m_bpm(120) {
+    int nbCommands=50;
+    m_protoAddAudioTuile = new AddAudioTuile();
+    m_protoAddAudioTuile->createClones(nbCommands);
+    m_protoRemoveAudioTuile = new RemoveAudioTuile();
+    m_protoRemoveAudioTuile->createClones(nbCommands);
+    m_protoSetProcStep= new SetProcStep();
+    m_protoSetProcStep->createClones(nbCommands);
+}
 
 AudioManager::~AudioManager() {
     jack_deactivate(m_jackClient);
@@ -61,30 +80,37 @@ void AudioManager::init() {
 }
 
 void AudioManager::clear() {
-   TuilesManager::getInstance()->clear(); 
+    TuilesManager::getInstance()->clear(); 
 
 }
 
 void AudioManager::start() {
-   TuilesManager::getInstance()->startTrees(); 
+    TuilesManager::getInstance()->startTrees(); 
 
 }
 
 void AudioManager::stop() {
-   TuilesManager::getInstance()->stopTrees(); 
+    TuilesManager::getInstance()->stopTrees(); 
 
 }
 
 void AudioManager::update() {
-   TuilesManager::getInstance()->update(); 
+    TuilesManager::getInstance()->update(); 
 
 }
 
 void AudioManager::setBpm(const float& bpm) {
     m_bpm=bpm;
 
-    //TODO set step in proc
-
+/*
+    SetProcStep* com = static_cast<SetProcStep*>
+                                    (m_protoSetProcStep->popClone());
+    if(com) {
+        com->setAudioManager(this);
+        com->setStep(m_bpm*
+        TuilesManager::getInstance()->getCommandsToProc()->runCommand(com);
+    }
+*/
 }
 
 bool AudioManager::isPlaying() {
@@ -115,12 +141,12 @@ const float& AudioManager::getPlayPositionInBeats() {
 void AudioManager::process(const int& nbFrames) {
     if(TuilesManager::getInstance()->isPlaying()) {
         //go through all the processes
-        vector<AudioTuile*>::iterator itTui = m_audioTuiles.begin();
-        for(; itTui!=m_audioTuiles.end(); ++itTui) {
+        vector<AudioTuile*>::iterator itTui = m_procAudioTuiles.begin();
+        for(; itTui!=m_procAudioTuiles.end(); ++itTui) {
                 (*itTui)->resetBuffers();
         }
-        itTui = m_audioTuiles.begin();
-        for(; itTui!=m_audioTuiles.end(); ++itTui) {
+        itTui = m_procAudioTuiles.begin();
+        for(; itTui!=m_procAudioTuiles.end(); ++itTui) {
                 (*itTui)->processBuffers(nbFrames);
         }
     }
@@ -150,5 +176,29 @@ AudioOutputTuile* AudioManager::addAudioOutputTuile(const std::string& output) {
     AudioOutputTuile* newTuile = new AudioOutputTuile();
     TuilesManager::getInstance()->addLeaf(newTuile);
     return newTuile;
+}
+
+SeqTuile* AudioManager::addSeqTuile() {
+    SeqTuile* newSeq = new SeqTuile();
+    TuilesManager::getInstance()->addSeq(newSeq);
+    return newSeq;
+}
+
+LoopTuile* AudioManager::addLoopTuile() {
+    LoopTuile* newLoop = new LoopTuile();
+    TuilesManager::getInstance()->addLoop(newLoop);
+    return newLoop;
+}
+
+MidiOscMonitorTuile* AudioManager::addMidiOscMonitorTuile() {
+    MidiOscMonitorTuile* newMonitor = new MidiOscMonitorTuile();
+    TuilesManager::getInstance()->addMonitor((MonitorTuile*)newMonitor);
+    return newMonitor;
+}
+
+MidiOscSwitchTuile* AudioManager::addMidiOscSwitchTuile() {
+    MidiOscSwitchTuile* newSwitch = new MidiOscSwitchTuile();
+    TuilesManager::getInstance()->addSwitch((SwitchTuile*)newSwitch);
+    return newSwitch;
 }
 

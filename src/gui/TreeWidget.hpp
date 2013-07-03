@@ -26,72 +26,68 @@
 #include <vector>
 #include <list>
 
-class TuileWidget;
+#include "TuileWidgetNode.hpp";
+
 class TuileParamGroup;
+class TuileWidget;
+class SeqWidget;
 
-class TreeWidget : public Fl_Scroll {
-  public:
-	TreeWidget(int ,int , int, int);
-	~TreeWidget();
+class TreeWidget : public Fl_Scroll, public TuileWidgetNode {
+    public:
+        static TreeWidget* getInstance();
+        ~TreeWidget();
 
-    void update();
-    void refreshTuiles();
-    void zoom(const float&);
+        void update();
+        void refreshTuiles();
+        void zoom(const float&);
 
-	void draw();
-    int handle(int);
+        void draw();
+        int handle(int);
 
-    inline void setPixelsPerBeat(int ppb){m_pixelsPerBeat=ppb;}
-    void getMagnetizedPositionAndTuile(const int&, const int&, const int&,
+        inline void setPixelsPerBeat(int ppb){m_pixelsPerBeat=ppb;}
+        void getMagnetizedPositionAndTuile(const int&, const int&, const int&,
                                         int&, int&, bool&, const std::string&);
+        TuileWidget* createTuileWidget(const std::string& tuileName);
+        SeqWidget* createSeqWidget();
+        void addTuileWidget(TuileWidget*);
+        void removeTuileWidget(TuileWidget*);
+        void removeTuileWidget(const unsigned int&);
 
-    void addTuileWidget(const unsigned int& id);
-    void removeTuileWidget(TuileWidget*);
-    void removeTuileWidget(const unsigned int&);
-	void dropTuile(const std::string& tuileName, 
-					const unsigned int& id, const std::string& op);
+        inline void setParamGroup(TuileParamGroup* paramGroup){ 
+            m_paramGroup=paramGroup;
+        }
 
-    inline void setParamGroup(TuileParamGroup* paramGroup){ 
-        m_paramGroup=paramGroup;
-    }
+        inline void clear(){Fl_Scroll::clear();m_tuileWidgets.clear();}
 
-    inline void clear(){Fl_Scroll::clear();m_tuileWidgets.clear();}
+    private:
+        TreeWidget();
 
-  private:
+    private:
+        int m_cursorX;
+        int m_pixelsPerBeat;
+        int m_offsetX, m_offsetY;
+        int m_magnetSize;
 
-	int m_cursorX;
-	int m_pixelsPerBeat;
-	int m_offsetX, m_offsetY;
-    int m_magnetSize;
-    
-    int m_zeroPosX;
-    int m_startLoopPosX;
-    int m_loopW;
-    unsigned int m_forkLeafID;
+        int m_zeroPosX;
+        int m_startLoopPosX;
+        int m_loopW;
+        unsigned int m_forkLeafID;
 
-    std::list<TuileWidget*> m_tuileWidgets;
-    TuileWidget* m_selectedTuileWidget;
+        std::list<TuileWidget*> m_tuileWidgets;
+        TuileWidget* m_selectedTuileWidget;
 
-    TuileWidget* m_overWidget;
-    unsigned int m_overWidgetPart;
+        TuileWidget* m_overWidget;
+        unsigned int m_overWidgetPart;
+        TuileWidget* m_draggedWidget;
+        unsigned int m_draggedWidgetPart;
+        bool m_connectingTuiles;
 
-    TuileWidget* m_draggedWidget;
-    unsigned int m_draggedWidgetPart;
-    int m_draggingStartX, m_draggingStartY;
-    float m_draggedTuileInitLeftOffset;
-    float m_draggedTuileInitRightOffset;
-    float m_draggedTuileInitLength;
+        TuileParamGroup* m_paramGroup;
 
-    bool m_movingLoop;
-    float m_loopInitLeftOffset;
-    float m_loopInitRightOffset;
-    float m_loopInitLength;
-
-    TuileParamGroup* m_paramGroup;
-
-    std::vector<std::string> m_inputBuffersStr;
-    std::vector<std::string> m_outputBuffersStr;
-    unsigned int m_nbInternalOutputs, m_nbExternalOutputs, m_nbExternalInputs;
+        std::vector<std::string> m_inputBuffersStr;
+        std::vector<std::string> m_outputBuffersStr;
+        unsigned int m_nbInternalOutputs, m_nbExternalOutputs, 
+                        m_nbExternalInputs;
 };
 
 #endif

@@ -1,24 +1,31 @@
 /***************************************************************************
- *  FaustWidget.h
+ *  SeqWidget.h
  *  2012- Florent Berthaut
  *  ANR INEDIT Project
  *  This file is part of LiveTuiles
  ****************************************************************************/
  
  
-#ifndef _FaustWidget_H
-#define _FaustWidget_H
+#ifndef _SeqWidget_H
+#define _SeqWidget_H
 
 #include "TuileWidget.hpp"
 
-class FaustTuile;
+namespace tuiles{class SeqTuile;}
 
-class FaustWidget: public TuileWidget {
+class SeqWidget: public TuileWidget {
   public:
-	FaustWidget(const std::string& name, FaustTuile*);
-	~FaustWidget();
+	SeqWidget(const std::string& name, tuiles::SeqTuile*);
+	~SeqWidget();
+
+    void draw();
+    void drawExec(const float&);
+
+    void setFirstChildWidget(TuileWidgetNode*);
+    void setSecondChildWidget(TuileWidgetNode*);
 
   private:
+    tuiles::SeqTuile* m_seqTuile;
     
 };
 

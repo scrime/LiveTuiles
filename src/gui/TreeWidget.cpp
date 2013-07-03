@@ -13,6 +13,10 @@
 #include <cassert>
 
 #include "../audio/AudioManager.hpp"
+#include <tuiles/SeqTuile.hpp>
+#include <tuiles/SwitchTuile.hpp>
+#include <tuiles/MonitorTuile.hpp>
+#include <tuiles/LoopTuile.hpp>
 
 #include "MainWindow.hpp"
 #include "TuileWidget.hpp"
@@ -20,24 +24,28 @@
 #include "FaustWidget.hpp"
 #include "AudioInputWidget.hpp"
 #include "AudioOutputWidget.hpp"
+#include "SeqWidget.hpp"
+#include "LoopWidget.hpp"
+#include "MonitorWidget.hpp"
+#include "SwitchWidget.hpp"
 
 #include "TuileParamGroup.hpp"
 
 using namespace std;
+using namespace tuiles;
 
-TreeWidget::TreeWidget(int x, int y, int w, int h):
-								Fl_Scroll(x, y, w, h, ""), 
-								m_cursorX(0), m_pixelsPerBeat(10),
-                                m_offsetX(10), m_offsetY(10), m_magnetSize(5),
-                                m_zeroPosX(0), m_startLoopPosX(0), m_loopW(0),
-                                m_selectedTuileWidget(NULL),
-                                m_overWidget(NULL), m_overWidgetPart(0),
-                                m_draggedWidget(NULL), m_draggedWidgetPart(0), 
-                                m_movingLoop(false),
-                                m_nbInternalOutputs(0), m_nbExternalOutputs(0), 
-                                m_nbExternalInputs(0) {
+TreeWidget::TreeWidget():   Fl_Scroll(0, 0, 10, 10, ""), 
+                            TuileWidgetNode(NULL),
+                            m_cursorX(0), m_pixelsPerBeat(10),
+                            m_offsetX(10), m_offsetY(10), m_magnetSize(5),
+                            m_zeroPosX(0), m_startLoopPosX(0), m_loopW(0),
+                            m_selectedTuileWidget(NULL),
+                            m_overWidget(NULL), m_overWidgetPart(0),
+                            m_draggedWidget(NULL), m_draggedWidgetPart(0), 
+                            m_nbInternalOutputs(0), m_nbExternalOutputs(0), 
+                            m_nbExternalInputs(0) {
 
-
+    m_id=-1;
     type(Fl_Scroll::BOTH);
 
 	end();
@@ -45,11 +53,17 @@ TreeWidget::TreeWidget(int x, int y, int w, int h):
 
 TreeWidget::~TreeWidget() {}
 
+TreeWidget* TreeWidget::getInstance() {
+    static TreeWidget instance;
+    return &instance;
+}
+
 void TreeWidget::update() {
-/*
     //update cursor
-    m_cursorX = m_zeroPosX + (m_tuilesManager->getPlayPosition()) 
-                                *m_pixelsPerBeat;
+    m_cursorX = m_zeroPosX + 
+                    (AudioManager::getInstance()->getPlayPositionInBeats()) 
+                    *m_pixelsPerBeat;
+/*
     //check for score modifications
     if(m_tuilesManager->checkTuilesPropsUpdate()) {
         refreshTuiles();
@@ -75,6 +89,7 @@ void TreeWidget::zoom(const float& zoom) {
 
 void TreeWidget::draw() {
     Fl_Scroll::draw();
+
 	//box
 	fl_draw_box(FL_DOWN_BOX, x(), y(), w(), h(), FL_BACKGROUND2_COLOR);
 	fl_push_clip(x()+2, y()+2, w()-4, h()-4);
@@ -86,7 +101,26 @@ void TreeWidget::draw() {
 	}
 
 	//children
-	draw_children();
+	//draw_children();
+    vector<TuileWidgetNode*>::iterator itWidget=m_childrenWidgets.begin();
+    for(; itWidget!=m_childrenWidgets.end(); ++itWidget) {
+        //(*itWidget)->drawConnections();
+        (*itWidget)->draw();
+    }
+
+
+/*
+    //connections between tuiles 
+    list<TuileWidget*>::const_iterator itWidget=m_tuileWidgets.begin();
+    for(; itWidget!=m_tuileWidgets.end(); ++itWidget) {
+        (*itWidget)->drawConnections();
+    }
+*/
+    //cursor
+	fl_color(FL_RED);
+    fl_line(m_offsetX+m_cursorX, y()+m_offsetY, 
+            m_offsetX+m_cursorX, y()+h()-m_offsetY);
+
 	fl_pop_clip();
 }
 
@@ -96,6 +130,7 @@ void TreeWidget::refreshTuiles() {
     m_startLoopPosX=0;
     m_loopW=0;
 
+/*
     //update tuiles positions 
     int yPos=1;
     list<TuileWidget*>::const_iterator itWidget=m_tuileWidgets.begin();
@@ -103,16 +138,17 @@ void TreeWidget::refreshTuiles() {
         (*itWidget)->refresh(-m_zeroPosX+x()+m_offsetX, y(), 
                              m_pixelsPerBeat, yPos);
     }
+*/
 }
 
 int TreeWidget::handle(int event) {
     //bool needRefresh=false;
 
+/*
     switch(event) { 
         case FL_DRAG: { 
             if(m_draggedWidget) {
                 m_draggedWidget->drag(Fl::event_x(), Fl::event_y());
-/*
                 switch(m_draggedWidgetPart) {
                     case 0: {
                         float draggedOff=float(Fl::event_x()-m_draggingStartX)
@@ -149,7 +185,6 @@ int TreeWidget::handle(int event) {
                         refreshTuiles();
                     }
                 }
-*/
             }
             else {
                return Fl_Scroll::handle(event); 
@@ -204,7 +239,6 @@ int TreeWidget::handle(int event) {
             return 1;
         }break;
         case FL_PUSH: {
-/*
             if(m_overWidget) {
                 if(m_selectedTuileWidget) {
                     m_selectedTuileWidget->deselect();
@@ -235,9 +269,7 @@ int TreeWidget::handle(int event) {
             else {
                     return Fl_Scroll::handle(event); 
             }
-*/
             return Fl_Scroll::handle(event); 
-            return 1;
         }break;
         case FL_RELEASE: {
             m_movingLoop=false;
@@ -245,14 +277,27 @@ int TreeWidget::handle(int event) {
             m_draggedWidget=NULL;
             return Fl_Scroll::handle(event); 
         }break;
+        case FL_KEYUP: {
+            switch(Fl::event_key()) {
+                case FL_Control_R: 
+                case FL_Control_L: {
+                    m_connectingTuiles=false;
+                }break;
+                default:break;
+            }
+        }break;
         case FL_KEYDOWN: {
             switch(Fl::event_key()) {
                 case FL_BackSpace: {
                     //TODO remove selectedTuile
                     return 1;
                 }break;
+                case FL_Control_R: 
+                case FL_Control_L: {
+                    m_connectingTuiles=true;
+                    return 1;
+                }break;
                 case 32: {
-                    AudioManager::getInstance()->togglePlay();
                     MainWindow::getInstance()->togglePlay();
                 }break;
                 default:break;
@@ -270,11 +315,36 @@ int TreeWidget::handle(int event) {
         }break;
         default:break;
     }
+*/
+    switch(event) { 
+        case FL_KEYDOWN: {
+            switch(Fl::event_key()) {
+                case FL_BackSpace: {
+                    //TODO remove selectedTuile
+                    return 1;
+                }break;
+                case 32: {
+                    MainWindow::getInstance()->togglePlay();
+                }break;
+                default:break;
+            }
+        }break;
+        case FL_ENTER: {
+            Fl::focus(this);
+            return 1;
+        }break;
+        case FL_LEAVE: 
+        case FL_FOCUS: 
+        case FL_UNFOCUS: {
+            return 1;
+        }break;
+        default:break;
+    }
     return Fl_Scroll::handle(event);
 }
 
 
-void TreeWidget::getMagnetizedPositionAndTuile(const int& inX, const int& inY, 
+void TreeWidget::getMagnetizedPositionAndTuile( const int& inX, const int& inY, 
                                                 const int& inW, 
                                                 int& outX, int& outY, 
                                                 bool& drop,
@@ -291,13 +361,12 @@ void TreeWidget::getMagnetizedPositionAndTuile(const int& inX, const int& inY,
 
         if(inY>(*itWidget)->y() - (*itWidget)->h()/2 
                 && inY<(*itWidget)->y() + 3*(*itWidget)->h()/2) {
-
             //fork
             if(fabs((*itWidget)->getSyncIn()-inX)<m_magnetSize) {
                 outX=(*itWidget)->getSyncIn();
                 (*itWidget)->highlightSyncInLine(); 
                 if(drop) {
-					dropTuile(tuileName, (*itWidget)->getID(),"fork");
+                    (*itWidget)->tryForkWithTuile(tuileName);
                     outDrop=true;
                 }
             }
@@ -306,7 +375,7 @@ void TreeWidget::getMagnetizedPositionAndTuile(const int& inX, const int& inY,
                 outX=(*itWidget)->getSyncOut();
                 (*itWidget)->highlightSyncOutLine(); 
                 if(drop) {
-					dropTuile(tuileName, (*itWidget)->getID(),"seq");
+					(*itWidget)->trySeqWithTuile(tuileName);
                     outDrop=true;
                 }
             } 
@@ -315,7 +384,7 @@ void TreeWidget::getMagnetizedPositionAndTuile(const int& inX, const int& inY,
                 outX=(*itWidget)->getSyncIn()-inW;
                 (*itWidget)->highlightSyncInLine(); 
                 if(drop) {
-					dropTuile(tuileName, (*itWidget)->getID(),"leftseq");
+					(*itWidget)->tryLeftSeqWithTuile(tuileName);
                     outDrop=true;
                 }
             } 
@@ -324,7 +393,15 @@ void TreeWidget::getMagnetizedPositionAndTuile(const int& inX, const int& inY,
                 outX=(*itWidget)->getSyncOut()-inW;
                 (*itWidget)->highlightSyncOutLine(); 
                 if(drop) {
-					dropTuile(tuileName, (*itWidget)->getID(),"join");
+					(*itWidget)->tryJoinWithTuile(tuileName);
+                    outDrop=true;
+                }
+            } 
+            else if(inX>(*itWidget)->x() 
+                        && inX<(*itWidget)->x()+(*itWidget)->w()) {
+                (*itWidget)->highlightReal(); 
+                if(drop) {
+					(*itWidget)->tryAddTuileChild(tuileName);
                     outDrop=true;
                 }
             } 
@@ -334,12 +411,19 @@ void TreeWidget::getMagnetizedPositionAndTuile(const int& inX, const int& inY,
 	//drop without link to other tuiles
     if(inX>x() && inY<x()+w() && inY>y() && inY<y()+h()) {
         if(drop && !outDrop) {
-            dropTuile(tuileName, 0, "");
+            TuileWidget* newWidget = createTuileWidget(tuileName);
+            if(newWidget) {
+                addTuileWidget(newWidget);
+            }
         }
     }
 }
 
-void TreeWidget::addTuileWidget(const unsigned int& id) {
+void TreeWidget::addTuileWidget(TuileWidget* newWidget) {
+    m_tuileWidgets.push_back(newWidget);
+    this->add(m_tuileWidgets.back());
+    
+
 /*
     if(m_tuilesManager->getTuileProps(id)) {
         std::string shortName = m_tuilesManager->getTuileProps(id)->getName();
@@ -380,48 +464,73 @@ void TreeWidget::removeTuileWidget(const unsigned int& id) {
         delete erasedWidget;
         m_paramGroup->clear();
     }
-/*
     if(m_tuileWidgets.size()==0) {
-        SimpleTuilesLooper::getInstance()->clearAll();
+        AudioManager::getInstance()->clear();
     }
-*/
 }
 
-void TreeWidget::dropTuile(const std::string& tuileName, 
-							const unsigned int& id, const std::string& op) {
+SeqWidget* TreeWidget::createSeqWidget() {
     AudioManager* audioMan=AudioManager::getInstance();
+    SeqTuile* newSTuile = audioMan->addSeqTuile();
+    SeqWidget* newWidget = new SeqWidget("seq", newSTuile);
+    m_childrenWidgets.push_back(newWidget);
+    newWidget->setParent(this);
+    DEBUG("TreeWidget: created a new SeqWidget");
+    return newWidget;
+}
+
+
+TuileWidget* TreeWidget::createTuileWidget(const std::string& tuileName) {
+    AudioManager* audioMan=AudioManager::getInstance();
+    TuileWidget* newWidget=NULL;
+    Tuile* newTuile=NULL;
     if(tuileName.find(".tui")!=string::npos) {
     }
     else if(tuileName.compare("loop")==0) {
+        LoopTuile* newLTuile = audioMan->addLoopTuile();
+        newTuile = (Tuile*)newLTuile;
+        newWidget = new LoopWidget(tuileName, newLTuile);
     }
     else if(tuileName.compare("monitor")==0) {
+        MidiOscMonitorTuile* newMTuile = audioMan->addMidiOscMonitorTuile();
+        newTuile = (Tuile*)newMTuile;
+        newWidget = new MonitorWidget(tuileName, newMTuile);
     }
     else if(tuileName.compare("switch")==0) {
+        MidiOscSwitchTuile* newSwTuile = audioMan->addMidiOscSwitchTuile();
+        newTuile = (Tuile*)newSwTuile;
+        newWidget = new SwitchWidget(tuileName, newSwTuile);
     }
     else if(tuileName.compare("output")==0) {
-        m_tuileWidgets.push_back(
-            new AudioOutputWidget(tuileName, 
-                                audioMan->addAudioOutputTuile(tuileName)));
-        this->add(m_tuileWidgets.back());
+        AudioOutputTuile* newAOTuile = audioMan->addAudioOutputTuile(tuileName);
+        newTuile = (Tuile*)newAOTuile;
+        newWidget = new AudioOutputWidget(tuileName, newAOTuile);
     }
     else if(tuileName.compare("input")==0) {
-        m_tuileWidgets.push_back(
-            new AudioInputWidget(tuileName, 
-                                audioMan->addAudioInputTuile(tuileName)));
-        this->add(m_tuileWidgets.back());
+        AudioInputTuile* newAITuile = audioMan->addAudioInputTuile(tuileName);
+        newTuile = (Tuile*)newAITuile;
+        newWidget = new AudioInputWidget(tuileName, newAITuile);
     }
     else if(tuileName.find(".wav")!=string::npos) {
-        m_tuileWidgets.push_back(
-            new SoundFileWidget(tuileName, 
-                                audioMan->addSoundFileTuile(tuileName)));
-        this->add(m_tuileWidgets.back());
+        SoundFileTuile* newSFTuile = audioMan->addSoundFileTuile(tuileName);
+        newTuile = (Tuile*)newSFTuile;
+        newWidget = new SoundFileWidget(tuileName, newSFTuile);
     }
     else if(tuileName.find(".dsp")!=string::npos) {
-        m_tuileWidgets.push_back(
-            new FaustWidget(tuileName, 
-                            audioMan->addFaustTuile(tuileName)));
-        this->add(m_tuileWidgets.back());
+        FaustTuile* newFTuile = audioMan->addFaustTuile(tuileName);
+        newTuile = (Tuile*)newFTuile;
+        newWidget = new FaustWidget(tuileName, newFTuile);
     }
+
+    if(newWidget) {
+        m_childrenWidgets.push_back(newWidget);
+        newWidget->setParent(this);
+        DEBUG("TreeWidget: created the new TuileWidget "<<tuileName);
+    }
+    else {
+        DEBUG("TreeWidget: could not create the new TuileWidget "<<tuileName);
+    }
+    return newWidget;
 
 /*
 

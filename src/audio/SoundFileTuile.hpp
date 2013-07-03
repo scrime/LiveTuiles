@@ -15,6 +15,8 @@
 #include "AudioTuile.hpp"
 #include "Grain.hpp"
 
+class SetSoundFileProperties;
+
 class SoundFileTuile : public AudioTuile {	
 	public:
 		SoundFileTuile();
@@ -22,19 +24,31 @@ class SoundFileTuile : public AudioTuile {
 
 		virtual void load(const std::string&);
 		void unload();
-	
 		void setSampleRate(const unsigned int&);
 
 		void activate();
 		void deactivate();
+
         void setLength(const long&);
         inline virtual void setPositionRatio(const float& ratio){
             m_position=ratio*(float)m_framesCount;
         }
+        const float& getVolume(){return m_volume;}
+        void setVolume(const float& vol);
 
 		virtual void processBuffers(const int& nbFrames);
+
+    protected:
+        friend class SetSoundFileProperties;
+        SetSoundFileProperties* m_protoSetSFProps;
+        float m_procVolume;
     
+    private:
+        void updateSoundFileProperties();
+
 	private:
+        float m_volume;
+
 		jack_default_audio_sample_t** m_buffers;
 		unsigned int m_channelsCount;
 		unsigned int m_sampleRate;
@@ -58,7 +72,6 @@ class SoundFileTuile : public AudioTuile {
 
 		std::map<unsigned int, jack_default_audio_sample_t*> m_envelopes;
 		jack_default_audio_sample_t* m_env;
-
 };
 
 #endif

@@ -12,6 +12,7 @@
 #include <cassert>
 
 using namespace std;
+using namespace tuiles;
 
 SoundFileWidget::SoundFileWidget(const std::string& name, 
                                 SoundFileTuile* tuile): 
