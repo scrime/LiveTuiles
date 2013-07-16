@@ -1,24 +1,28 @@
 /***************************************************************************
- *  AudioInputWidget.h
+ *  AudioTuileWidget.h
  *  2012- Florent Berthaut
  *  ANR INEDIT Project
  *  This file is part of LiveTuiles
  ****************************************************************************/
  
  
-#ifndef _AudioInputWidget_H
-#define _AudioInputWidget_H
+#ifndef _AudioTuileWidget_H
+#define _AudioTuileWidget_H
 
 #include "TuileWidget.hpp"
 
-class AudioInputTuile;
+class AudioTuile;
 
-class AudioInputWidget: public TuileWidget {
+class AudioTuileWidget: public TuileWidget {
   public:
-	AudioInputWidget(const std::string& name, AudioInputTuile*);
-	~AudioInputWidget();
+	AudioTuileWidget(const std::string& name, AudioTuile*);
+	~AudioTuileWidget();
 
-  private:
+    virtual void connectToWidget(AudioTuileWidget*);
+    inline AudioTuile* getAudioTuile(){return m_audioTuile;}
+    
+  protected:
+    AudioTuile* m_audioTuile;
     
 };
 

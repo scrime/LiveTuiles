@@ -16,7 +16,9 @@
 using namespace std;
 
 SwitchWidget::SwitchWidget(const std::string& name, 
-                        MidiOscSwitchTuile* tuile): TuileWidget(name, tuile){}
+                        MidiOscSwitchTuile* tuile): TuileWidget(name, tuile){
+    m_canTakeInput=false;
+}
 
 SwitchWidget::~SwitchWidget() {}
 

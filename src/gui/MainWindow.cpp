@@ -172,12 +172,12 @@ void MainWindow::togglePlay() {
     AudioManager* man = AudioManager::getInstance();
     if(man->isPlaying()) {
 		m_loopStartButton->label("Play");
-		man->stop();
+		man->stopTrees();
         m_loopStartButton->value(0);
     }
     else {
 		m_loopStartButton->label("Stop");
-		man->start();
+		man->startTrees();
         m_loopStartButton->value(1);
 	}
 }
@@ -233,14 +233,6 @@ void MainWindow::clearAll() {
     m_tuiles->refreshTree();
     m_tuilesTree->refreshTuiles();
 */
-}
-
-void MainWindow::removeTuile(const unsigned int& id) {
-/*
-    m_tuiles->removeTuile(id);
-    m_processes->removeProcess(id);
-*/
-    m_tuilesTree->removeTuileWidget(id);
 }
 
 void MainWindow::cbZoomTree(Fl_Widget*) {

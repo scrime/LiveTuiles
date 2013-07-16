@@ -16,7 +16,7 @@
 using namespace std;
 
 FaustWidget::FaustWidget(const std::string& name, 
-                        FaustTuile* tuile): TuileWidget(name, tuile){}
+                            FaustTuile* tuile): AudioTuileWidget(name, tuile){}
 
 FaustWidget::~FaustWidget() {}
 

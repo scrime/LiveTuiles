@@ -16,7 +16,9 @@
 using namespace std;
 
 AudioInputWidget::AudioInputWidget(const std::string& name, 
-                        AudioInputTuile* tuile): TuileWidget(name, tuile) {}
+                        AudioInputTuile* tuile): AudioTuileWidget(name, tuile) {
+    m_canTakeInput=false;
+}
 
 AudioInputWidget::~AudioInputWidget() {}
 

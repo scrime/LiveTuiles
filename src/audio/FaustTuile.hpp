@@ -13,7 +13,7 @@
 
 #include "AudioTuile.hpp"
 
-class FaustTuile : public AudioTuile{	
+class FaustTuile : public AudioTuile {
 	public:
 		FaustTuile();
 		~FaustTuile();

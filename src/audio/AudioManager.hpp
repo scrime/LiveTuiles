@@ -16,10 +16,7 @@
 #include <jack/types.h>
 #include <jack/midiport.h>
 
-namespace tuiles {
-    class SeqTuile;
-    class LoopTuile;
-}
+#include <tuiles/TuilesManager.hpp>
 
 class AudioTuile;
 class FaustTuile;
@@ -33,16 +30,12 @@ class AddAudioTuile;
 class RemoveAudioTuile;
 class SetProcStep;
 
-class AudioManager {	
+class AudioManager : public tuiles::TuilesManager {
 	public:
 		static AudioManager* getInstance();
 		~AudioManager();
 
 		void init();
-		void update();
-        void clear();
-        void start();
-        void stop();
         void togglePlay();
         void setBpm(const float&);
 
@@ -62,10 +55,10 @@ class AudioManager {
         MidiOscMonitorTuile* addMidiOscMonitorTuile();
         MidiOscSwitchTuile* addMidiOscSwitchTuile();
 
-        bool isPlaying();
-        const float& getPlayPosition();
         const float& getPlayPositionInBeats();
         const float& getBpm(){return m_bpm;}
+        const float& getFramesPerBeat(){return m_framesPerBeat;}
+        void framesToBeats(const float& frames, float& beats);
 
     protected:
         friend class AddAudioTuile;
@@ -75,6 +68,9 @@ class AudioManager {
         friend class SetProcStep;
         SetProcStep* m_protoSetProcStep;
 
+    private:
+        void internalAddAudioTuile(AudioTuile*);
+
 	private:
 		AudioManager();
 
@@ -82,6 +78,7 @@ class AudioManager {
 		unsigned int m_sampleRate;	
 		unsigned int m_bufferSize;	
         float m_bpm;
+        float m_framesPerBeat;
         float m_playPosInBeats;
 
         std::vector<AudioTuile*> m_procAudioTuiles;

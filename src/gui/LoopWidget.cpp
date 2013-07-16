@@ -17,7 +17,9 @@ using namespace std;
 using namespace tuiles;
 
 LoopWidget::LoopWidget(const std::string& name, 
-                        LoopTuile* tuile): TuileWidget(name, tuile){}
+                        LoopTuile* tuile): TuileWidget(name, tuile){
+    m_canTakeInput=false;
+}
 
 LoopWidget::~LoopWidget() {}
 

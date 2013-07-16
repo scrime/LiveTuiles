@@ -9,11 +9,11 @@
 #ifndef _AudioInputWidget_H
 #define _AudioInputWidget_H
 
-#include "TuileWidget.hpp"
+#include "AudioTuileWidget.hpp"
 
 class AudioInputTuile;
 
-class AudioInputWidget: public TuileWidget {
+class AudioInputWidget: public AudioTuileWidget {
   public:
 	AudioInputWidget(const std::string& name, AudioInputTuile*);
 	~AudioInputWidget();

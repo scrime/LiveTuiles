@@ -9,14 +9,15 @@
 #ifndef _AudioOutputWidget_H
 #define _AudioOutputWidget_H
 
-#include "TuileWidget.hpp"
+#include "AudioTuileWidget.hpp"
 
 class AudioOutputTuile;
 
-class AudioOutputWidget: public TuileWidget {
+class AudioOutputWidget: public AudioTuileWidget {
   public:
 	AudioOutputWidget(const std::string& name, AudioOutputTuile*);
 	~AudioOutputWidget();
+
 
   private:
     

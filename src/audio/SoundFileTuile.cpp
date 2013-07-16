@@ -64,6 +64,7 @@ void SoundFileTuile::load(const std::string& fileName) {
 	
 	//frames number
 	m_framesCount = (long)(sfInfo.frames);
+    m_length=m_framesCount;
     m_lengthInMs = float(m_framesCount)/(float(m_sampleRate)/1000.0);
 
 	//create the buffers
@@ -182,6 +183,7 @@ void SoundFileTuile::processBuffers(const int& nbFrames) {
             m_internalBuffer[c].assign(m_internalBuffer[c].size(), 0);
         }
         if(m_active) {
+            cout<<"process soundfile"<<endl;
             //start new grain ?
             if(m_grainDistanceCounter>=m_grainDistance) {
                 if(m_speed<1.0) {

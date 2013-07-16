@@ -1,26 +1,30 @@
 /***************************************************************************
- *  AudioInputWidget.cpp
+ *  AudioTuileWidget.cpp
  *  2012- Florent Berthaut
  *  ANR INEDIT Project
  *  This file is part of LiveTuiles
  ****************************************************************************/
 
-#include "AudioInputWidget.hpp"
+#include "AudioTuileWidget.hpp"
 
 #include <iostream>
 #include <math.h>
 #include <cassert>
 
-#include "../audio/AudioInputTuile.hpp"
+#include "../audio/AudioTuile.hpp"
 
 using namespace std;
 
-AudioInputWidget::AudioInputWidget(const std::string& name, 
-                        AudioInputTuile* tuile): TuileWidget(name, tuile) {
-    m_canTakeInput=false;
+AudioTuileWidget::AudioTuileWidget(const std::string& name, 
+                                    AudioTuile* tuile):  
+                                            TuileWidget(name, tuile), 
+                                            m_audioTuile(tuile) {
 }
 
-AudioInputWidget::~AudioInputWidget() {}
+AudioTuileWidget::~AudioTuileWidget() {}
 
-
+void AudioTuileWidget::connectToWidget(AudioTuileWidget* widget) {
+    m_inputWidgets.push_back(widget);
+    m_audioTuile->addInputTuile(widget->getAudioTuile());
+}
 

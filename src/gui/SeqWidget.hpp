@@ -9,17 +9,20 @@
 #ifndef _SeqWidget_H
 #define _SeqWidget_H
 
-#include "TuileWidget.hpp"
+#include "OpWidget.hpp"
 
 namespace tuiles{class SeqTuile;}
 
-class SeqWidget: public TuileWidget {
+class SeqWidget: public OpWidget {
   public:
 	SeqWidget(const std::string& name, tuiles::SeqTuile*);
 	~SeqWidget();
 
-    void draw();
-    void drawExec(const float&);
+    void drawComposition();
+    void drawExecution(const float&);
+    virtual int handle(int event);
+
+    virtual void notify();
 
     void setFirstChildWidget(TuileWidgetNode*);
     void setSecondChildWidget(TuileWidgetNode*);

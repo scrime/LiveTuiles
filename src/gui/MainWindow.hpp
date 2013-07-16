@@ -63,7 +63,6 @@ class MainWindow  : public Fl_Double_Window {
 		}	
 		void cbTreeButtons(Fl_Widget*);
         void clearAll();
-        void removeTuile(const unsigned int&);
 
 		static void statZoomTree(Fl_Widget* w,void* f) { 
 			MainWindow *tmpf = static_cast<MainWindow *>(f);

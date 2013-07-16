@@ -9,11 +9,11 @@
 #ifndef _SoundFileWidget_H
 #define _SoundFileWidget_H
 
-#include "TuileWidget.hpp"
+#include "AudioTuileWidget.hpp"
 
 class SoundFileTuile;
 
-class SoundFileWidget: public TuileWidget {
+class SoundFileWidget: public AudioTuileWidget {
   public:
 	SoundFileWidget(const std::string& name, SoundFileTuile*);
 	~SoundFileWidget();

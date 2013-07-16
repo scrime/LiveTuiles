@@ -9,11 +9,11 @@
 #ifndef _FaustWidget_H
 #define _FaustWidget_H
 
-#include "TuileWidget.hpp"
+#include "AudioTuileWidget.hpp"
 
 class FaustTuile;
 
-class FaustWidget: public TuileWidget {
+class FaustWidget: public AudioTuileWidget {
   public:
 	FaustWidget(const std::string& name, FaustTuile*);
 	~FaustWidget();

@@ -39,7 +39,6 @@ TuilesBank::~TuilesBank() {
 }
 
 void TuilesBank::draw() {
-
     //draw label 
     draw_label();
 
@@ -94,6 +93,10 @@ void TuilesBank::draw() {
 
     }
 
+    //draw dragged tuile
+    if(m_dragging) {
+        m_draggedTuile->drawComposition();
+    }
 }
 
 

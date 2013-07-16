@@ -1,35 +1,27 @@
 /***************************************************************************
- *  SeqWidget.h
+ *  OpWidget.h
  *  2012- Florent Berthaut
  *  ANR INEDIT Project
  *  This file is part of LiveTuiles
  ****************************************************************************/
  
  
-#ifndef _SeqWidget_H
-#define _SeqWidget_H
+#ifndef _OpWidget_H
+#define _OpWidget_H
 
 #include "TuileWidget.hpp"
 
-namespace tuiles{class SeqTuile;}
+namespace tuiles{class OpTuile;}
 
-class SeqWidget: public TuileWidget {
+class OpWidget: public TuileWidget {
   public:
-	SeqWidget(const std::string& name, tuiles::SeqTuile*);
-	~SeqWidget();
+	OpWidget(const std::string& name, tuiles::OpTuile*);
+	~OpWidget();
 
-    void drawComposition();
-    void drawExecution(const float&);
-    virtual int handle(int event);
-
-    virtual void notify();
-
-    void setFirstChildWidget(TuileWidgetNode*);
-    void setSecondChildWidget(TuileWidgetNode*);
+    void refreshChildrenTuileWidgets();
 
   private:
-    tuiles::SeqTuile* m_seqTuile;
-    
+    tuiles::OpTuile* m_opTuile;
 };
 
 #endif

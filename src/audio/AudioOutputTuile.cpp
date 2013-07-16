@@ -7,8 +7,7 @@
 
 #include "AudioOutputTuile.hpp"
 
-#include <sstream>
-#include <fstream>
+#include <iostream>
 #include <stdexcept>
 
 #include "AudioManager.hpp"
@@ -49,7 +48,8 @@ void AudioOutputTuile::processBuffers(const int& nbFrames) {
     if(!m_computed) {
         m_internalBuffer[0].assign(nbFrames, 0);
         m_internalBuffer[1].assign(nbFrames, 0);
-        if(m_active) {
+        if(m_procActive) {
+            cout<<"process output"<<endl;
             jack_default_audio_sample_t* bufL=(jack_default_audio_sample_t *)
                             jack_port_get_buffer(m_outputPortLeft, nbFrames);
             jack_default_audio_sample_t* bufR=(jack_default_audio_sample_t *)

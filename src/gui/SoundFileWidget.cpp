@@ -6,6 +6,7 @@
  ****************************************************************************/
 
 #include "SoundFileWidget.hpp"
+#include "../audio/SoundFileTuile.hpp"
 
 #include <iostream>
 #include <math.h>
@@ -16,7 +17,9 @@ using namespace tuiles;
 
 SoundFileWidget::SoundFileWidget(const std::string& name, 
                                 SoundFileTuile* tuile): 
-                                TuileWidget(name, (Tuile*)tuile){}
+                                AudioTuileWidget(name, tuile) {
+    m_canTakeInput=false;
+}
 
 SoundFileWidget::~SoundFileWidget() {}
 
