@@ -51,6 +51,7 @@ class TreeWidget : public TuileWidget, public Fl_Scroll {
         void removeTuileWidget(TuileWidget*);
         TuileWidget* getTuileWidget(const unsigned int& id);
 
+        void deselectAllTuileWidgets();
         inline void setParamGroup(TuileParamGroup* paramGroup){ 
             m_paramGroup=paramGroup;
         }

@@ -32,9 +32,11 @@ void TuileParamGroup::setWidget(TuileParamWidget* widget) {
             remove(child(0));
         }
     }
-    add(widget);
-    widget->resize(x(),y(),w(),h());
-    widget->redraw();
+    if(widget) {
+        add(widget);
+        widget->resize(x(),y(),w(),h());
+        widget->redraw();
+    }
     redraw();
 }
 

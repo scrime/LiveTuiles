@@ -246,6 +246,13 @@ int TreeWidget::handle(int event) {
     return Fl_Scroll::handle(event);
 }
 
+void TreeWidget::deselectAllTuileWidgets() {
+    m_paramGroup->setWidget(NULL);
+	list<TuileWidget*>::const_iterator itWidget=m_tuileWidgets.begin();
+	for(;itWidget!=m_tuileWidgets.end(); ++itWidget) {
+        (*itWidget)->deselect();
+    }
+}
 
 void TreeWidget::getMagnetizedPositionAndTuile( const int& inX, const int& inY,
                                                 const int& inW, 

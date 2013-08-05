@@ -37,6 +37,9 @@ class TuileWidget: public tuiles::Observer {
     inline virtual int getCenterReal(){return 0;}
     inline void setSync1Y(const int& y){m_sync1Y=y;}
     inline void setSync2Y(const int& y){m_sync2Y=y;}
+
+    inline virtual void select(){}
+    inline virtual void deselect(){}
     inline virtual void resetHighlight(){}
     inline virtual void highlightSyncInLine(){}
     inline virtual void highlightSyncOutLine(){}
