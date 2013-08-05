@@ -202,7 +202,7 @@ int TreeWidget::handle(int event) {
                     return 1;
                 }break;
                 case 32: {
-                    if(Fl::event_state(FL_CTRL|FL_COMMAND|FL_SHIFT)) {
+                    if(Fl::event_state(FL_SHIFT)) {
                         MainWindow::getInstance()->togglePlayStop();
                     }
                     else {
@@ -210,8 +210,27 @@ int TreeWidget::handle(int event) {
                     }
                     return 1;
                 }break;
+                case FL_Meta_L:
+                case FL_Meta_R:
+                case FL_Control_L: 
+                case FL_Control_R: {
+                    fl_cursor(FL_CURSOR_CROSS);
+                    cout<<"changed cursor"<<endl;
+                    return 1;
+                }break;;
                 default:break;
             }
+        }break;
+        case FL_KEYUP: {
+            switch(Fl::event_key()) {
+                case FL_Meta_L:
+                case FL_Meta_R:
+                case FL_Control_L: 
+                case FL_Control_R: {
+                    fl_cursor(FL_CURSOR_DEFAULT);
+                    return 1;
+                }break;;
+            };
         }break;
         case FL_ENTER: {
             Fl::focus(this);
