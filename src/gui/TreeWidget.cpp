@@ -363,6 +363,8 @@ void TreeWidget::addTuileWidget(TuileWidget* newWidget) {
     m_tuileWidgets.push_back(newWidget);
     m_tuileWidgetMap[newWidget->getID()]=newWidget;
     refreshChildrenTuileWidgets();
+    deselectAllTuileWidgets();
+    newWidget->select();
     DEBUG("TreeWidget: added the tuile widget to trees");
 }
 

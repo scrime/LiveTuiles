@@ -23,6 +23,7 @@ FaustTuile::~FaustTuile() {}
 
 void FaustTuile::load(const std::string& fileName) {
 	m_fileName=fileName;
+    m_name=m_fileName;
 
     //get string with content of file
     ifstream fileStream(m_fileName.c_str());

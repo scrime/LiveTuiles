@@ -12,6 +12,7 @@
 #include <cassert>
 
 #include <Fl/fl_draw.H>
+#include <FL/filename.H>
 
 #include "TuileParamWidget.hpp"
 #include "TuileParamGroup.hpp"
@@ -216,6 +217,7 @@ void LeafTuileWidget::drag(const int& dragX, const int& dragY) {
 
 void LeafTuileWidget::notify() {
     TuileWidget::notify();
+    m_name=fl_filename_name(m_tuile->getName().c_str());
     resize(x(), y(), m_width, h());
 	this->redraw();
 }

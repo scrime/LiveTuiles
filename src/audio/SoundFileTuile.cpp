@@ -47,6 +47,7 @@ SoundFileTuile::~SoundFileTuile(){}
 void SoundFileTuile::load(const std::string& fileName) {
 
 	m_fileName=fileName;
+    m_name=m_fileName;
 
 	//get the file
 	SF_INFO sfInfo;

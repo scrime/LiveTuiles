@@ -19,6 +19,7 @@ AudioOutputTuile::AudioOutputTuile(): AudioTuile(){}
 AudioOutputTuile::~AudioOutputTuile() {}
 
 void AudioOutputTuile::load(const std::string& output) {
+    m_name=output;
     AudioManager* man=AudioManager::getInstance();
     m_outputPortLeft=jack_port_register(man->getJackClient(),
                                         (output+"-L").c_str(),

@@ -20,6 +20,7 @@ AudioInputTuile::AudioInputTuile(): AudioTuile() {}
 AudioInputTuile::~AudioInputTuile() {}
 
 void AudioInputTuile::load(const std::string& input) {
+    m_name=input;
     AudioManager* man=AudioManager::getInstance();
     m_inputPortLeft=jack_port_register(man->getJackClient(),
                                         (input+"-L").c_str(),
