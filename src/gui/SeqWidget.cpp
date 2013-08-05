@@ -53,18 +53,12 @@ int SeqWidget::handle(int event) {
                 return 1;
             }break;
             case FL_PUSH: {
-                m_dragging=true;
-
                 return 1;
             }break;
             case FL_DRAG: {
-                if(m_dragging) {
-                    cout<<"dragging seq"<<endl;
-                }
                 return 1;
             }break;
             case FL_RELEASE: {
-                m_dragging=false;
 
                 return 1;
             }break;

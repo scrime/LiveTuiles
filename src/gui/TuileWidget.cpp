@@ -29,17 +29,15 @@ TuileWidget::TuileWidget(Tuile* tuile):
                                     m_syncLColor(FL_FOREGROUND_COLOR), 
                                     m_rectColor(FL_FOREGROUND_COLOR), 
                                     m_realColor(fl_darker(FL_BACKGROUND_COLOR)),
-                                    m_overSyncIn(false), m_overSyncOut(false),
-                                    m_draggingSyncIn(false), 
-                                    m_draggingSyncOut(false),
-                                    m_dragging(false), m_magnetSize(5),
+                                    m_overPart(TUILE_NONE), 
+                                    m_draggedPart(TUILE_NONE), 
+                                    m_magnetSize(5),
                                     m_measureDiv(32), 
                                     m_backgroundColor(FL_BACKGROUND_COLOR),
                                     m_selected(false), 
                                     m_paramWidget(NULL) {
     if(m_tuile) {
         m_id=m_tuile->getID();
-//        m_tuile->addObserver(this);
     }
 }
 

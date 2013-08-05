@@ -58,6 +58,15 @@ void AudioTuileWidget::drawConnections() {
 
 int AudioTuileWidget::handle(int event) {
     switch(event) { 
+        case FL_MOVE: { 
+            if(Fl::event_state(FL_CTRL|FL_COMMAND) 
+                && Fl::event_x()>x()+m_real1X && Fl::event_x()<x()+m_real2X) {
+                return 1;
+            }
+            else {
+                return LeafTuileWidget::handle(event);
+            }
+        }break;
         case FL_DRAG: {
             if(m_connecting) {
                 TreeWidget::getInstance()->testConnection(  this, 

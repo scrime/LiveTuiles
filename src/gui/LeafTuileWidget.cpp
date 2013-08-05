@@ -128,55 +128,60 @@ int LeafTuileWidget::handle(int event) {
     switch(event) { 
         case FL_MOVE: { 
             if(abs(Fl::event_x()-(x()+m_sync2X))<m_magnetSize) {
-                m_overSyncIn=false;
-                m_overSyncOut=true;
+                fl_cursor(FL_CURSOR_NONE);
+                m_overPart=TUILE_SYNCOUT;
                 resetHighlight();
                 highlightSyncOutLine();
                 return 1;
             }
             else if(Fl::event_x()>x()+m_real1X && Fl::event_x()<x()+m_real2X) {
-                m_overSyncIn=true;
-                m_overSyncOut=false;
-                resetHighlight();
-                highlightSyncInLine();
-                highlightReal();
+                if(Fl::event_y()>y()+h()/2) {
+                    m_overPart=TUILE_LENGTH;
+                    fl_cursor(FL_CURSOR_WE);
+                    resetHighlight();
+                    highlightReal();
+                }
+                else {
+                    fl_cursor(FL_CURSOR_MOVE);
+                    m_overPart=TUILE_SYNCIN;
+                    resetHighlight();
+                    highlightSyncInLine();
+                    highlightReal();
+                }
                 return 1;
             }
+            m_overPart=TUILE_NONE;
         }break;
         case FL_DRAG: {
             float diffX = Fl::event_x()-m_dragPosX;
             float pixPerFrame=TreeWidget::getInstance()->getPixelsPerFrame();
-            if(m_draggingSyncOut) {
-                m_tuile->setRightOffset(m_tuile->getRightOffset()
-                                        -diffX/pixPerFrame);
+            switch(m_overPart) {
+                case TUILE_SYNCOUT: {
+                    m_tuile->setRightOffset(m_tuile->getRightOffset()
+                                            -diffX/pixPerFrame);
+                }break;
+                case TUILE_SYNCIN: {
+                    m_tuile->setLeftOffset(m_tuile->getLeftOffset()
+                                            -diffX/pixPerFrame);
+                    position(x(), Fl::event_y());
+                }break;
+                case TUILE_LENGTH: {
+                    m_tuile->setLength(m_tuile->getLength()
+                                            +diffX/pixPerFrame);
+                }
+                default:break;
             }
-            else {
-                m_tuile->setLeftOffset(m_tuile->getLeftOffset()
-                                        -diffX/pixPerFrame);
-                position(x(), Fl::event_y());
-            }
-            cout<<"dragging tuile "<<m_id<<endl;
             m_dragPosX=Fl::event_x();
             m_dragPosY=Fl::event_y();
             return 1;
         }break;
         case FL_PUSH: {
-            if(m_overSyncIn) {
-                m_draggingSyncIn=true;
-                m_draggingSyncOut=false;
-            }
-            else if(m_overSyncOut) {
-                m_draggingSyncIn=false;
-                m_draggingSyncOut=true;
-            }
             m_dragPosX=Fl::event_x();
             m_dragPosY=Fl::event_y();
             select();
             return 1;
         }break;
         case FL_RELEASE: {
-            m_draggingSyncIn=false;
-            m_draggingSyncOut=false;
             return 1;
         }break;
         case FL_ENTER:
@@ -186,6 +191,7 @@ int LeafTuileWidget::handle(int event) {
         case FL_LEAVE: 
         case FL_UNFOCUS: {
             resetHighlight();
+            fl_cursor(FL_CURSOR_DEFAULT);
             return 1;
         }break;
         default:break;

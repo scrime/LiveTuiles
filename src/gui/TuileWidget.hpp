@@ -74,11 +74,9 @@ class TuileWidget: public tuiles::Observer {
     Fl_Color m_rectColor;
     Fl_Color m_realColor;
 
-	bool m_overSyncIn;
-	bool m_overSyncOut;
-	bool m_draggingSyncIn;
-	bool m_draggingSyncOut;
-    bool m_dragging;
+    enum TUILE_PART{TUILE_NONE, TUILE_SYNCIN, TUILE_SYNCOUT, TUILE_LENGTH};
+    TUILE_PART m_overPart;
+    TUILE_PART m_draggedPart;
 
 	int m_dragPosX;
 	int m_dragPosY;
