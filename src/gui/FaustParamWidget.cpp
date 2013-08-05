@@ -5,18 +5,20 @@
  *  This file is part of LiveTuiles
  ****************************************************************************/
 
+#include "FaustParamWidget.hpp"
+
 #include <iostream>
 #include <math.h>
 #include <cassert>
 
-#include "FaustParamWidget.hpp"
+#include "../audio/FaustTuile.hpp"
 
 using namespace std;
 
 
-FaustParamWidget::FaustParamWidget(int x, int y, int w, int h,
-								const unsigned int& id, const string& name):
-                                TuileParamWidget(x, y, w, h, id, name) {
+FaustParamWidget::FaustParamWidget(FaustTuile* faustTuile):
+                                TuileParamWidget(faustTuile),
+                                m_faustTuile(faustTuile) {
     
     m_connectPack = new Fl_Pack(0,0,50,20,"");
     m_connectPack->type(Fl_Pack::HORIZONTAL);
@@ -77,15 +79,5 @@ void FaustParamWidget::cbConnectChoice(Fl_Widget* w) {
         cout<<m_outputChoice->value()<<endl;
     }
 */
-}
-
-void FaustParamWidget::setInputList(const vector<string>& names, 
-                                    const vector<int>& ids) {
-    m_inputChoice->clear();
-    vector<string>::const_iterator itInps = names.begin();
-    for(; itInps!=names.end(); ++itInps) {
-        m_inputChoice->add((*itInps).c_str(), "", NULL); 
-    }
-    m_inputIDs=ids;
 }
 

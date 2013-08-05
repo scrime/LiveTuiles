@@ -16,7 +16,7 @@ namespace tuiles{class SeqTuile;}
 class SeqWidget: public OpWidget {
   public:
 	SeqWidget(const std::string& name, tuiles::SeqTuile*);
-	~SeqWidget();
+	virtual ~SeqWidget();
 
     void drawComposition();
     void drawExecution(const float&);
@@ -24,8 +24,8 @@ class SeqWidget: public OpWidget {
 
     virtual void notify();
 
-    void setFirstChildWidget(TuileWidgetNode*);
-    void setSecondChildWidget(TuileWidgetNode*);
+    void setFirstChildWidget(TuileWidget*);
+    void setSecondChildWidget(TuileWidget*);
 
   private:
     tuiles::SeqTuile* m_seqTuile;

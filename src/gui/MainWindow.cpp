@@ -61,9 +61,12 @@ void MainWindow::init() {
     m_bpmInput->tooltip(m_bpmInputTooltip.c_str());
     m_bpmInput->bounds(30,400);
     m_bpmInput->callback(statBpm, this);
-    m_loopStartButton = new Fl_Toggle_Button(20, m_spacing, 50, 30, "Play");
-    m_loopStartButton->callback(statLoopStart, this);
-	m_loopStartButton->clear_visible_focus();
+    m_playPauseButton = new Fl_Toggle_Button(20, m_spacing, 30, 30, "@>");
+    m_playPauseButton->callback(statPlayPause, this);
+	m_playPauseButton->clear_visible_focus();
+    m_stopButton = new Fl_Button(30, m_spacing, 20, 30, "@|<");
+    m_stopButton->callback(statStop, this);
+	m_stopButton->clear_visible_focus();
     m_treeZoomSlider= new Fl_Slider(0,0,100,20,"Zoom");
     m_treeZoomSlider->align(FL_ALIGN_LEFT);
     m_treeZoomSlider->type(FL_HOR_NICE_SLIDER);
@@ -72,9 +75,10 @@ void MainWindow::init() {
 	m_controlPart = new HitPack(20, 0, w()-40, m_controlHeight, "");
     m_controlPart->end();
 	m_controlPart->type(HitPack::HORIZONTAL);
-    m_controlPart->add(m_loopStartButton);
+    m_controlPart->add(m_stopButton);
+    m_controlPart->add(m_playPauseButton);
     m_controlPart->add(m_bpmInput);
-    m_controlPart->add(new Fl_Group(0,0,w()-250,0,""));
+    m_controlPart->add(new Fl_Group(0,0,w()-270,0,""));
     m_controlPart->add(m_treeZoomSlider);
 
     //TREE/SCORE
@@ -105,13 +109,11 @@ void MainWindow::init() {
 	m_editScoreButtonsPart->add(m_clearTreeButton);
 	
 	m_tuilesBank = new TuilesBank(0, 0, m_browserWidth, m_editHeight);
-    m_tuilesBank->end();
 	m_tuilesBank->open("","{*.wav,*.dsp,*.tui}",".");
     m_tuilesBank->setTreeWidget(m_tuilesTree);
 
-    m_tuileParamGroup= new TuileParamGroup(0,15,w()-m_browserWidth-130, 
-                                               m_editHeight);
-    m_tuileParamGroup->end();
+    m_tuileParamGroup= TuileParamGroup::getInstance();
+    m_tuileParamGroup->resize(0, 15, w()-m_browserWidth-130, m_editHeight);
     m_tuileParamGroup->color(fl_darker(FL_BACKGROUND2_COLOR));
     m_tuileParamGroup->box(FL_DOWN_BOX);
     m_tuilesTree->setParamGroup(m_tuileParamGroup);
@@ -156,7 +158,6 @@ void MainWindow::idle(void* pnt) {
     
 void MainWindow::update() {
 	m_tuilesTree->update();
-    redraw();
 	usleep(1000);
 }
 
@@ -164,22 +165,48 @@ void MainWindow::cbBpm(Fl_Widget*) {
 	AudioManager::getInstance()->setBpm(m_bpmInput->value());
 }
 
-void MainWindow::cbLoopStart(Fl_Widget*) {
-    togglePlay();
+void MainWindow::cbPlayPause(Fl_Widget*) {
+    togglePlayPause();
 }
 
-void MainWindow::togglePlay() {
+
+void MainWindow::togglePlayPause() {
     AudioManager* man = AudioManager::getInstance();
     if(man->isPlaying()) {
-		m_loopStartButton->label("Play");
-		man->stopTrees();
-        m_loopStartButton->value(0);
+		m_playPauseButton->label("@>");
+		man->pauseTrees();
+        m_playPauseButton->value(0);
     }
     else {
-		m_loopStartButton->label("Stop");
+		m_playPauseButton->label("@||");
 		man->startTrees();
-        m_loopStartButton->value(1);
+        m_playPauseButton->value(1);
 	}
+    m_tuilesTree->redraw();
+}
+
+void MainWindow::togglePlayStop() {
+    AudioManager* man = AudioManager::getInstance();
+    if(man->isPlaying()) {
+		m_playPauseButton->label("@>");
+		man->stopTrees();
+        m_playPauseButton->value(0);
+    }
+    else {
+		m_playPauseButton->label("@||");
+		man->stopTrees();
+		man->startTrees();
+        m_playPauseButton->value(1);
+	}
+    m_tuilesTree->redraw();
+}
+
+void MainWindow::cbStop(Fl_Widget*) {
+    AudioManager* man = AudioManager::getInstance();
+    m_playPauseButton->label("@>");
+    man->stopTrees();
+    m_playPauseButton->value(0);
+    m_tuilesTree->redraw();
 }
 
 void MainWindow::cbTreeButtons(Fl_Widget* w) {
@@ -212,8 +239,10 @@ void MainWindow::cbTreeButtons(Fl_Widget* w) {
 }
 
 void MainWindow::clearAll() {
-    m_loopStartButton->value(0);
-    m_loopStartButton->label("Play");
+    m_playPauseButton->value(0);
+    m_playPauseButton->label("@|>");
+
+    //FIXME clear all tuiles in audiomanager 
 /*
     m_tuiles->stop();
     m_tuiles->clear();
@@ -222,17 +251,6 @@ void MainWindow::clearAll() {
     m_tuileParamGroup->clear();
 */
 
-/*
-    //add the first leaf and loop tuile that will be used for looping 
-    //default to 16 beats
-    m_tuiles->addLeafTuile(16, m_firstLeafID);
-    m_tuiles->addLoop(m_firstLeafID, m_mainLoopID);
-    m_tuiles->setRoot(m_mainLoopID);
-    m_tuilesTree->setMainLoopID(m_mainLoopID);
-    m_tuilesTree->setLoopLeafID(m_firstLeafID);
-    m_tuiles->refreshTree();
-    m_tuilesTree->refreshTuiles();
-*/
 }
 
 void MainWindow::cbZoomTree(Fl_Widget*) {

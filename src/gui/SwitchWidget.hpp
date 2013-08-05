@@ -9,16 +9,18 @@
 #ifndef _SwitchWidget_H
 #define _SwitchWidget_H
 
-#include "TuileWidget.hpp"
+#include "OpWidget.hpp"
 
 class MidiOscSwitchTuile;
 
-class SwitchWidget: public TuileWidget {
+class SwitchWidget: public OpWidget {
   public:
 	SwitchWidget(const std::string& name, MidiOscSwitchTuile*);
 	~SwitchWidget();
 
   private:
+
+    MidiOscSwitchTuile* m_switchTuile;
     
 };
 

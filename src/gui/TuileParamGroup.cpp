@@ -1,10 +1,8 @@
 /***************************************************************************
- *            TuileParamGroup.cpp
- *
- *  2012 Florent Berthaut
+ *  TuileParamGroup.cpp
+ *  2012-2013 Florent Berthaut
  *  ANR INEDIT Project
- *
- *  This file is part of libTuiles
+ *  This file is part of LiveTuiles
  ****************************************************************************/
 
 #include "TuileParamGroup.hpp"
@@ -15,8 +13,7 @@
 
 using namespace std;
 
-TuileParamGroup::TuileParamGroup(int x, int y, int w, int h): 
-                                Fl_Group(x,y,w,h,"Edit Tuile") { 
+TuileParamGroup::TuileParamGroup(): Fl_Group(0,0,100,100,"Edit Tuile") { 
     align(FL_ALIGN_TOP|FL_ALIGN_LEFT);
     color(fl_darker(fl_darker(FL_GREEN)));
     end();
@@ -24,6 +21,10 @@ TuileParamGroup::TuileParamGroup(int x, int y, int w, int h):
 
 TuileParamGroup::~TuileParamGroup() {}
 
+TuileParamGroup* TuileParamGroup::getInstance() {
+    static TuileParamGroup instance;
+    return &instance;
+}
 
 void TuileParamGroup::setWidget(TuileParamWidget* widget) {
     if(children()>0) {
@@ -31,47 +32,10 @@ void TuileParamGroup::setWidget(TuileParamWidget* widget) {
             remove(child(0));
         }
     }
-    begin();
     add(widget);
-    end();
-}
-
-TuileParamWidget* TuileParamGroup::createParamWidget(const unsigned int& id, 
-                                                     const std::string& name) {
-    begin();
-    TuileParamWidget* newParamWidget=NULL;
-    if(name.find(".dsp")!=name.npos) {
-        newParamWidget = new FaustParamWidget(x(),y(),w(),h(), id, name);
-    }
-    else if(name.find(".wav")!=name.npos) {
-        newParamWidget = new SoundFileParamWidget(x(),y(),w(),h(), id, name);
-    }
-    else if(name.compare("osc")==0) {
-        //newParamWidget = new SoundFileParamWidget(x(),y(),w(),h(), id, name);
-        newParamWidget = new TuileParamWidget(x(),y(),w(),h(), id, name);
-        cout<<"Create osc tuile param widget"<<endl;
-    }
-    else if(name.compare("switch")==0) {
-        //newParamWidget = new SoundFileParamWidget(x(),y(),w(),h(), id, name);
-        newParamWidget = new SwitchParamWidget(x(),y(),w(),h(), id, name);
-        cout<<"Create switch tuile param widget"<<endl;
-    }
-    else if(name.compare("while")==0) {
-        //newParamWidget = new SoundFileParamWidget(x(),y(),w(),h(), id, name);
-        newParamWidget = new TuileParamWidget(x(),y(),w(),h(), id, name);
-        cout<<"Create while tuile param widget"<<endl;
-    }
-    else {
-        //newParamWidget = new SoundFileParamWidget(x(),y(),w(),h(), id, name);
-        newParamWidget = new TuileParamWidget(x(),y(),w(),h(), id, name);
-        cout<<"Create curve tuile param widget"<<endl;
-    }
-    end();
-    if(newParamWidget) {
-        setWidget(newParamWidget);
-        newParamWidget->init();
-    }
-    return newParamWidget;
+    widget->resize(x(),y(),w(),h());
+    widget->redraw();
+    redraw();
 }
 
 

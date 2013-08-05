@@ -50,12 +50,12 @@ void FaustTuile::load(const std::string& fileName) {
     m_bufferSize = AudioManager::getInstance()->getBufferSize();
     m_inputChannels = m_dsp->getNumInputs();
     m_dspInputBuffer = new float*[m_inputChannels];
-    for(unsigned int c=0; c<m_inputChannels; ++c) {
+    for(int c=0; c<m_inputChannels; ++c) {
         m_dspInputBuffer[c]=new float[m_bufferSize];
     }
     m_outputChannels = m_dsp->getNumOutputs();
     m_dspOutputBuffer = new float*[m_outputChannels];
-    for(unsigned int c=0; c<m_outputChannels; ++c) {
+    for(int c=0; c<m_outputChannels; ++c) {
         m_dspOutputBuffer[c]=new float[m_bufferSize];
     }
 
@@ -70,7 +70,7 @@ void FaustTuile::unload() {
 
 void FaustTuile::activate() {
     if(m_loaded) {
-        m_active=true;
+        m_procActive=true;
         m_activateAsked=true;
     }
 }
@@ -80,48 +80,34 @@ void FaustTuile::deactivate() {
 }
 
 void FaustTuile::processBuffers(const int& nbFrames) {
-/*
     if(!m_computed) {
         for(unsigned int c=0; c<m_internalBuffer.size(); ++c) {
             m_internalBuffer[c].assign(nbFrames, 0);
-            for(unsigned int f=0; f<nbFrames && f<m_bufferSize; ++f) {
+            for(int f=0; f<nbFrames && f<m_bufferSize; ++f) {
                 m_dspInputBuffer[c][f]=0;
             }
         }
-        if(m_active && m_inputTuiles.size()>0) {
-            const vector<vector<float> >& inpBuf = 
-                        m_inputTuiles.front()->getBuffer(); 
-
-            if(m_activateAsked) { //crossfade when beginning the process
-                float fade=0, fadeStep=1.0/float(nbFrames);
-                for(unsigned int f=0; f<nbFrames && f<m_bufferSize; 
-                                                        ++f, fade+=fadeStep) {
-                    for(unsigned int c=0; c<m_inputChannels 
-                                            && c<inpBuf.size(); ++c) {
-
-                        m_dspInputBuffer[c][f]=inpBuf[c][f]*fade;
-                    }
-                }
-                m_activateAsked=false;
-            }
-            else {
-                for(unsigned int c=0; c<m_inputChannels 
-                                        && c<inpBuf.size(); ++c) {
-                    for(unsigned int f=0; f<nbFrames && f<m_bufferSize; ++f) {
-                        m_dspInputBuffer[c][f]=inpBuf[c][f];
+        if(m_procActive && m_inputTuiles.size()>0) {
+            //accumulate the buffers of all inputs
+            vector<AudioTuile*>::iterator itInp=m_inputTuiles.begin();
+            for(; itInp!=m_inputTuiles.end(); ++itInp) {
+                const vector<vector<float> >& inpBuf = 
+                            (*itInp)->getBuffer(); 
+                for(int c=0; c<m_inputChannels && c<(int)inpBuf.size(); ++c) {
+                    for(int f=0;f<m_bufferSize && f<(int)inpBuf[c].size(); ++f){
+                        m_dspInputBuffer[c][f]+=inpBuf[c][f];
                     }
                 }
             }
             m_dsp->compute(nbFrames, m_dspInputBuffer, m_dspOutputBuffer);
             for(unsigned int c=0; c<m_internalBuffer.size(); ++c) {
-                for(unsigned int f=0; f<nbFrames && f<m_bufferSize; ++f) {
+                for(int f=0; f<nbFrames && f<m_bufferSize; ++f) {
                     m_internalBuffer[c][f]=m_dspOutputBuffer[c][f];
                 }
             }
         }
         m_computed=true;
     }
-*/
 }
 
 

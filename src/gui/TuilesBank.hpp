@@ -18,7 +18,7 @@
 #include <vector>
 
 class TreeWidget;
-class TuileWidget;
+class LeafTuileWidget;
 
 class TuilesBank : public Fl_Group {
     public:
@@ -53,7 +53,7 @@ class TuilesBank : public Fl_Group {
         int m_offsetX, m_offsetY;
         std::string m_pattern;
         std::string m_currentPattern;
-        TuileWidget* m_draggedTuile;
+        LeafTuileWidget* m_draggedTuile;
         TreeWidget* m_treeWidget;
 		std::string m_currentDir;
         Fl_Button *m_prevButton;

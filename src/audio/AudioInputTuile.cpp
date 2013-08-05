@@ -33,9 +33,9 @@ void AudioInputTuile::load(const std::string& input) {
 
     //connect to the soundcard by default
     jack_connect(man->getJackClient(),"system:capture_1", 
-                                string("LiveTuiles"+input+"-L").c_str());
+                                string("LiveTuiles:"+input+"-L").c_str());
     jack_connect(man->getJackClient(),"system:capture_2", 
-                                string("LiveTuiles"+input+"-L").c_str());
+                                string("LiveTuiles:"+input+"-R").c_str());
 	m_loaded=true;
 }
 
@@ -47,7 +47,7 @@ void AudioInputTuile::processBuffers(const int& nbFrames) {
     if(!m_computed) {
         m_internalBuffer[0].assign(nbFrames, 0);
         m_internalBuffer[1].assign(nbFrames, 0);
-        if(m_active) {
+        if(m_procActive) {
             jack_default_audio_sample_t* bufL=(jack_default_audio_sample_t *)
                             jack_port_get_buffer(m_inputPortLeft, nbFrames);
             jack_default_audio_sample_t* bufR=(jack_default_audio_sample_t *)

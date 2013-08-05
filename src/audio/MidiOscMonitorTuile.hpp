@@ -8,9 +8,9 @@
 #ifndef MidiOscMonitorTuile_h
 #define MidiOscMonitorTuile_h
 
-#include "AudioTuile.hpp"
+#include <tuiles/MonitorTuile.hpp>
 
-class MidiOscMonitorTuile : public AudioTuile{	
+class MidiOscMonitorTuile : public tuiles::MonitorTuile {	
 	public:
 		MidiOscMonitorTuile();
 		~MidiOscMonitorTuile();

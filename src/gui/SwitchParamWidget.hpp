@@ -1,10 +1,8 @@
 /***************************************************************************
- *            SwitchParamWidget.h
- *
- *  2012 Florent Berthaut
+ *  SwitchParamWidget.hpp
+ *  2012-2013 Florent Berthaut
  *  ANR INEDIT Project
- *
- *  This file is part of libTuiles
+ *  This file is part of LiveTuiles
  ****************************************************************************/
  
  
@@ -15,10 +13,11 @@
 
 #include "TuileParamWidget.hpp"
 
+class MidiOscSwitchTuile;
+
 class SwitchParamWidget : public TuileParamWidget{
   public:
-	SwitchParamWidget(int ,int , int, int, const unsigned int&, 
-                                            const std::string&);
+	SwitchParamWidget(MidiOscSwitchTuile*);
 	~SwitchParamWidget();
 
     void update();
@@ -30,10 +29,9 @@ class SwitchParamWidget : public TuileParamWidget{
     void cbTuileSwitchInputs(Fl_Widget*);
 
   protected:
+    MidiOscSwitchTuile* m_switchTuile;
     HitPack *m_switchPack;
     Fl_Simple_Counter *m_selectInput;
-
-
 };
 
 #endif

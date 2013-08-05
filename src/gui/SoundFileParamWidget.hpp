@@ -11,10 +11,11 @@
 
 #include "TuileParamWidget.hpp"
 
+class SoundFileTuile;
+
 class SoundFileParamWidget : public TuileParamWidget{
   public:
-	SoundFileParamWidget(int ,int , int, int, const unsigned int&, 
-                                            const std::string&);
+	SoundFileParamWidget(SoundFileTuile*);
 	~SoundFileParamWidget();
 
     void update();
@@ -26,6 +27,7 @@ class SoundFileParamWidget : public TuileParamWidget{
     void cbTuileSoundFileInputs(Fl_Widget*);
 
   protected:
+    SoundFileTuile* m_sfTuile;
     HitPack *m_audioPack;
     Fl_Slider *m_volumeSlider;
     Fl_Value_Input *m_bpmInput;

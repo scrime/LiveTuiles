@@ -113,16 +113,14 @@ const float& AudioManager::getPlayPositionInBeats() {
 }
 
 void AudioManager::process(const int& nbFrames) {
-    if(m_procPlaying) {
-        //go through all the processes
-        vector<AudioTuile*>::iterator itTui = m_procAudioTuiles.begin();
-        for(; itTui!=m_procAudioTuiles.end(); ++itTui) {
-            (*itTui)->resetBuffers();
-        }
-        itTui = m_procAudioTuiles.begin();
-        for(; itTui!=m_procAudioTuiles.end(); ++itTui) {
-            (*itTui)->processBuffers(nbFrames);
-        }
+    //go through all the processes
+    vector<AudioTuile*>::iterator itTui = m_procAudioTuiles.begin();
+    for(; itTui!=m_procAudioTuiles.end(); ++itTui) {
+        (*itTui)->resetBuffers();
+    }
+    itTui = m_procAudioTuiles.begin();
+    for(; itTui!=m_procAudioTuiles.end(); ++itTui) {
+        (*itTui)->processBuffers(nbFrames);
     }
 }
 
@@ -195,7 +193,8 @@ LoopTuile* AudioManager::addLoopTuile() {
 MidiOscMonitorTuile* AudioManager::addMidiOscMonitorTuile() {
     MidiOscMonitorTuile* newMonitor = new MidiOscMonitorTuile();
     addMonitor((MonitorTuile*)newMonitor);
-    internalAddAudioTuile(newMonitor);
+    //FIXME
+    //internalAddAudioTuile(newMonitor);
     //default length to one beat
     newMonitor->setLength(float(m_sampleRate)/(m_bpm/60.0));
     return newMonitor;
@@ -204,7 +203,8 @@ MidiOscMonitorTuile* AudioManager::addMidiOscMonitorTuile() {
 MidiOscSwitchTuile* AudioManager::addMidiOscSwitchTuile() {
     MidiOscSwitchTuile* newSwitch = new MidiOscSwitchTuile();
     addSwitch((SwitchTuile*)newSwitch);
-    internalAddAudioTuile(newSwitch);
+    //FIXME
+    //internalAddAudioTuile(newSwitch);
     //default length to one beat
     newSwitch->setLength(float(m_sampleRate)/(m_bpm/60.0));
     return newSwitch;

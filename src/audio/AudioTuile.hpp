@@ -13,6 +13,8 @@
 #include <tuiles/LeafTuile.hpp>
 #include <jack/types.h>
 
+class UpdateInputTuiles;
+
 class AudioTuile: public tuiles::LeafTuile {
     public:
         AudioTuile();
@@ -22,20 +24,28 @@ class AudioTuile: public tuiles::LeafTuile {
 
         void addInputTuile(AudioTuile*);
         void removeInputTuile(AudioTuile*);
-        inline void clearInputTuiles(){m_inputTuiles.clear();}
+        inline void clearInputTuiles() { 
+            m_inputTuiles.clear(); 
+            updateInputTuiles();
+        }
+        void updateInputTuiles();
 
         inline std::vector<std::vector<jack_default_audio_sample_t> >& 
                     getBuffer(){return m_internalBuffer;}
+
+        void procUpdateInputTuiles(const std::vector<AudioTuile*>&);
 
     protected: 
         std::string m_fileName;
         bool m_loaded;
         float m_lengthInMs;
         bool m_computed;
-        float m_volume;
 
         std::vector<AudioTuile*> m_inputTuiles;
         std::vector<std::vector<jack_default_audio_sample_t> > m_internalBuffer;
+
+        UpdateInputTuiles* m_protoUpdateInputTuiles;
+        std::vector<AudioTuile*> m_procInputTuiles;
 };
 
 #endif

@@ -36,7 +36,6 @@ void HitPack::add(Fl_Widget* widget) {
     Fl_Pack::add(widget);
 }
 
-
 void HitPack::repositionWidgets() {
     if(type()==Fl_Pack::HORIZONTAL) {
         int posX=x()+m_externalSpacing;

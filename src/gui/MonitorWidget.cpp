@@ -16,8 +16,8 @@
 using namespace std;
 
 MonitorWidget::MonitorWidget(const std::string& name, 
-                        MidiOscMonitorTuile* tuile): TuileWidget(name, tuile){
-    m_canTakeInput=false;
+                            MidiOscMonitorTuile* tuile): 
+                                LeafTuileWidget(name, tuile) {
 }
 
 MonitorWidget::~MonitorWidget() {}

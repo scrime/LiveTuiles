@@ -9,10 +9,17 @@
 
 #include <iostream>
 
+#include <tuiles/CommandsHandler.hpp>
+
+#include "commands/UpdateInputTuiles.hpp"
+
 using namespace std;
 using namespace tuiles;
 
-AudioTuile::AudioTuile(): LeafTuile() {}
+AudioTuile::AudioTuile(): LeafTuile() {
+    m_protoUpdateInputTuiles = new UpdateInputTuiles();
+    m_protoUpdateInputTuiles->createClones(m_nbCommands);
+}
 
 AudioTuile::~AudioTuile() {}
 
@@ -22,6 +29,7 @@ void AudioTuile::resetBuffers() {
 
 void AudioTuile::addInputTuile(AudioTuile* inputTuile) {
     m_inputTuiles.push_back(inputTuile);
+    updateInputTuiles();
 }
 
 void AudioTuile::removeInputTuile(AudioTuile* inputTuile) {
@@ -34,9 +42,24 @@ void AudioTuile::removeInputTuile(AudioTuile* inputTuile) {
             ++itTui;
         }
     }
-    
+    updateInputTuiles();
 }
 
+void AudioTuile::updateInputTuiles() {
+    UpdateInputTuiles* com = 
+        static_cast<UpdateInputTuiles*>(m_protoUpdateInputTuiles->popClone());
+    if(com) {
+        com->setAudioTuile(this); 
+        com->setInputTuiles(m_inputTuiles);
+        m_commandsToProc->runCommand(com);
+    }
+}
+
+void AudioTuile::procUpdateInputTuiles(const std::vector<AudioTuile*>& 
+                                                                inputTuiles) {
+    m_procInputTuiles = inputTuiles;
+    cout<<"tuile "<<m_name<<" now has "<<m_procInputTuiles.size()<<" proc inputs"<<endl;
+}
 
 
 

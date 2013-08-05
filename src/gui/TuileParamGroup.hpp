@@ -1,10 +1,8 @@
 /***************************************************************************
- *            TuileParamGroup.h
- *
- *  2012 Florent Berthaut
+ *  TuileParamGroup.h
+ *  2012-2013 Florent Berthaut
  *  ANR INEDIT Project
- *
- *  This file is part of libTuiles
+ *  This file is part of LiveTuiles
  ****************************************************************************/
 
 #ifndef _TuileParamGroup_H
@@ -23,18 +21,15 @@
 #include <vector>
 
 #include "TuileParamWidget.hpp"
- 
 
-class TuileParamGroup : public Fl_Group{
+class TuileParamGroup : public Fl_Group {
   public:
-	TuileParamGroup(int ,int , int, int);
+    static TuileParamGroup* getInstance();
 	~TuileParamGroup();
-
     void setWidget(TuileParamWidget*);
-    TuileParamWidget* createParamWidget(const unsigned int&, 
-                                            const std::string&);
 
   protected:
+	TuileParamGroup();
 
 };
 

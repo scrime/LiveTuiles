@@ -1,12 +1,9 @@
 /***************************************************************************
- *            FaustParamWidget.h
- *
- *  2012 Florent Berthaut
+ *  FaustParamWidget.hpp
+ *  2012- Florent Berthaut
  *  ANR INEDIT Project
- *
- *  This file is part of libTuiles
+ *  This file is part of LiveTuiles
  ****************************************************************************/
- 
  
 #ifndef _FaustParamWidget_H
 #define _FaustParamWidget_H
@@ -17,11 +14,13 @@
 #include <faust/gui/UI.h>
 
 #include "TuileParamWidget.hpp"
+#include "HitPack.hpp"
+
+class FaustTuile;
 
 class FaustParamWidget : public TuileParamWidget, public UI {
   public:
-	FaustParamWidget(int ,int , int, int, const unsigned int&, 
-                                            const std::string&);
+	FaustParamWidget(FaustTuile*);
 	~FaustParamWidget();
 
     void init();
@@ -118,17 +117,11 @@ class FaustParamWidget : public TuileParamWidget, public UI {
     inline void addVerticalBargraph(const char* label, FAUSTFLOAT* zone, 
                                         FAUSTFLOAT min, FAUSTFLOAT max){};
 
-    virtual void setInputList(const std::vector<std::string>&, 
-                                const std::vector<int>&);
-
   protected:
-
+    FaustTuile* m_faustTuile;
     std::map<std::string, float*> m_paramsMap;
-
     Fl_Choice *m_inputChoice, *m_outputChoice;
     Fl_Pack *m_connectPack;
-    std::vector<int> m_inputIDs;
-
 };
 
 #endif

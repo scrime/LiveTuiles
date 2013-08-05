@@ -11,27 +11,28 @@
 
 #include "TuileParamWidget.hpp"
 
+#include <tuiles/Tuile.hpp>
+
+#include "HitPack.hpp"
+
 using namespace std;
+using namespace tuiles;
 
-
-TuileParamWidget::TuileParamWidget(int x, int y, int w, int h,
-                                    const unsigned int& id, 
-                                    const std::string& name):
-                                    Fl_Scroll(x,y,w,h, ""), m_id(id),
-                                    m_name(name) { 
+TuileParamWidget::TuileParamWidget(Tuile* tuile):Fl_Scroll(0, 0, 100, 100, ""), 
+                                                  m_tuile(tuile) {
     box(FL_DOWN_BOX);
     color(fl_rgb_color(70,90,70));
 
     type(VERTICAL_ALWAYS);
 
-    m_pack = new HitPack(x,y,w-30,h,"");
+    m_pack = new HitPack(0,0,w()-30,h(),"");
     m_pack->end();
     m_pack->type(Fl_Pack::VERTICAL);
     m_pack->internalSpacing(15);
     m_pack->externalSpacing(5);
     end();
 
-    m_tuilePack = new HitPack(x, y, w, 40, "");
+    m_tuilePack = new HitPack(0, y(), w(), 40, "");
     m_tuilePack->end();
     m_tuilePack->type(Fl_Pack::HORIZONTAL);
     m_tuilePack->internalSpacing(10);

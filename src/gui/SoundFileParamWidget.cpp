@@ -1,21 +1,23 @@
 /***************************************************************************
  *  SoundFileParamWidget.cpp
- *  2012 Florent Berthaut
+ *  2012-2013 Florent Berthaut
  *  ANR INEDIT Project
  *  This file is part of LiveTuiles
  ****************************************************************************/
+
+#include "SoundFileParamWidget.hpp"
 
 #include <iostream>
 #include <math.h>
 #include <cassert>
 
-#include "SoundFileParamWidget.hpp"
+#include "HitPack.hpp"
+#include "../audio/SoundFileTuile.hpp"
 
 using namespace std;
 
-SoundFileParamWidget::SoundFileParamWidget(int x, int y, int w, int h,
-								const unsigned int& id, const string& name):
-                                TuileParamWidget(x, y, w, h, id, name) {
+SoundFileParamWidget::SoundFileParamWidget(SoundFileTuile* sfTuile):
+                                TuileParamWidget(sfTuile), m_sfTuile(sfTuile) {
 
     m_outputChoice = new Fl_Choice(0, 0, 50, 20, "Output");
     m_outputChoice->align(FL_ALIGN_LEFT|FL_ALIGN_TOP);

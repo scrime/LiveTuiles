@@ -1,10 +1,8 @@
 /***************************************************************************
- *            TuileParamWidget.h
- *
- *  2012 Florent Berthaut
+ *  TuileParamWidget.hpp
+ *  2012- Florent Berthaut
  *  ANR INEDIT Project
- *
- *  This file is part of libTuiles
+ *  This file is part of LiveTuiles
  ****************************************************************************/
 
 #ifndef _TuileParamWidget_H
@@ -29,21 +27,18 @@
 #include <FL/fl_draw.H>
 #include <FL/Fl_Choice.H>
 
-#include "HitPack.hpp"
+class HitPack;
+namespace tuiles{class Tuile;}
 
 class TuileParamWidget : public Fl_Scroll {
   public:
-	TuileParamWidget(int ,int , int, int, const unsigned int&, 
-                                            const std::string&);
+	TuileParamWidget(tuiles::Tuile*);
 	~TuileParamWidget();
 
     inline virtual void init(){}
     virtual void update();
 
     void updateTuileProps();
-
-    inline const std::string& getName(){return m_name;}
-	inline void setName(const std::string& name){m_name=name;}
 
     static void statTuileInputs(Fl_Widget* w, void* f){ 
         TuileParamWidget *tpw = static_cast<TuileParamWidget *>(f); 
@@ -55,9 +50,7 @@ class TuileParamWidget : public Fl_Scroll {
                                         const std::vector<int>&){}
 
   protected:
-	unsigned int m_id;
-	std::string m_name;
-
+    tuiles::Tuile* m_tuile;
     HitPack* m_pack;
 
     HitPack* m_tuilePack;

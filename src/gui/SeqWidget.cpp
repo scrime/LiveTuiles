@@ -22,7 +22,6 @@ using namespace tuiles;
 SeqWidget::SeqWidget(const std::string& name, 
                                 SeqTuile* tuile): OpWidget(name, tuile), 
                                                     m_seqTuile(tuile) {
-    m_canTakeInput=false;
     size(w(), h()*2);
     m_realColor=fl_lighter(FL_BACKGROUND_COLOR);
 }
@@ -32,7 +31,7 @@ SeqWidget::~SeqWidget() {}
 void SeqWidget::drawComposition() {
 	fl_color(m_realColor);
 	fl_rect(x()+m_real1X, y(), m_real2X-m_real1X, h());
-    vector<TuileWidgetNode*>::iterator itChild=m_childrenTuileWidgets.begin();
+    vector<TuileWidget*>::iterator itChild=m_childrenTuileWidgets.begin();
     for(; itChild!=m_childrenTuileWidgets.end(); ++itChild) {
         (*itChild)->drawComposition();
     }
@@ -43,7 +42,7 @@ void SeqWidget::drawExecution(const float& alpha) {
 }
 
 int SeqWidget::handle(int event) {
-    if(!Fl_Scroll::handle(event)) {
+    if(!Fl_Group::handle(event)) {
         switch(event) { 
             case FL_ENTER:
             case FL_FOCUS: {
@@ -51,6 +50,22 @@ int SeqWidget::handle(int event) {
             }
             case FL_LEAVE: 
             case FL_UNFOCUS: {
+                return 1;
+            }break;
+            case FL_PUSH: {
+                m_dragging=true;
+
+                return 1;
+            }break;
+            case FL_DRAG: {
+                if(m_dragging) {
+                    cout<<"dragging seq"<<endl;
+                }
+                return 1;
+            }break;
+            case FL_RELEASE: {
+                m_dragging=false;
+
                 return 1;
             }break;
             default:break;
@@ -62,36 +77,57 @@ int SeqWidget::handle(int event) {
     }
 }
 
-void SeqWidget::setFirstChildWidget(TuileWidgetNode* child) {
+void SeqWidget::setFirstChildWidget(TuileWidget* child) {
     m_seqTuile->setFirstChild(child->getTuile());
-    notify();
     DEBUG("in SeqWidget, set first child to "<<child->getID());
 }
 
-void SeqWidget::setSecondChildWidget(TuileWidgetNode* child) {
+void SeqWidget::setSecondChildWidget(TuileWidget* child) {
     m_seqTuile->setSecondChild(child->getTuile());
-    notify();
     DEBUG("in SeqWidget, set second child to "<<child->getID());
 }
 
 void SeqWidget::notify() {
     TuileWidget::notify();
     float pixPerFrame=TreeWidget::getInstance()->getPixelsPerFrame();
-    int height=0;
+    int minPosY=numeric_limits<int>::max();
+    int maxPosY=0;
     int childID=0;
-    vector<TuileWidgetNode*>::iterator itChild=m_childrenTuileWidgets.begin();
+    vector<TuileWidget*>::iterator itChild=m_childrenTuileWidgets.begin();
     //set the positions of child widgets
     for(; itChild!=m_childrenTuileWidgets.end(); ++itChild, ++childID) {
         if(*itChild) {
-            float childPos=-m_seqTuile->getChildPositionAtPos(childID,0);
+            (*itChild)->notify();
+            float childPos=-m_seqTuile->getChildPositionAtPos(childID, 0);
             childPos=min<float>(childPos, 
                             childPos+(*itChild)->getTuile()->getLeftOffset());
-            (*itChild)->position(x()+m_real1X+childPos*pixPerFrame, y()+height);
-            height+=(*itChild)->h();
+            Fl_Widget* wid = (*itChild)->getWidget();
+            wid->resize(x()+m_real1X+childPos*pixPerFrame, 
+                                            wid->y(),
+                                            wid->w(),
+                                            wid->h());
+            if(wid->y()<minPosY) {
+                minPosY=wid->y();
+            }
+            if(wid->y()+wid->h()>maxPosY) {
+                maxPosY=wid->y()+wid->h();
+            }
         }
     }
-    //resize according to total height of the children
-    size(w(), height);
+    //resize and reposition according to the children
+    Fl_Widget::resize(x(), minPosY, m_width, maxPosY-minPosY);
+
+    //set children sync Y positions
+    if(m_childrenTuileWidgets.size()>=2) {
+        m_childrenTuileWidgets[0]
+            ->setSync2Y((y()+h()/2)
+                        -(m_childrenTuileWidgets[0]->getWidget()->y() 
+                            + m_childrenTuileWidgets[0]->getWidget()->h()/2));
+        m_childrenTuileWidgets[1]
+            ->setSync1Y((y()+h()/2)
+                        -(m_childrenTuileWidgets[1]->getWidget()->y() 
+                            + m_childrenTuileWidgets[1]->getWidget()->h()/2));
+    }
     redraw();
 }
 

@@ -14,23 +14,26 @@
 #include "AudioManager.hpp"
 
 using namespace std;
+using namespace tuiles;
 
-MidiOscSwitchTuile::MidiOscSwitchTuile():   AudioTuile() {}
+MidiOscSwitchTuile::MidiOscSwitchTuile():   SwitchTuile() {}
 
 MidiOscSwitchTuile::~MidiOscSwitchTuile() {}
 
 void MidiOscSwitchTuile::load(const std::string& fileName) {
+/*
 	m_fileName=fileName;
     m_loaded=true;
+*/
 }
 
 void MidiOscSwitchTuile::unload() {
+/*
 	m_loaded=false;
+*/
 }
 
 void MidiOscSwitchTuile::activate() {
-    if(m_loaded) {
-    }
 }
 
 void MidiOscSwitchTuile::deactivate() {

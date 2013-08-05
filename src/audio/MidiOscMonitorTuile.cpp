@@ -14,21 +14,26 @@
 #include "AudioManager.hpp"
 
 using namespace std;
+using namespace tuiles;
 
-MidiOscMonitorTuile::MidiOscMonitorTuile(): AudioTuile() {}
+MidiOscMonitorTuile::MidiOscMonitorTuile(): MonitorTuile() {}
 
 MidiOscMonitorTuile::~MidiOscMonitorTuile() {}
 
 void MidiOscMonitorTuile::load(const std::string& fileName) {
+/*
 	m_fileName=fileName;
+*/
 }
 
 void MidiOscMonitorTuile::unload() {
 }
 
 void MidiOscMonitorTuile::activate() {
+/*
     if(m_loaded) {
     }
+*/
 }
 
 void MidiOscMonitorTuile::deactivate() {

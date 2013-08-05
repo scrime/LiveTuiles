@@ -1,10 +1,8 @@
 /***************************************************************************
- *            SwitchParamWidget.cpp
- *
- *  2012 Florent Berthaut
+ *  SwitchParamWidget.cpp
+ *  2012-2013 Florent Berthaut
  *  ANR INEDIT Project
- *
- *  This file is part of libTuiles
+ *  This file is part of LiveTuiles
  ****************************************************************************/
 
 #include <iostream>
@@ -13,12 +11,14 @@
 
 #include "SwitchParamWidget.hpp"
 
+#include "HitPack.hpp"
+#include "../audio/MidiOscSwitchTuile.hpp"
+
 using namespace std;
 
-
-SwitchParamWidget::SwitchParamWidget(int x, int y, int w, int h,
-								const unsigned int& id, const string& name):
-                                TuileParamWidget(x, y, w, h, id, name) {
+SwitchParamWidget::SwitchParamWidget(MidiOscSwitchTuile* switchTuile):
+                                            TuileParamWidget(switchTuile),
+                                            m_switchTuile(switchTuile) {
 
     m_selectInput = new Fl_Simple_Counter(0, 0, 50, 20, "Selected Child");
     m_selectInput->align(FL_ALIGN_TOP|FL_ALIGN_LEFT);

@@ -19,6 +19,8 @@
 using namespace std;
 
 SoundFileTuile::SoundFileTuile():   AudioTuile(),
+                                    m_volume(1),
+                                    m_procVolume(1),
                                     m_grainVolume(1),
                                     m_grainSize(4096),
                                     m_windowSize(2),
@@ -148,6 +150,7 @@ void SoundFileTuile::unload() {
 
 void SoundFileTuile::activate() {
     //TODO compute position in file from position and speed
+    m_filePosition=0;
 
 }
 
@@ -182,8 +185,7 @@ void SoundFileTuile::processBuffers(const int& nbFrames) {
             m_internalBuffer[c].resize(nbFrames);
             m_internalBuffer[c].assign(m_internalBuffer[c].size(), 0);
         }
-        if(m_active) {
-            cout<<"process soundfile"<<endl;
+        if(m_procActive) {
             //start new grain ?
             if(m_grainDistanceCounter>=m_grainDistance) {
                 if(m_speed<1.0) {
@@ -200,7 +202,8 @@ void SoundFileTuile::processBuffers(const int& nbFrames) {
                 }
                 m_grains.push_back(Grain(m_grainVolume*m_procVolume, 
                                             m_grainSize, 
-                                            rand()%m_windowSize+m_position,
+                                            rand()%m_windowSize
+                                            +m_procPosition,
                                             m_envelopes[m_grainSize],
                                             m_buffers, m_framesCount, 
                                             m_channelsCount));
@@ -209,7 +212,6 @@ void SoundFileTuile::processBuffers(const int& nbFrames) {
             else {
                 m_grainDistanceCounter+=nbFrames;
             }
-            m_filePosition+=(float)nbFrames * m_speed;
         }
         //process grains
         list<Grain>::iterator itGrain; 

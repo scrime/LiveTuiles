@@ -32,9 +32,9 @@ class FaustTuile : public AudioTuile {
         llvm_dsp* m_dsp;
         llvm_dsp_factory* m_dspFactory;
         bool m_processing;
-        unsigned int m_inputChannels;
-        unsigned int m_outputChannels;
-        unsigned int m_bufferSize;
+        int m_inputChannels;
+        int m_outputChannels;
+        int m_bufferSize;
         float **m_dspInputBuffer;
         float **m_dspOutputBuffer;
         bool m_activateAsked;

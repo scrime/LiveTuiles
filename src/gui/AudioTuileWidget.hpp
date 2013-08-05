@@ -9,20 +9,26 @@
 #ifndef _AudioTuileWidget_H
 #define _AudioTuileWidget_H
 
-#include "TuileWidget.hpp"
+#include "LeafTuileWidget.hpp"
 
 class AudioTuile;
 
-class AudioTuileWidget: public TuileWidget {
+class AudioTuileWidget: public LeafTuileWidget {
   public:
 	AudioTuileWidget(const std::string& name, AudioTuile*);
-	~AudioTuileWidget();
+	virtual ~AudioTuileWidget();
 
+    virtual int handle(int event);
+    virtual void drawConnections();
+
+    bool canTakeInput(){return m_canTakeInput;}
     virtual void connectToWidget(AudioTuileWidget*);
     inline AudioTuile* getAudioTuile(){return m_audioTuile;}
     
   protected:
     AudioTuile* m_audioTuile;
+    bool m_canTakeInput;
+    bool m_connecting;
     
 };
 

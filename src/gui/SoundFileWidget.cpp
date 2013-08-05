@@ -6,6 +6,7 @@
  ****************************************************************************/
 
 #include "SoundFileWidget.hpp"
+#include "SoundFileParamWidget.hpp"
 #include "../audio/SoundFileTuile.hpp"
 
 #include <iostream>
@@ -19,6 +20,7 @@ SoundFileWidget::SoundFileWidget(const std::string& name,
                                 SoundFileTuile* tuile): 
                                 AudioTuileWidget(name, tuile) {
     m_canTakeInput=false;
+    m_paramWidget=new SoundFileParamWidget(tuile);
 }
 
 SoundFileWidget::~SoundFileWidget() {}

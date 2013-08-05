@@ -41,7 +41,6 @@ class SoundFileTuile : public AudioTuile {
     protected:
         friend class SetSoundFileProperties;
         SetSoundFileProperties* m_protoSetSFProps;
-        float m_procVolume;
     
     private:
         void updateSoundFileProperties();
@@ -49,6 +48,7 @@ class SoundFileTuile : public AudioTuile {
 	private:
         float m_volume;
 
+        float m_procVolume;
 		jack_default_audio_sample_t** m_buffers;
 		unsigned int m_channelsCount;
 		unsigned int m_sampleRate;

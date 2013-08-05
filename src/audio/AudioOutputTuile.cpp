@@ -32,10 +32,10 @@ void AudioOutputTuile::load(const std::string& output) {
 
     //connect to the soundcard by default
     jack_connect(man->getJackClient(), 
-                    string("LiveTuiles"+output+"-L").c_str(), 
+                    string("LiveTuiles:"+output+"-L").c_str(), 
                     "system:playback_1");
     jack_connect(man->getJackClient(), 
-                    string("LiveTuiles"+output+"-R").c_str(), 
+                    string("LiveTuiles:"+output+"-R").c_str(), 
                     "system:playback_2");
 	m_loaded=true;
 }
@@ -48,25 +48,26 @@ void AudioOutputTuile::processBuffers(const int& nbFrames) {
     if(!m_computed) {
         m_internalBuffer[0].assign(nbFrames, 0);
         m_internalBuffer[1].assign(nbFrames, 0);
+        jack_default_audio_sample_t* bufL=(jack_default_audio_sample_t *)
+                        jack_port_get_buffer(m_outputPortLeft, nbFrames);
+        jack_default_audio_sample_t* bufR=(jack_default_audio_sample_t *)
+                        jack_port_get_buffer(m_outputPortRight, nbFrames);
         if(m_procActive) {
-            cout<<"process output"<<endl;
-            jack_default_audio_sample_t* bufL=(jack_default_audio_sample_t *)
-                            jack_port_get_buffer(m_outputPortLeft, nbFrames);
-            jack_default_audio_sample_t* bufR=(jack_default_audio_sample_t *)
-                            jack_port_get_buffer(m_outputPortRight, nbFrames);
-
-            vector<AudioTuile*>::iterator itTui=m_inputTuiles.begin();
-            for(; itTui!=m_inputTuiles.end(); ++itTui) {
+            vector<AudioTuile*>::iterator itTui=m_procInputTuiles.begin();
+            for(; itTui!=m_procInputTuiles.end(); ++itTui) {
                 (*itTui)->processBuffers(nbFrames);
-                for(int f=0; f<nbFrames; ++f) {
-                    m_internalBuffer[0][f]+=(*itTui)->getBuffer()[0][f];
-                    m_internalBuffer[1][f]+=(*itTui)->getBuffer()[1][f];
+                for(unsigned int c=0; c<m_internalBuffer.size(); ++c) {
+                    for(int f=0; f<nbFrames; ++f) {
+                        m_internalBuffer[c][f]+=
+                            (*itTui)->getBuffer()
+                                        [c%(*itTui)->getBuffer().size()][f];
+                    }
                 }
             }
-            for(int f=0; f<nbFrames; ++f) {
-                bufL[f]=m_internalBuffer[0][f];
-                bufR[f]=m_internalBuffer[1][f];
-            }
+        }
+        for(int f=0; f<nbFrames; ++f) {
+            bufL[f]=m_internalBuffer[0][f];
+            bufR[f]=m_internalBuffer[1][f];
         }
         m_computed=true;
      }

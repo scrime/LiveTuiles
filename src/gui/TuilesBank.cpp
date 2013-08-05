@@ -10,8 +10,9 @@
 #include <math.h>
 #include <cassert>
 
+#include "MainWindow.hpp"
 #include "TreeWidget.hpp"
-#include "TuileWidget.hpp"
+#include "LeafTuileWidget.hpp"
 
 using namespace std;
 
@@ -32,6 +33,10 @@ TuilesBank::TuilesBank(int x, int y, int w, int h):
     m_tuilesList.push_back(std::string("loop"));
     m_tuilesList.push_back(std::string("switch"));
     m_tuilesList.push_back(std::string("monitor"));
+
+    end();
+    m_draggedTuile = new LeafTuileWidget("");
+    m_draggedTuile->hide();
 }
 
 TuilesBank::~TuilesBank() {
@@ -118,9 +123,9 @@ int TuilesBank::handle(int event) {
     switch(event) { 
         case FL_DRAG: { 
             if(!m_dragging) {
+                cout<<"starts dragging"<<endl;
                 if(m_selectedFromBank.size()>0) {
                     m_dragging=true;
-                    m_draggedTuile = new TuileWidget("");
                     m_draggedTuile->setName(m_selectedFromBank);
                     m_draggedTuile->position(Fl::event_x(), Fl::event_y());
                     window()->add(m_draggedTuile);
@@ -129,7 +134,6 @@ int TuilesBank::handle(int event) {
                     if(fl_filename_match(m_filesList[m_selectedFile].c_str(), 
                                                 m_pattern.c_str())!=0) {
                         m_dragging=true;
-                        m_draggedTuile = new TuileWidget("");
                         m_draggedTuile->setName(m_filesList[m_selectedFile]);
                         m_draggedTuile->position(Fl::event_x(), Fl::event_y());
                         window()->add(m_draggedTuile);
@@ -137,6 +141,7 @@ int TuilesBank::handle(int event) {
                 }
             }
             else {
+                cout<<"dragging"<<endl;
                 //get magnetized tuile and position from the tree widget
                 int posX, posY;
                 bool drop=false;
@@ -150,11 +155,13 @@ int TuilesBank::handle(int event) {
                 window()->redraw();
                 m_draggedTuile->redraw();
             }
+            redraw();
             return 1;
         }break;
         case FL_PUSH: {
             m_selectedFromBank="";
             m_selectedFromDir=false;
+            m_dragging=false;
             fl_font(FL_HELVETICA, 14);
             if(Fl::event_x()<x()+2*w()/3) { //files list
                 //get selected line
@@ -187,6 +194,7 @@ int TuilesBank::handle(int event) {
                     m_selectedFromBank=m_tuilesList[selectedLine];
                 }
             }
+            redraw();
             return 1;
         }break;
         case FL_RELEASE: {
@@ -209,7 +217,6 @@ int TuilesBank::handle(int event) {
 
                 //remove the draggedtuile widget
                 window()->remove(m_draggedTuile);
-				delete m_draggedTuile;
 
                 //clear selection
                 drop=false;
@@ -225,6 +232,7 @@ int TuilesBank::handle(int event) {
             if( newLine<=float(m_filesList.size()) && newLine>=0) {
                 m_topLine=newLine;
             }
+            redraw();
             return 1;
         }break;
     }

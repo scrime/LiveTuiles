@@ -8,65 +8,64 @@
 #ifndef _TuileWidget_H
 #define _TuileWidget_H
 
+#include <vector>
 #include <string>
-
-#include "TuileWidgetNode.hpp"
+#include <FL/Fl_Widget.H>
+#include <tuiles/Observer.hpp>
 
 class TuileParamWidget;
-class TuileParamGroup;
-class AudioTuile;
+namespace tuiles{class Tuile;}
 
-class TuileWidget: public TuileWidgetNode {
+class TuileWidget: public tuiles::Observer {
   public:
-	TuileWidget(const std::string& name, tuiles::Tuile* tuile=NULL);
-	~TuileWidget();
+	TuileWidget(tuiles::Tuile*);
+	virtual ~TuileWidget();
 
-    inline const std::string& getName(){return m_name;}
-	inline void setName(const std::string& name){m_name=name;}
-
-    void update();
-
-    virtual int handle(int event);
-    virtual void drawComposition();
-    virtual void drawExecution(const float&);
-    virtual void drawConnections();
-    virtual void drag(const int&, const int&);
-
-    void select();
-    void deselect();
+    inline const int& getID(){return m_id;}
+    inline tuiles::Tuile* getTuile(){return m_tuile;}
 
     virtual void notify();
 
-    inline int getSyncIn() {return x()+m_sync1X;}
-    inline int getSyncOut() {return x()+m_sync2X;}
-    inline int getRealIn() {return x()+m_real1X;}
-    inline int getRealOut() {return x()+m_real2X;}
+    inline virtual void drawComposition(){}
+    inline virtual void drawExecution(const float& alpha=1){}
+    inline virtual void refreshChildrenTuileWidgets(){}
 
-    void resetHighlight();
-    void highlightSyncInLine();
-    void highlightSyncOutLine();
-    void highlightReal(bool high=true);
+    inline virtual int getSyncIn() {return m_sync1X;}
+    inline virtual int getSyncOut() {return m_sync2X;}
+    inline virtual int getRealIn() {return m_real1X;}
+    inline virtual int getRealOut(){return m_real2X;}
+    inline virtual int getCenterReal(){return 0;}
+    inline void setSync1Y(const int& y){m_sync1Y=y;}
+    inline void setSync2Y(const int& y){m_sync2Y=y;}
+    inline virtual void resetHighlight(){}
+    inline virtual void highlightSyncInLine(){}
+    inline virtual void highlightSyncOutLine(){}
+    inline virtual void highlightReal(bool high=true){}
 
-    bool canTakeInput(){return m_canTakeInput;}
-    virtual void connectToWidget(TuileWidget*){}
-
-    inline TuileParamWidget* getParamWidget(){return m_paramWidget;}
-
-    virtual void tryForkWithTuile(const std::string& tuileName);
-    virtual void trySeqWithTuile(const std::string& tuileName);
-    virtual void tryJoinWithTuile(const std::string& tuileName);
-    virtual void tryLeftSeqWithTuile(const std::string& tuileName);
+    inline virtual void tryForkWithTuile(const std::string& tuileName){}
+    inline virtual void trySeqWithTuile(const std::string& tuileName){}
+    inline virtual void tryJoinWithTuile(const std::string& tuileName){}
+    inline virtual void tryLeftSeqWithTuile(const std::string& tuileName){}
     inline virtual void tryAddTuileChild(const std::string& tuileName){}
 
+    inline virtual Fl_Widget* getWidget(){return NULL;}
+
   protected:
-	std::string m_name;
+    int m_id;
+    std::vector<TuileWidget*> m_childrenTuileWidgets;
+    tuiles::Tuile* m_tuile;
+
     bool m_muted;
-    bool m_canTakeInput;
 
 	float m_height;
+    float m_width;
 
 	int m_sync1X;
+    int m_sync1Y;
 	int m_sync2X;
+    int m_sync2Y;
+    int m_syncWidth;
+    int m_syncHeight;
 	int m_real1X;
 	int m_real2X;
     Fl_Color m_sync1Color;
@@ -91,11 +90,7 @@ class TuileWidget: public TuileWidgetNode {
 	Fl_Color m_backgroundColor;
     bool m_selected;
 
-    std::vector<TuileWidget*> m_inputWidgets;
-
     TuileParamWidget* m_paramWidget; 
-    TuileParamGroup* m_paramGroup;
-    
 };
 
 #endif

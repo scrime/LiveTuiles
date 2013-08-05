@@ -9,11 +9,11 @@
 #ifndef _MonitorWidget_H
 #define _MonitorWidget_H
 
-#include "TuileWidget.hpp"
+#include "LeafTuileWidget.hpp"
 
 class MidiOscMonitorTuile;
 
-class MonitorWidget: public TuileWidget {
+class MonitorWidget: public LeafTuileWidget {
   public:
 	MonitorWidget(const std::string& name, MidiOscMonitorTuile*);
 	~MonitorWidget();
