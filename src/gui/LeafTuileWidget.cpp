@@ -89,13 +89,22 @@ void LeafTuileWidget::highlightReal(bool high) {
 }
 
 void LeafTuileWidget::drawComposition() {
+
+    //name background
+	fl_color(m_realColor);
+	fl_rectf(x()+m_real1X+2, y()+h()-fl_height(), 
+            fl_width(m_name.c_str())+2, fl_height());
+
 	//realwindow
 	fl_color(m_realColor);
 	fl_rectf(x()+m_real1X, y(), m_real2X-m_real1X, h());
 	fl_color(FL_FOREGROUND_COLOR);
 	fl_rect(x()+m_real1X, y(), m_real2X-m_real1X, h());
+    fl_line_style(FL_DOT, 5);
+	fl_line(x()+m_real1X, y()+h()-5, x()+m_real2X, y()+h()-5);
 
 	//syncwindow
+    fl_line_style(0);
 	fl_color(m_syncLColor);
 	fl_line(x()+m_sync1X, y()+h()/2, x()+m_real2X, y()+h()/2);
 	fl_line(x()+m_sync2X, y()+h()/2, x()+m_real1X, y()+h()/2);
@@ -117,7 +126,7 @@ void LeafTuileWidget::drawComposition() {
 	//name
     fl_color(FL_WHITE);
 	fl_font(FL_HELVETICA_ITALIC, 10);
-	fl_draw(m_name.c_str(), x()+m_real1X+2, y()+h()-2);
+	fl_draw(m_name.c_str(), x()+m_real1X+2, y()+h()-fl_descent());
 }
 
 void LeafTuileWidget::drawExecution(const float&) {

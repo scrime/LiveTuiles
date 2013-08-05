@@ -113,12 +113,9 @@ void SeqWidget::notify() {
 
     //set children sync Y positions
     if(m_childrenTuileWidgets.size()>=2) {
-        m_childrenTuileWidgets[0]
-            ->setSync2Y((y()+h()/2)
-                        -(m_childrenTuileWidgets[0]->getWidget()->y() 
-                            + m_childrenTuileWidgets[0]->getWidget()->h()/2));
         m_childrenTuileWidgets[1]
-            ->setSync1Y((y()+h()/2)
+            ->setSync1Y((m_childrenTuileWidgets[0]->getWidget()->y() 
+                            + m_childrenTuileWidgets[0]->getWidget()->h()/2)
                         -(m_childrenTuileWidgets[1]->getWidget()->y() 
                             + m_childrenTuileWidgets[1]->getWidget()->h()/2));
     }

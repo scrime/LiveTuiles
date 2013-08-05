@@ -203,7 +203,8 @@ void SoundFileTuile::processBuffers(const int& nbFrames) {
                 m_grains.push_back(Grain(m_grainVolume*m_procVolume, 
                                             m_grainSize, 
                                             rand()%m_windowSize
-                                            +m_procPosition,
+                                            +(m_procPosition/m_procLength)
+                                            *float(m_framesCount),
                                             m_envelopes[m_grainSize],
                                             m_buffers, m_framesCount, 
                                             m_channelsCount));
