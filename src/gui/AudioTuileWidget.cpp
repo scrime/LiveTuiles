@@ -28,12 +28,8 @@ AudioTuileWidget::AudioTuileWidget(const std::string& name,
 
 AudioTuileWidget::~AudioTuileWidget() {}
 
-void AudioTuileWidget::connectToWidget(AudioTuileWidget* widget) {
-    m_inputWidgets.push_back(widget);
-    m_audioTuile->addInputTuile(widget->getAudioTuile());
-}
-
-void AudioTuileWidget::drawConnections() {
+void AudioTuileWidget::drawComposition() {
+    LeafTuileWidget::drawComposition();
     fl_color(FL_BLUE);
     if(m_connecting) {
         fl_begin_line();
@@ -41,16 +37,6 @@ void AudioTuileWidget::drawConnections() {
                     getCenterReal(), y()+h()*2,
                     m_dragPosX, m_dragPosY-h(),
                     m_dragPosX, m_dragPosY);
-        fl_end_line();
-    }
-
-    vector<LeafTuileWidget*>::iterator itWid=m_inputWidgets.begin();
-    for(; itWid!=m_inputWidgets.end(); ++itWid) {
-        fl_begin_line();
-        fl_curve((*itWid)->getCenterReal(), (*itWid)->y()+(*itWid)->h(), 
-                (*itWid)->getCenterReal(), (*itWid)->y()+(*itWid)->h()*2,
-                getCenterReal(), y()-h(),
-                getCenterReal(), y());
         fl_end_line();
     }
 }

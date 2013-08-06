@@ -23,6 +23,7 @@ class TuileWidget;
 class SeqWidget;
 class AudioTuileWidget;
 class LeafTuileWidget;
+class ConnectionWidget;
 
 class TreeWidget : public TuileWidget, public Fl_Scroll {
     public:
@@ -74,6 +75,7 @@ class TreeWidget : public TuileWidget, public Fl_Scroll {
         std::list<TuileWidget*> m_tuileWidgets;
         std::list<AudioTuileWidget*> m_audioTuileWidgets;
         std::map<unsigned int, TuileWidget*> m_tuileWidgetMap;
+        std::vector<ConnectionWidget*> m_connections;
 
         TuileParamGroup* m_paramGroup;
 };

@@ -28,6 +28,7 @@
 #include "LoopWidget.hpp"
 #include "MonitorWidget.hpp"
 #include "SwitchWidget.hpp"
+#include "ConnectionWidget.hpp"
 
 #include "TuileParamGroup.hpp"
 
@@ -97,10 +98,9 @@ void TreeWidget::draw() {
 	draw_children();
 
     //connections between tuiles 
-    list<AudioTuileWidget*>::const_iterator itWidget
-                                                =m_audioTuileWidgets.begin();
-    for(; itWidget!=m_audioTuileWidgets.end(); ++itWidget) {
-        (*itWidget)->drawConnections();
+    vector<ConnectionWidget*>::iterator itCon=m_connections.begin();
+    for(; itCon!=m_connections.end(); ++itCon) {
+        (*itCon)->drawConnection();
     }
 
     //cursor
@@ -160,6 +160,11 @@ void TreeWidget::notify() {
     list<TuileWidget*>::const_iterator itWidget=m_tuileWidgets.begin();
     for(;itWidget!=m_tuileWidgets.end(); ++itWidget) {
         (*itWidget)->notify();
+    }
+    //update all connections
+    vector<ConnectionWidget*>::iterator itCon=m_connections.begin();
+    for(; itCon!=m_connections.end(); ++itCon) {
+        (*itCon)->update();
     }
     redraw();
 }
@@ -271,9 +276,10 @@ void TreeWidget::testConnection(AudioTuileWidget* tuile,
                                         const int& x, 
                                             const int& y, 
                                                 bool drop) {
+    bool found=false;
 	list<AudioTuileWidget*>::const_iterator itWidget=
                                                 m_audioTuileWidgets.begin();
-	for(;itWidget!=m_audioTuileWidgets.end(); ++itWidget) {
+	for(;itWidget!=m_audioTuileWidgets.end() && !found; ++itWidget) {
         (*itWidget)->resetHighlight(); 
         if(y>(*itWidget)->y() - (*itWidget)->h()/2 
                 && y<(*itWidget)->y() + 3*(*itWidget)->h()/2) {
@@ -283,11 +289,15 @@ void TreeWidget::testConnection(AudioTuileWidget* tuile,
                         DEBUG("Connecting tuile "<<tuile->getID()
                                 <<" to "<<(*itWidget)->getID());
                         (*itWidget)->highlightReal(false);
-                        (*itWidget)->connectToWidget(tuile);
+                        m_connections.push_back(new ConnectionWidget(tuile, 
+                                                                    *itWidget));
+                        add(m_connections.back());
+                        notify();
                     }
                     else {
                         (*itWidget)->highlightReal();
                     }
+                    found=true;
                 }
             }
         }

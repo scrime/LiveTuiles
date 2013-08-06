@@ -18,11 +18,10 @@ class AudioTuileWidget: public LeafTuileWidget {
 	AudioTuileWidget(const std::string& name, AudioTuile*);
 	virtual ~AudioTuileWidget();
 
+    virtual void drawComposition();
     virtual int handle(int event);
-    virtual void drawConnections();
 
     bool canTakeInput(){return m_canTakeInput;}
-    virtual void connectToWidget(AudioTuileWidget*);
     inline AudioTuile* getAudioTuile(){return m_audioTuile;}
     
   protected:
