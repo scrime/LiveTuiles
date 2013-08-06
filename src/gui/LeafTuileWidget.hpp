@@ -30,8 +30,7 @@ class LeafTuileWidget: public TuileWidget, public Fl_Widget {
     virtual int handle(int event);
     virtual void draw(){drawComposition();}
     virtual void drawComposition();
-    virtual void drawExecution(const float&);
-    virtual void drag(const int&, const int&);
+    virtual void drawExecution(const int& offset=0);
     inline int getSyncIn() {return x()+m_sync1X;}
     inline int getSyncOut() {return x()+m_sync2X;}
     inline int getRealIn() {return x()+m_real1X;}
@@ -47,11 +46,10 @@ class LeafTuileWidget: public TuileWidget, public Fl_Widget {
 
     inline TuileParamWidget* getParamWidget(){return m_paramWidget;}
 
-    virtual void tryForkWithTuile(const std::string& tuileName);
-    virtual void trySeqWithTuile(const std::string& tuileName);
-    virtual void tryJoinWithTuile(const std::string& tuileName);
-    virtual void tryLeftSeqWithTuile(const std::string& tuileName);
-    inline virtual void tryAddTuileChild(const std::string& tuileName){}
+    virtual bool testMagnetWithTuile(const int& inX, const int& inY,
+                                        int& outX, int& outY,     
+                                        const std::string& tuileName,
+                                        const bool& drop);
 
     inline virtual Fl_Widget* getWidget(){return this;}
 

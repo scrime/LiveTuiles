@@ -17,10 +17,8 @@
 using namespace std;
 
 FaustWidget::FaustWidget(const std::string& name, 
-                            FaustTuile* tuile): AudioTuileWidget(name, tuile){
-
+                            FaustTuile* tuile): AudioTuileWidget(name, tuile) {
     m_paramWidget=new FaustParamWidget(tuile);
-
 }
 
 

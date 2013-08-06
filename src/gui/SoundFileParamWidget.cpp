@@ -18,14 +18,7 @@ using namespace std;
 
 SoundFileParamWidget::SoundFileParamWidget(SoundFileTuile* sfTuile):
                                 TuileParamWidget(sfTuile), m_sfTuile(sfTuile) {
-
-    m_outputChoice = new Fl_Choice(0, 0, 50, 20, "Output");
-    m_outputChoice->align(FL_ALIGN_LEFT|FL_ALIGN_TOP);
-    m_outputChoice->callback(statTuileSoundFileInputs,this);
-    m_outputChoice->add("Internal+Main", "", NULL); 
-    m_outputChoice->add("Internal only", "", NULL); 
-    m_outputChoice->value(0);
-    m_pack->add(m_outputChoice);
+    end();
 
     m_volumeSlider = new Fl_Slider(0, 0, 50, 20, "Volume");
     m_volumeSlider->callback(statTuileSoundFileInputs,this);
@@ -34,9 +27,8 @@ SoundFileParamWidget::SoundFileParamWidget(SoundFileTuile* sfTuile):
     m_volumeSlider->bounds(0, 2);
     m_volumeSlider->value(1);
     m_volumeSlider->labelsize(12);
-    m_pack->add(m_volumeSlider);
+    add(m_volumeSlider);
 
-    end();
 }
 
 SoundFileParamWidget::~SoundFileParamWidget() {}

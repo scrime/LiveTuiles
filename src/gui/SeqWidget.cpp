@@ -29,16 +29,13 @@ SeqWidget::SeqWidget(const std::string& name,
 SeqWidget::~SeqWidget() {}
 
 void SeqWidget::drawComposition() {
+    fl_line_style(0);
 	fl_color(m_realColor);
 	fl_rect(x()+m_real1X, y(), m_real2X-m_real1X, h());
     vector<TuileWidget*>::iterator itChild=m_childrenTuileWidgets.begin();
     for(; itChild!=m_childrenTuileWidgets.end(); ++itChild) {
         (*itChild)->drawComposition();
     }
-}
-
-void SeqWidget::drawExecution(const float& alpha) {
-
 }
 
 int SeqWidget::handle(int event) {
@@ -69,16 +66,6 @@ int SeqWidget::handle(int event) {
     else {
         return 1;
     }
-}
-
-void SeqWidget::setFirstChildWidget(TuileWidget* child) {
-    m_seqTuile->setFirstChild(child->getTuile());
-    DEBUG("in SeqWidget, set first child to "<<child->getID());
-}
-
-void SeqWidget::setSecondChildWidget(TuileWidget* child) {
-    m_seqTuile->setSecondChild(child->getTuile());
-    DEBUG("in SeqWidget, set second child to "<<child->getID());
 }
 
 void SeqWidget::notify() {

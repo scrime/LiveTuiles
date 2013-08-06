@@ -43,8 +43,10 @@ class TreeWidget : public TuileWidget, public Fl_Scroll {
 
         void testConnection(AudioTuileWidget*, const int& x, 
                             const int& y, bool drop=false);
-        void getMagnetizedPositionAndTuile(const int&, const int&, const int&,
-                                        int&, int&, bool&, const std::string&);
+        virtual bool testMagnetWithTuile(const int& inX, const int& inY,
+                                            int& outX, int& outY, 
+                                            const std::string& tuileName,
+                                            const bool& drop);
         TuileWidget* createTuileWidget(const std::string& tuileName);
         SeqWidget* createSeqWidget(TuileWidget*, TuileWidget*);
         void addTuileWidget(TuileWidget*);

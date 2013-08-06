@@ -13,23 +13,17 @@
 
 #include <tuiles/Tuile.hpp>
 
-#include "HitPack.hpp"
-
 using namespace std;
 using namespace tuiles;
 
-TuileParamWidget::TuileParamWidget(Tuile* tuile):Fl_Scroll(0, 0, 100, 100, ""), 
-                                                  m_tuile(tuile) {
-    box(FL_DOWN_BOX);
+TuileParamWidget::TuileParamWidget(Tuile* tuile):
+                                                HitPack(0, 0, 100, 100, ""), 
+                                                m_tuile(tuile) {
+    box(FL_FLAT_BOX);
     color(fl_rgb_color(70,90,70));
-
-    type(VERTICAL_ALWAYS);
-
-    m_pack = new HitPack(0,0,w()-30,h(),"");
-    m_pack->end();
-    m_pack->type(Fl_Pack::VERTICAL);
-    m_pack->internalSpacing(15);
-    m_pack->externalSpacing(5);
+    type(Fl_Pack::VERTICAL);
+    internalSpacing(15);
+    externalSpacing(5);
     end();
 
     m_tuilePack = new HitPack(0, y(), w(), 40, "");
@@ -48,7 +42,7 @@ TuileParamWidget::TuileParamWidget(Tuile* tuile):Fl_Scroll(0, 0, 100, 100, ""),
     m_lengthInput->callback(statTuileInputs,this);
     m_lengthInput->labelsize(12);
     m_lengthInput->step(0.1);
-    m_lengthInput->bounds(0,100000);
+    m_lengthInput->bounds(0, 100000);
     m_lengthInput->soft(0);
     m_lOffsetInput = new Fl_Value_Input(0, 0, 60, 20, "Left Offset");
     m_lOffsetInput->align(FL_ALIGN_TOP|FL_ALIGN_LEFT);
@@ -72,7 +66,7 @@ TuileParamWidget::TuileParamWidget(Tuile* tuile):Fl_Scroll(0, 0, 100, 100, ""),
     m_tuilePack->add(m_rOffsetInput);
     m_tuilePack->add(m_removeButton);
 
-    m_pack->add(m_tuilePack);
+    add(m_tuilePack);
 
     updateTuileProps();
 }
@@ -86,7 +80,6 @@ void TuileParamWidget::update() {
 
 void TuileParamWidget::cbTuileInputs(Fl_Widget* w) {
 /*
-    TuilesManager* tMan = TuilesManager::getInstance();
     if(m_nameInput->contains(w)) {
     }
     else if(m_lengthInput->contains(w)) {
@@ -104,46 +97,6 @@ void TuileParamWidget::cbTuileInputs(Fl_Widget* w) {
 */
 }
 
-
-/*
-void TuileParamWidget::setBuffers(const vector<Buffer*>& intOutBufs, 
-                                    const vector<Buffer*>& extInpBufs, 
-                                    const vector<Buffer*>& extOutBufs) {
-    m_inputBufferList->clear();
-    m_outputBufferList->clear();
-    vector<Buffer*>::const_iterator itBuf;
-    for(itBuf=intOutBufs.begin(); itBuf!=intOutBufs.end(); ++itBuf) {
-        m_inputBufferList->add(fl_filename_name((*itBuf)->getName().c_str()),
-                                    0, NULL, (void*)*itBuf);
-    }
-    for(itBuf=extInpBufs.begin(); itBuf!=extInpBufs.end(); ++itBuf) {
-        m_inputBufferList->add(fl_filename_name((*itBuf)->getName().c_str()),
-                                    0, NULL, (void*)*itBuf);
-    }
-    m_outputBufferList->add("Internal Only", 0, NULL, NULL);
-    for(itBuf=extOutBufs.begin(); itBuf!=extOutBufs.end(); ++itBuf) {
-        m_outputBufferList->add(fl_filename_name((*itBuf)->getName().c_str()),
-                                    0, NULL, (void*)*itBuf);
-    }
-
-    //set current values
-    if(m_process->getInputBuffer()) {
-        m_inputBufferList->value(
-            m_inputBufferList->find_item(
-            fl_filename_name(m_process->getInputBuffer()->getName().c_str())));
-    }
-
-    if(m_process->getOutputBuffer()) {
-        m_outputBufferList->value(
-            m_outputBufferList->find_item(
-            fl_filename_name(m_process->getOutputBuffer()->getName().c_str())));
-    }
-    else {
-        m_outputBufferList->value(
-            m_outputBufferList->find_item("Internal Only"));
-    }
-}
-*/
 
 void TuileParamWidget::updateTuileProps() {
 /*

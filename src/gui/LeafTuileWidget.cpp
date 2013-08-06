@@ -90,19 +90,13 @@ void LeafTuileWidget::highlightReal(bool high) {
 }
 
 void LeafTuileWidget::drawComposition() {
-
-    //name background
-	fl_color(m_realColor);
-	fl_rectf(x()+m_real1X+2, y()+h()-fl_height(), 
-            fl_width(m_name.c_str())+2, fl_height());
-
-	//realwindow
-	fl_color(m_realColor);
-	fl_rectf(x()+m_real1X, y(), m_real2X-m_real1X, h());
+    //real frame
 	fl_color(FL_FOREGROUND_COLOR);
 	fl_rect(x()+m_real1X, y(), m_real2X-m_real1X, h());
-    fl_line_style(FL_DOT, 5);
-	fl_line(x()+m_real1X, y()+h()-5, x()+m_real2X, y()+h()-5);
+
+    //stretch line
+    fl_line_style(FL_DOT, h()/3);
+	fl_line(x()+m_real1X, y()+3*h()/4, x()+m_real2X, y()+3*h()/4);
 
 	//syncwindow
     fl_line_style(0);
@@ -127,11 +121,24 @@ void LeafTuileWidget::drawComposition() {
 	//name
     fl_color(FL_WHITE);
 	fl_font(FL_HELVETICA_ITALIC, 10);
-	fl_draw(m_name.c_str(), x()+m_real1X+2, y()+h()-fl_descent());
+	fl_draw(m_name.c_str(), x()+m_real1X+2, y()+h()/2-fl_descent());
 }
 
-void LeafTuileWidget::drawExecution(const float&) {
-
+void LeafTuileWidget::drawExecution(const int& offset) {
+	//realwindow
+	fl_color(m_realColor);
+	fl_rectf(x()+m_real1X+offset, y(), m_real2X-m_real1X, h());
+    //name background
+	fl_color(m_realColor);
+	fl_rectf(x()+m_real1X+2+offset, y(), 
+            fl_width(m_name.c_str())+2, fl_height());
+	//name
+    fl_color(fl_darker(m_realColor));
+	fl_font(FL_HELVETICA_ITALIC, 10);
+	fl_draw(m_name.c_str(), x()+m_real1X+2+offset, y()+h()/2-fl_descent());
+    //realization frame
+	fl_color(fl_darker(m_realColor));
+	fl_rect(x()+m_real1X+offset, y(), m_real2X-m_real1X, h());
 }
 
 int LeafTuileWidget::handle(int event) {
@@ -176,8 +183,10 @@ int LeafTuileWidget::handle(int event) {
                     position(x(), Fl::event_y());
                 }break;
                 case TUILE_LENGTH: {
-                    m_tuile->setLength(m_tuile->getLength()
-                                            +diffX/pixPerFrame);
+                    if((m_real2X-m_real1X)+diffX>m_magnetSize) { 
+                        m_tuile->setLength(m_tuile->getLength()
+                                                +diffX/pixPerFrame);
+                    }
                 }
                 default:break;
             }
@@ -210,11 +219,6 @@ int LeafTuileWidget::handle(int event) {
     return 0;
 }
 
-void LeafTuileWidget::drag(const int& dragX, const int& dragY) {
-
-
-}
-
 void LeafTuileWidget::notify() {
     TuileWidget::notify();
     m_name=fl_filename_name(m_tuile->getName().c_str());
@@ -235,57 +239,31 @@ void LeafTuileWidget::deselect() {
     resetHighlight();
 }
 
-void LeafTuileWidget::tryForkWithTuile(const std::string& tuileName) {
-    DEBUG("in LeafTuileWidget "<<m_name<<" try fork with "<<tuileName);
-/*
-    TreeWidget* tree = TreeWidget::getInstance();
-    LeafTuileWidget* newWidget = tree->createLeafTuileWidget(tuileName);
-    SeqWidget* seqWidget = tree->createSeqWidget();
-    if(newWidget && seqWidget) {
-        m_parentLeafTuileWidget->replaceChildLeafTuileWidget(this, seqWidget);
-        seqWidget->setFirstChildWidget(this);
-        seqWidget->setSecondChildWidget(newWidget);
+bool LeafTuileWidget::testMagnetWithTuile(const int& inX, const int& inY,
+                                            int& outX, int& outY,
+                                            const std::string& tuileName,
+                                            const bool& drop) {
+    if(inY>y()-m_magnetSize && inY<y()+h()+m_magnetSize) {
+        if(abs(inX-(x()+m_sync2X))<m_magnetSize) {
+            outX=x()+m_sync2X;
+            outY=y();
+            if(drop) {
+                TreeWidget* tree = TreeWidget::getInstance();
+                TuileWidget* newWidget = tree->createTuileWidget(tuileName);
+                if(newWidget) {
+                    newWidget->getWidget()->position(x(), y());
+                    SeqWidget* newSeqWidget = 
+                        tree->createSeqWidget(this, newWidget);
+                    newSeqWidget->notify();
+                }
+                tree->refreshTuiles();
+
+            }
+            return true;
+        }
     }
-*/
+
+    return false;
 }
 
-void LeafTuileWidget::trySeqWithTuile(const std::string& tuileName) {
-    DEBUG("in LeafTuileWidget "<<m_name<<" try seq with "<<tuileName);
-    TreeWidget* tree = TreeWidget::getInstance();
-    TuileWidget* newWidget = tree->createTuileWidget(tuileName);
-    if(newWidget) {
-        newWidget->getWidget()->position(x(), y());
-        SeqWidget* newSeqWidget = tree->createSeqWidget(this, newWidget);
-        newSeqWidget->notify();
-    }
-    tree->refreshTuiles();
-}
-
-void LeafTuileWidget::tryJoinWithTuile(const std::string& tuileName) {
-    DEBUG("in LeafTuileWidget "<<m_name<<" try join with "<<tuileName);
-/*
-    TreeWidget* tree = TreeWidget::getInstance();
-    LeafTuileWidget* newWidget = tree->createLeafTuileWidget(tuileName);
-    SeqWidget* seqWidget = tree->createSeqWidget();
-    if(newWidget && seqWidget) {
-        m_parentLeafTuileWidget->replaceChildLeafTuileWidget(this, seqWidget);
-        seqWidget->setFirstChildWidget(this);
-        seqWidget->setSecondChildWidget(newWidget);
-    }
-*/
-}
-
-void LeafTuileWidget::tryLeftSeqWithTuile(const std::string& tuileName) {
-    DEBUG("in LeafTuileWidget "<<m_name<<" try left seq with "<<tuileName);
-/*
-    TreeWidget* tree = TreeWidget::getInstance();
-    LeafTuileWidget* newWidget = tree->createLeafTuileWidget(tuileName);
-    SeqWidget* seqWidget = tree->createSeqWidget();
-    if(newWidget && seqWidget) {
-        m_parentLeafTuileWidget->replaceChildLeafTuileWidget(this, seqWidget);
-        seqWidget->setFirstChildWidget(newWidget);
-        seqWidget->setSecondChildWidget(this);
-    }
-*/
-}
 

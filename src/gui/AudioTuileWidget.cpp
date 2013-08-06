@@ -29,7 +29,6 @@ AudioTuileWidget::AudioTuileWidget(const std::string& name,
 AudioTuileWidget::~AudioTuileWidget() {}
 
 void AudioTuileWidget::connectToWidget(AudioTuileWidget* widget) {
-    cout<<"added to audio tuile"<<endl;
     m_inputWidgets.push_back(widget);
     m_audioTuile->addInputTuile(widget->getAudioTuile());
 }

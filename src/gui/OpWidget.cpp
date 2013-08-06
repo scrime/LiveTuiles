@@ -48,5 +48,25 @@ void OpWidget::refreshChildrenTuileWidgets() {
 }
 
 
+void OpWidget::drawExecution(const int& offset) {
+    vector<TuileWidget*>::iterator itChild=m_childrenTuileWidgets.begin();
+    for(; itChild!=m_childrenTuileWidgets.end(); ++itChild) {
+        (*itChild)->drawExecution(offset);
+    }
+}
 
+bool OpWidget::testMagnetWithTuile(const int& inX, const int& inY,
+                                    int& outX, int& outY,     
+                                    const std::string& tuileName,
+                                    const bool& drop) {
+    bool magnetized=false;
+    vector<TuileWidget*>::iterator itChWid=m_childrenTuileWidgets.begin();
+    for(; itChWid!=m_childrenTuileWidgets.end() && !magnetized; ++itChWid) {
+        if((*itChWid)->testMagnetWithTuile(inX, inY, outX, 
+                                            outY, tuileName, drop)) {
+            magnetized=true;
+        }
+    }
+    return magnetized;
+}
 

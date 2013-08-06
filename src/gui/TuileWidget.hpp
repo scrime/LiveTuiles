@@ -27,7 +27,7 @@ class TuileWidget: public tuiles::Observer {
     virtual void notify();
 
     inline virtual void drawComposition(){}
-    inline virtual void drawExecution(const float& alpha=1){}
+    inline virtual void drawExecution(const int& offset=0){}
     inline virtual void refreshChildrenTuileWidgets(){}
 
     inline virtual int getSyncIn() {return m_sync1X;}
@@ -45,11 +45,10 @@ class TuileWidget: public tuiles::Observer {
     inline virtual void highlightSyncOutLine(){}
     inline virtual void highlightReal(bool high=true){}
 
-    inline virtual void tryForkWithTuile(const std::string& tuileName){}
-    inline virtual void trySeqWithTuile(const std::string& tuileName){}
-    inline virtual void tryJoinWithTuile(const std::string& tuileName){}
-    inline virtual void tryLeftSeqWithTuile(const std::string& tuileName){}
-    inline virtual void tryAddTuileChild(const std::string& tuileName){}
+    inline virtual bool testMagnetWithTuile(const int& inX, const int& inY,
+                                            int& outX, int& outY, 
+                                            const std::string& tuileName,
+                                            const bool& drop){return false;}
 
     inline virtual Fl_Widget* getWidget(){return NULL;}
 

@@ -21,8 +21,13 @@ class OpWidget: public TuileWidget, public Fl_Group {
         OpWidget(const std::string& name, tuiles::OpTuile*);
         virtual ~OpWidget();
         inline virtual void draw(){drawComposition();}
+        virtual void drawExecution(const int& offset=0);
         void refreshChildrenTuileWidgets();
         inline virtual Fl_Widget* getWidget(){return this;}
+        virtual bool testMagnetWithTuile(const int& inX, const int& inY,
+                                        int& outX, int& outY,     
+                                        const std::string& tuileName,
+                                        const bool& drop);
     protected:
         tuiles::OpTuile* m_opTuile;
 };

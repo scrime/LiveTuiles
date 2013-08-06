@@ -57,23 +57,6 @@ void TreeWidget::update() {
     //update cursor
     m_cursorX = (AudioManager::getInstance()->getPlayPositionInBeats()) 
                     *m_pixelsPerBeat;
-/*
-    //check for score modifications
-    if(m_tuilesManager->checkTuilesPropsUpdate()) {
-        refreshTuiles();
-    }
-    //check for processes modifications
-    if(m_processesManager->checkProcessesUpdate()) {
-        vector<string> names;
-        vector<int> ids;
-        m_processesManager->getProcessesWithAudioOutputs(names, ids);        
-        list<TuileWidget*>::const_iterator itWidget=m_tuileWidgets.begin();
-        for(; itWidget!=m_tuileWidgets.end(); ++itWidget) {
-            (*itWidget)->getParamWidget()->setInputList(names, ids);
-        }
-        
-    }
-*/
     if(AudioManager::getInstance()->isPlaying()) {
         redraw();
     }
@@ -161,7 +144,6 @@ void TreeWidget::refreshTuiles() {
 }
 
 void TreeWidget::notify() {
-    
     //update tuiles positions 
     m_zeroPosX = m_tuile->getLeftOffset()*m_pixelsPerFrame;
     for(unsigned int i=0; i<m_childrenTuileWidgets.size(); ++i) {
@@ -254,73 +236,24 @@ void TreeWidget::deselectAllTuileWidgets() {
     }
 }
 
-void TreeWidget::getMagnetizedPositionAndTuile( const int& inX, const int& inY,
-                                                const int& inW, 
-                                                int& outX, int& outY, 
-                                                bool& drop,
-                                                const std::string& tuileName) {
-    //default values
+bool TreeWidget::testMagnetWithTuile(const int& inX, const int& inY,
+                                    int& outX, int& outY, 
+                                    const std::string& tuileName,
+                                    const bool& drop) {
+    bool magnetized=false;
     outX=inX;
     outY=inY;
-    bool outDrop=false;
-
-    //check against widgets: syncIn and syncOut
-	list<TuileWidget*>::const_iterator itWidget=m_tuileWidgets.begin();
-	for(;itWidget!=m_tuileWidgets.end(); ++itWidget) {
-        (*itWidget)->resetHighlight(); 
-        Fl_Widget* wid=(*itWidget)->getWidget();
-        if(inY>wid->y() - wid->h()/2 
-                && inY<wid->y() + 3*wid->h()/2) {
-            //fork
-            if(fabs((*itWidget)->getSyncIn()-inX)<m_magnetSize) {
-                outX=(*itWidget)->getSyncIn();
-                (*itWidget)->highlightSyncInLine(); 
-                if(drop) {
-                    (*itWidget)->tryForkWithTuile(tuileName);
-                    outDrop=true;
-                }
-            }
-            //seq existing-new
-            else if(fabs((*itWidget)->getSyncOut()-inX)<m_magnetSize) {
-                outX=(*itWidget)->getSyncOut();
-                (*itWidget)->highlightSyncOutLine(); 
-                if(drop) {
-					(*itWidget)->trySeqWithTuile(tuileName);
-                    outDrop=true;
-                }
-            } 
-            //seq new-existing
-            else if(fabs((*itWidget)->getSyncIn()-(inX+inW))<m_magnetSize) {
-                outX=(*itWidget)->getSyncIn()-inW;
-                (*itWidget)->highlightSyncInLine(); 
-                if(drop) {
-					(*itWidget)->tryLeftSeqWithTuile(tuileName);
-                    outDrop=true;
-                }
-            } 
-            //join
-            else if(fabs((*itWidget)->getSyncOut()-(inX+inW))<m_magnetSize) {
-                outX=(*itWidget)->getSyncOut()-inW;
-                (*itWidget)->highlightSyncOutLine(); 
-                if(drop) {
-					(*itWidget)->tryJoinWithTuile(tuileName);
-                    outDrop=true;
-                }
-            } 
-            else if(inX>wid->x() 
-                        && inX<wid->x()+wid->w()) {
-                (*itWidget)->highlightReal(); 
-                if(drop) {
-					(*itWidget)->tryAddTuileChild(tuileName);
-                    outDrop=true;
-                }
-            } 
+    vector<TuileWidget*>::iterator itChWid=m_childrenTuileWidgets.begin();
+    for(; itChWid!=m_childrenTuileWidgets.end() && !magnetized; ++itChWid) {
+        if((*itChWid)->testMagnetWithTuile(inX, inY, outX, 
+                                            outY, tuileName, drop)) {
+            magnetized=true;
         }
     }
 
 	//drop without link to other tuiles
     if(inX>x() && inY<x()+w() && inY>y() && inY<y()+h()) {
-        if(drop && !outDrop) {
+        if(drop && !magnetized) {
             TuileWidget* newWidget = createTuileWidget(tuileName);
             if(newWidget) {
                 newWidget->getTuile()->setLeftOffset(-float(inX)
@@ -330,6 +263,8 @@ void TreeWidget::getMagnetizedPositionAndTuile( const int& inX, const int& inY,
             }
         }
     }
+
+    return false;
 }
 
 void TreeWidget::testConnection(AudioTuileWidget* tuile, 

@@ -141,14 +141,13 @@ int TuilesBank::handle(int event) {
                 }
             }
             else {
-                cout<<"dragging"<<endl;
                 //get magnetized tuile and position from the tree widget
                 int posX, posY;
-                bool drop=false;
-                m_treeWidget->getMagnetizedPositionAndTuile(Fl::event_x(), 
-                                                    Fl::event_y(),
-                                                    m_draggedTuile->w(),
-                                                    posX, posY, drop, "");
+                m_treeWidget->testMagnetWithTuile(Fl::event_x(), 
+                                                  Fl::event_y(),
+                                                  posX, posY,
+                                                  "",
+                                                  false);
                 
                 //move the tuilewidget associated with the cursor
                 m_draggedTuile->position(posX,posY);
@@ -199,8 +198,6 @@ int TuilesBank::handle(int event) {
         }break;
         case FL_RELEASE: {
             if(m_dragging) {
-                int posX, posY;
-                bool drop=true;
                 std::string tuileName;
                 if(m_selectedFromBank.size()>0) {
                     tuileName=m_draggedTuile->getName();
@@ -209,19 +206,16 @@ int TuilesBank::handle(int event) {
                     tuileName=m_currentDir+m_draggedTuile->getName();
                 }
                 //drop the tuile in the tree widget
-                m_treeWidget->getMagnetizedPositionAndTuile(Fl::event_x(), 
-                                                    Fl::event_y(),
-                                                    m_draggedTuile->w(),
-                                                    posX, posY, drop,
-                                                    tuileName); 
+                int posX, posY;
+                m_treeWidget->testMagnetWithTuile(Fl::event_x(), 
+                                                  Fl::event_y(),
+                                                  posX, posY, 
+                                                  tuileName,
+                                                  true);
 
                 //remove the draggedtuile widget
                 window()->remove(m_draggedTuile);
 
-                //clear selection
-                drop=false;
-                m_treeWidget->getMagnetizedPositionAndTuile(0, 0, 0, posX, 
-                                                            posY, drop, "");
                 m_dragging=false;
                 window()->redraw();
             }

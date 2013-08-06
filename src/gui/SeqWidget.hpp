@@ -19,13 +19,8 @@ class SeqWidget: public OpWidget {
 	virtual ~SeqWidget();
 
     void drawComposition();
-    void drawExecution(const float&);
     virtual int handle(int event);
-
     virtual void notify();
-
-    void setFirstChildWidget(TuileWidget*);
-    void setSecondChildWidget(TuileWidget*);
 
   private:
     tuiles::SeqTuile* m_seqTuile;

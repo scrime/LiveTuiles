@@ -27,10 +27,11 @@
 #include <FL/fl_draw.H>
 #include <FL/Fl_Choice.H>
 
-class HitPack;
+#include "HitPack.hpp"
+
 namespace tuiles{class Tuile;}
 
-class TuileParamWidget : public Fl_Scroll {
+class TuileParamWidget : public HitPack {
   public:
 	TuileParamWidget(tuiles::Tuile*);
 	~TuileParamWidget();
@@ -46,12 +47,8 @@ class TuileParamWidget : public Fl_Scroll {
     }	
     void cbTuileInputs(Fl_Widget*);
 
-    inline virtual void setInputList(const std::vector<std::string>&, 
-                                        const std::vector<int>&){}
-
   protected:
     tuiles::Tuile* m_tuile;
-    HitPack* m_pack;
 
     HitPack* m_tuilePack;
     Fl_Input* m_nameInput;
@@ -63,10 +60,6 @@ class TuileParamWidget : public Fl_Scroll {
     std::list<Fl_Slider*> m_sliders;
     std::list<Fl_Button*> m_buttons;
     std::list<Fl_Value_Input*> m_inputs;
-
-    Fl_Pack* m_buffersPack;
-    Fl_Choice* m_inputBufferList;
-    Fl_Choice* m_outputBufferList;
 };
 
 #endif

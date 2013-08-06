@@ -6,16 +6,15 @@
  ****************************************************************************/
 
 #include "TuileParamGroup.hpp"
-
-#include "FaustParamWidget.hpp"
-#include "SoundFileParamWidget.hpp"
-#include "SwitchParamWidget.hpp"
+#include "TuileParamWidget.hpp"
 
 using namespace std;
 
-TuileParamGroup::TuileParamGroup(): Fl_Group(0,0,100,100,"Edit Tuile") { 
+TuileParamGroup::TuileParamGroup(): Fl_Scroll(0, 0, 100, 100, "Edit Tuile"), 
+                                    m_childWidget(NULL) { 
     align(FL_ALIGN_TOP|FL_ALIGN_LEFT);
     color(fl_darker(fl_darker(FL_GREEN)));
+    type(Fl_Scroll::VERTICAL_ALWAYS);
     end();
 }
 
@@ -27,15 +26,13 @@ TuileParamGroup* TuileParamGroup::getInstance() {
 }
 
 void TuileParamGroup::setWidget(TuileParamWidget* widget) {
-    if(children()>0) {
-        while(children()>0) {
-            remove(child(0));
-        }
+    if(m_childWidget) {
+        remove(m_childWidget);
     }
+    m_childWidget=widget;
     if(widget) {
-        add(widget);
-        widget->resize(x(),y(),w(),h());
-        widget->redraw();
+        add(m_childWidget);
+        m_childWidget->resize(x(), y(), w(), m_childWidget->h());
     }
     redraw();
 }

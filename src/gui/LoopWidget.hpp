@@ -19,11 +19,14 @@ class LoopWidget: public OpWidget {
 	~LoopWidget();
 
     void drawComposition();
-    void drawExecution(const float&);
-    virtual void tryAddTuileChild(const std::string& tuileName);
+    void drawExecution(const int&);
     int handle(int);
 
     void notify();
+    virtual bool testMagnetWithTuile(const int& inX, const int& inY,
+                                    int& outX, int& outY,     
+                                    const std::string& tuileName,
+                                    const bool& drop);
 
   private:
     tuiles::LoopTuile* m_loopTuile;

@@ -30,7 +30,7 @@ SwitchParamWidget::SwitchParamWidget(MidiOscSwitchTuile* switchTuile):
     tmpGroup->end();
     tmpGroup->add(m_selectInput);
     tmpGroup->resizable(false);
-    m_pack->add(tmpGroup);
+    add(tmpGroup);
     end();
 }
 
