@@ -39,7 +39,9 @@ TreeWidget::TreeWidget():   TuileWidget(AudioManager::getInstance()),
                             Fl_Scroll(0,0,100,100,""),
                             m_cursorX(0), 
                             m_offsetX(10), m_offsetY(10), m_magnetSize(5),
-                            m_zeroPosX(0) {
+                            m_zeroPosX(0), 
+                            m_connectionIDCounter(0),
+                            m_removingConnection(NULL) {
     m_tuile->addObserver(this);
 	end();
     m_id=-1;
@@ -75,6 +77,23 @@ void TreeWidget::zoom(const float& zoom) {
 
 void TreeWidget::draw() {
     Fl_Scroll::draw();
+
+    //remove connection
+    if(m_removingConnection) {
+        vector<ConnectionWidget*>::iterator itCon=m_connections.begin();
+        for(; itCon!=m_connections.end();) {
+            if((*itCon)->getID()==m_removingConnection->getID()) {
+                itCon=m_connections.erase(itCon);
+            }
+            else {
+                itCon++;
+            }
+        }
+        remove(m_removingConnection);
+        delete m_removingConnection;
+        m_removingConnection=NULL;
+        MainWindow::getInstance()->redraw();
+    }
 
 	//box
 	fl_draw_box(FL_DOWN_BOX, x(), y(), w(), h(), FL_BACKGROUND_COLOR);
@@ -289,8 +308,11 @@ void TreeWidget::testConnection(AudioTuileWidget* tuile,
                         DEBUG("Connecting tuile "<<tuile->getID()
                                 <<" to "<<(*itWidget)->getID());
                         (*itWidget)->highlightReal(false);
-                        m_connections.push_back(new ConnectionWidget(tuile, 
-                                                                    *itWidget));
+                        m_connections.push_back(
+                            new ConnectionWidget(m_connectionIDCounter,
+                                                    tuile, 
+                                                        *itWidget));
+                        m_connectionIDCounter++;
                         add(m_connections.back());
                         notify();
                     }
@@ -302,6 +324,11 @@ void TreeWidget::testConnection(AudioTuileWidget* tuile,
             }
         }
     }
+}
+
+void TreeWidget::markConnectionForRemoval(ConnectionWidget* con) {
+    m_removingConnection=con;
+    redraw();
 }
 
 void TreeWidget::addTuileWidget(TuileWidget* newWidget) {

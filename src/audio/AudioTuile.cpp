@@ -34,12 +34,12 @@ void AudioTuile::addInputTuile(AudioTuile* inputTuile) {
 
 void AudioTuile::removeInputTuile(AudioTuile* inputTuile) {
     vector<AudioTuile*>::iterator itTui=m_inputTuiles.begin();
-    for(; itTui!=m_inputTuiles.end(); ++itTui) {
+    for(; itTui!=m_inputTuiles.end();) {
         if((*itTui)->getID()==inputTuile->getID()) {
-            m_inputTuiles.erase(itTui++);
+            itTui=m_inputTuiles.erase(itTui);
         }
         else {
-            ++itTui;
+            itTui++;
         }
     }
     updateInputTuiles();

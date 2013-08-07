@@ -42,8 +42,6 @@ class TreeWidget : public TuileWidget, public Fl_Scroll {
         inline void setPixelsPerBeat(int ppb){m_pixelsPerBeat=ppb;}
         inline const float& getPixelsPerFrame(){return m_pixelsPerFrame;}
 
-        void testConnection(AudioTuileWidget*, const int& x, 
-                            const int& y, bool drop=false);
         virtual bool testMagnetWithTuile(const int& inX, const int& inY,
                                             int& outX, int& outY, 
                                             const std::string& tuileName,
@@ -58,6 +56,10 @@ class TreeWidget : public TuileWidget, public Fl_Scroll {
         inline void setParamGroup(TuileParamGroup* paramGroup){ 
             m_paramGroup=paramGroup;
         }
+
+        void markConnectionForRemoval(ConnectionWidget*);
+        void testConnection(AudioTuileWidget*, const int& x, 
+                            const int& y, bool drop=false);
 
         inline void clear(){clear();m_tuileWidgets.clear();}
 
@@ -75,7 +77,10 @@ class TreeWidget : public TuileWidget, public Fl_Scroll {
         std::list<TuileWidget*> m_tuileWidgets;
         std::list<AudioTuileWidget*> m_audioTuileWidgets;
         std::map<unsigned int, TuileWidget*> m_tuileWidgetMap;
+
+        unsigned int m_connectionIDCounter;
         std::vector<ConnectionWidget*> m_connections;
+        ConnectionWidget* m_removingConnection;
 
         TuileParamGroup* m_paramGroup;
 };
