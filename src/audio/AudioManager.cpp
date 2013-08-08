@@ -78,11 +78,6 @@ void AudioManager::init() {
 
 }
 
-void AudioManager::clear() {
-    TuilesManager::clear();
-
-}
-
 void AudioManager::setBpm(const float& bpm) {
     m_bpm=bpm;
     m_framesPerBeat = float(m_sampleRate)/(m_bpm/60.0);
@@ -214,5 +209,11 @@ MidiOscSwitchTuile* AudioManager::addMidiOscSwitchTuile() {
     //default length to one beat
     newSwitch->setLength(4*float(m_sampleRate)/(m_bpm/60.0));
     return newSwitch;
+}
+
+void AudioManager::procClearTrees() {
+    cout<<"clearing audio tuiles in proc"<<endl;
+    m_procAudioTuiles.clear();
+    TuilesManager::procClearTrees();
 }
 

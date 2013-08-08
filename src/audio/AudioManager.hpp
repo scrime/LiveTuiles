@@ -36,7 +36,6 @@ class AudioManager : public tuiles::TuilesManager {
 		~AudioManager();
 
 		virtual void init();
-        virtual void clear();
 
         void togglePlay();
         void setBpm(const float&);
@@ -62,6 +61,9 @@ class AudioManager : public tuiles::TuilesManager {
         const float& getBpm(){return m_bpm;}
         const float& getFramesPerBeat(){return m_framesPerBeat;}
         void framesToBeats(const float& frames, float& beats);
+
+    protected:
+        virtual void procClearTrees();
 
     protected:
         friend class AddAudioTuile;

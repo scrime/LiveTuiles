@@ -220,9 +220,9 @@ void MainWindow::cbTreeButtons(Fl_Widget* w) {
 void MainWindow::clearAll() {
     m_playPauseButton->value(0);
     m_playPauseButton->label("@|>");
-
     m_tuilesTree->clear();
-    AudioManager::getInstance()->clear();
+    AudioManager::getInstance()->clearTrees();
+    redraw();
 }
 
 void MainWindow::cbZoomTree(Fl_Widget*) {

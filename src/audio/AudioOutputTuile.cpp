@@ -16,7 +16,11 @@ using namespace std;
 
 AudioOutputTuile::AudioOutputTuile(): AudioTuile(){}
 
-AudioOutputTuile::~AudioOutputTuile() {}
+AudioOutputTuile::~AudioOutputTuile() {
+    AudioManager* man=AudioManager::getInstance();
+    jack_port_unregister(man->getJackClient(), m_outputPortLeft);
+    jack_port_unregister(man->getJackClient(), m_outputPortRight);
+}
 
 void AudioOutputTuile::load(const std::string& output) {
     m_name=output;

@@ -17,7 +17,11 @@ using namespace std;
 
 AudioInputTuile::AudioInputTuile(): AudioTuile() {}
 
-AudioInputTuile::~AudioInputTuile() {}
+AudioInputTuile::~AudioInputTuile() {
+    AudioManager* man=AudioManager::getInstance();
+    jack_port_unregister(man->getJackClient(), m_inputPortLeft);
+    jack_port_unregister(man->getJackClient(), m_inputPortRight);
+}
 
 void AudioInputTuile::load(const std::string& input) {
     m_name=input;

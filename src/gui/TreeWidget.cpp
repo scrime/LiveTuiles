@@ -101,7 +101,14 @@ void TreeWidget::draw() {
 	for(int i=x()+(m_zeroPosX-xposition()); i<x()+w(); i+=m_pixelsPerBeat) {
 		fl_line(i, y(), i, y()+h());
 	}
-	//first draw background execution tuiles
+
+    //connections between tuiles 
+    vector<ConnectionWidget*>::iterator itCon=m_connections.begin();
+    for(; itCon!=m_connections.end(); ++itCon) {
+        (*itCon)->drawConnection();
+    }
+
+	//draw background execution tuiles
     vector<TuileWidget*>::iterator itWidgetNode=
                                             m_childrenTuileWidgets.begin();
     for(; itWidgetNode!=m_childrenTuileWidgets.end(); ++itWidgetNode) {
@@ -110,12 +117,6 @@ void TreeWidget::draw() {
 
     //then draw composition tuiles and scrollbar
 	draw_children();
-
-    //connections between tuiles 
-    vector<ConnectionWidget*>::iterator itCon=m_connections.begin();
-    for(; itCon!=m_connections.end(); ++itCon) {
-        (*itCon)->drawConnection();
-    }
 
     //cursor
 	fl_color(FL_RED);
@@ -254,9 +255,19 @@ int TreeWidget::handle(int event) {
 
 void TreeWidget::clear() { 
     selectTuileWidget(NULL);
-    //m_paramGroup->selectTuileWidget(NULL);
+    vector<ConnectionWidget*>::iterator itCon=m_connections.begin();
+    for(; itCon!=m_connections.end(); ++itCon) {
+        delete (*itCon);
+    }
+    list<TuileWidget*>::iterator itWid=m_tuileWidgets.begin();
+    for(; itWid!=m_tuileWidgets.end(); ++itWid) {
+        delete (*itWid);
+    }
     m_tuileWidgets.clear();
+    m_childrenTuileWidgets.clear();
+    m_audioTuileWidgets.clear();
     m_connections.clear();
+    m_connectionIDCounter=0;
 }
 
 
@@ -370,7 +381,7 @@ void TreeWidget::removeTuileWidget(TuileWidget* erasedWidget) {
     delete erasedWidget;
     m_paramGroup->clear();
     if(m_tuileWidgets.size()==0) {
-        AudioManager::getInstance()->clear();
+        AudioManager::getInstance()->clearTrees();
     }
     redraw();
 }
