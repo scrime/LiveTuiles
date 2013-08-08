@@ -88,12 +88,14 @@ void FaustTuile::processBuffers(const int& nbFrames) {
                 m_dspInputBuffer[c][f]=0;
             }
         }
+        //set computed before to avoid infinite recursions
+        m_computed=true;
         if(m_procActive && m_inputTuiles.size()>0) {
             //accumulate the buffers of all inputs
             vector<AudioTuile*>::iterator itInp=m_inputTuiles.begin();
             for(; itInp!=m_inputTuiles.end(); ++itInp) {
-                const vector<vector<float> >& inpBuf = 
-                            (*itInp)->getBuffer(); 
+                (*itInp)->processBuffers(nbFrames);
+                const vector<vector<float> >& inpBuf = (*itInp)->getBuffer(); 
                 for(int c=0; c<m_inputChannels && c<(int)inpBuf.size(); ++c) {
                     for(int f=0;f<m_bufferSize && f<(int)inpBuf[c].size(); ++f){
                         m_dspInputBuffer[c][f]+=inpBuf[c][f];
@@ -107,7 +109,6 @@ void FaustTuile::processBuffers(const int& nbFrames) {
                 }
             }
         }
-        m_computed=true;
     }
 }
 

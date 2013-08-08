@@ -54,7 +54,7 @@ void MainWindow::init() {
     m_bpmInput = new Fl_Value_Input(m_spacing, m_spacing, 50, 30, "bpm");
     m_bpmInput->align(FL_ALIGN_RIGHT);
 	m_bpmInput->clear_visible_focus();
-    m_bpmInput->value(120);
+    m_bpmInput->value(60);
     m_bpmInput->step(0.1);
     m_bpmInput->soft(0);
 	m_bpmInputTooltip = "Drag horizontally with right or left click";
@@ -163,12 +163,12 @@ void MainWindow::update() {
 
 void MainWindow::cbBpm(Fl_Widget*) {
 	AudioManager::getInstance()->setBpm(m_bpmInput->value());
+    m_tuilesTree->refreshTuiles();
 }
 
 void MainWindow::cbPlayPause(Fl_Widget*) {
     togglePlayPause();
 }
-
 
 void MainWindow::togglePlayPause() {
     AudioManager* man = AudioManager::getInstance();
@@ -214,27 +214,6 @@ void MainWindow::cbTreeButtons(Fl_Widget* w) {
         clearAll();
     }
     else if(m_saveTreeButton->contains(w)) {
-/*
-        if(m_tuiles->getNbTuileProps()>0) {
-            std::string fileName = getenv("HOME");
-            fileName+="/test.tui";
-            xmlDocPtr doc = xmlNewDoc(BAD_CAST "1.0");
-            xmlNodePtr rootNode = 
-                xmlNewNode(NULL, BAD_CAST "MainWindow");
-            xmlDocSetRootElement(doc, rootNode);
-            //save from after the first fork
-            m_tuiles->saveTrees(rootNode);
-            //save all processes
-            vector<unsigned int> ids;
-            m_processes->save(rootNode);
-            xmlSaveFormatFileEnc(fileName.c_str(), doc, "UTF-8", 1);
-            xmlFreeDoc(doc);
-            xmlCleanupParser(); 
-        }
-        else {
-            cout<<"Nothing to save"<<endl;
-        }
-*/
     }
 }
 
@@ -242,15 +221,8 @@ void MainWindow::clearAll() {
     m_playPauseButton->value(0);
     m_playPauseButton->label("@|>");
 
-    //FIXME clear all tuiles in audiomanager 
-/*
-    m_tuiles->stop();
-    m_tuiles->clear();
-    m_processes->clear();
     m_tuilesTree->clear();
-    m_tuileParamGroup->clear();
-*/
-
+    AudioManager::getInstance()->clear();
 }
 
 void MainWindow::cbZoomTree(Fl_Widget*) {

@@ -67,11 +67,6 @@ void TreeWidget::update() {
 
 void TreeWidget::zoom(const float& zoom) {
     m_pixelsPerBeat=10.0+zoom*100;
-    m_pixelsPerFrame=m_pixelsPerBeat
-                        /AudioManager::getInstance()->getFramesPerBeat();
-    DEBUG("Zoom : pixperbeat: "<<m_pixelsPerBeat
-        <<" framesperbeat: "<<AudioManager::getInstance()->getFramesPerBeat()
-        <<" pixperframe: "<<m_pixelsPerFrame);
     refreshTuiles();
 }
 
@@ -158,6 +153,9 @@ void TreeWidget::refreshChildrenTuileWidgets() {
 }
 
 void TreeWidget::refreshTuiles() {
+    //get new pix per frames
+    m_pixelsPerFrame=m_pixelsPerBeat
+                        /AudioManager::getInstance()->getFramesPerBeat();
     //notify
     notify();
 }
@@ -204,7 +202,10 @@ int TreeWidget::handle(int event) {
         case FL_KEYDOWN: {
             switch(Fl::event_key()) {
                 case FL_BackSpace: {
-                    //TODO remove selectedTuile
+                    if(m_selectedTuile) {
+                        removeTuileWidget(m_selectedTuile);
+                        m_selectedTuile=NULL;
+                    }
                     return 1;
                 }break;
                 case 32: {
@@ -221,7 +222,6 @@ int TreeWidget::handle(int event) {
                 case FL_Control_L: 
                 case FL_Control_R: {
                     fl_cursor(FL_CURSOR_CROSS);
-                    cout<<"changed cursor"<<endl;
                     return 1;
                 }break;;
                 default:break;
@@ -252,7 +252,20 @@ int TreeWidget::handle(int event) {
     return Fl_Scroll::handle(event);
 }
 
+void TreeWidget::clear() { 
+    selectTuileWidget(NULL);
+    //m_paramGroup->selectTuileWidget(NULL);
+    m_tuileWidgets.clear();
+    m_connections.clear();
+}
+
+
+void TreeWidget::selectTuileWidget(TuileWidget* selected) {
+    m_selectedTuile=selected;
+}
+
 void TreeWidget::deselectAllTuileWidgets() {
+    m_selectedTuile=NULL;
     m_paramGroup->setWidget(NULL);
 	list<TuileWidget*>::const_iterator itWidget=m_tuileWidgets.begin();
 	for(;itWidget!=m_tuileWidgets.end(); ++itWidget) {
@@ -337,6 +350,7 @@ void TreeWidget::addTuileWidget(TuileWidget* newWidget) {
     refreshChildrenTuileWidgets();
     deselectAllTuileWidgets();
     newWidget->select();
+    selectTuileWidget(newWidget);
     DEBUG("TreeWidget: added the tuile widget to trees");
 }
 
@@ -350,6 +364,7 @@ TuileWidget* TreeWidget::getTuileWidget(const unsigned int& id) {
 }
 
 void TreeWidget::removeTuileWidget(TuileWidget* erasedWidget) {
+    AudioManager::getInstance()->deleteTuile(erasedWidget->getTuile());
     m_tuileWidgetMap.erase(erasedWidget->getID());
     remove(erasedWidget->getWidget());
     delete erasedWidget;
@@ -357,6 +372,7 @@ void TreeWidget::removeTuileWidget(TuileWidget* erasedWidget) {
     if(m_tuileWidgets.size()==0) {
         AudioManager::getInstance()->clear();
     }
+    redraw();
 }
 
 SeqWidget* TreeWidget::createSeqWidget(TuileWidget* t1, TuileWidget* t2) {

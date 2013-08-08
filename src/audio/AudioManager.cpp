@@ -51,10 +51,9 @@ AudioManager* AudioManager::getInstance() {
 int jackCallback(jack_nframes_t nbFrames, void *arg) {
     AudioManager* aman = AudioManager::getInstance();
     //progress in the trees
-    aman->processTrees(nbFrames);
+    aman->processTrees(float(nbFrames)*aman->m_procStep);
     //process the buffers
     aman->process(nbFrames);
-
 	return 0;
 }
 
@@ -63,7 +62,7 @@ void AudioManager::init() {
 	m_jackClient = jack_client_open("LiveTuiles", JackNullOption, NULL);	
 	m_sampleRate = jack_get_sample_rate(m_jackClient);	
 	m_bufferSize = jack_get_buffer_size(m_jackClient);	
-    setBpm(120);
+    setBpm(60);
 
 /*
     m_midiInputProc = new MidiInputProcess(0, 
@@ -79,19 +78,21 @@ void AudioManager::init() {
 
 }
 
+void AudioManager::clear() {
+    TuilesManager::clear();
+
+}
+
 void AudioManager::setBpm(const float& bpm) {
     m_bpm=bpm;
     m_framesPerBeat = float(m_sampleRate)/(m_bpm/60.0);
-
-/*
     SetProcStep* com = static_cast<SetProcStep*>
                                     (m_protoSetProcStep->popClone());
     if(com) {
         com->setAudioManager(this);
-        com->setStep(m_bpm*
-        TuilesManager::getInstance()->getCommandsToProc()->runCommand(com);
+        com->setStep(m_bpm/60.0);
+        m_commandsToProc->runCommand(com);
     }
-*/
 }
 
 void AudioManager::framesToBeats(const float& frames, float& beats) {
@@ -134,13 +135,18 @@ void AudioManager::internalAddAudioTuile(AudioTuile* tuile) {
     }
 }
 
+void AudioManager::deleteTuile(Tuile* tuile) {
+    TuilesManager::deleteTuile(tuile);
+
+}
+
 FaustTuile* AudioManager::addFaustTuile(const std::string& fileName) {
     FaustTuile* newTuile = new FaustTuile();
     addLeaf(newTuile);
     newTuile->load(fileName);
     internalAddAudioTuile(newTuile);
     //default length to one beat
-    newTuile->setLength(float(m_sampleRate)/(m_bpm/60.0));
+    newTuile->setLength(4*float(m_sampleRate)/(m_bpm/60.0));
     return newTuile;
 }
 
@@ -160,7 +166,7 @@ AudioInputTuile* AudioManager::addAudioInputTuile(const std::string& input) {
     newTuile->load("input"+oss.str());
     internalAddAudioTuile(newTuile);
     //default length to one beat
-    newTuile->setLength(float(m_sampleRate)/(m_bpm/60.0));
+    newTuile->setLength(4*float(m_sampleRate)/(m_bpm/60.0));
     return newTuile;
 }
 
@@ -172,7 +178,7 @@ AudioOutputTuile* AudioManager::addAudioOutputTuile(const std::string& output) {
     newTuile->load("output"+oss.str());
     internalAddAudioTuile(newTuile);
     //default length to one beat
-    newTuile->setLength(float(m_sampleRate)/(m_bpm/60.0));
+    newTuile->setLength(4*float(m_sampleRate)/(m_bpm/60.0));
     return newTuile;
 }
 
@@ -186,7 +192,7 @@ LoopTuile* AudioManager::addLoopTuile() {
     LoopTuile* newLoop = new LoopTuile();
     addLoop(newLoop);
     //default length to one beat
-    newLoop->setLength(float(m_sampleRate)/(m_bpm/60.0));
+    newLoop->setLength(4*float(m_sampleRate)/(m_bpm/60.0));
     return newLoop;
 }
 
@@ -196,7 +202,7 @@ MidiOscMonitorTuile* AudioManager::addMidiOscMonitorTuile() {
     //FIXME
     //internalAddAudioTuile(newMonitor);
     //default length to one beat
-    newMonitor->setLength(float(m_sampleRate)/(m_bpm/60.0));
+    newMonitor->setLength(4*float(m_sampleRate)/(m_bpm/60.0));
     return newMonitor;
 }
 
@@ -206,7 +212,7 @@ MidiOscSwitchTuile* AudioManager::addMidiOscSwitchTuile() {
     //FIXME
     //internalAddAudioTuile(newSwitch);
     //default length to one beat
-    newSwitch->setLength(float(m_sampleRate)/(m_bpm/60.0));
+    newSwitch->setLength(4*float(m_sampleRate)/(m_bpm/60.0));
     return newSwitch;
 }
 

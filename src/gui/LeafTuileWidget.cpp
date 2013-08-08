@@ -198,6 +198,7 @@ int LeafTuileWidget::handle(int event) {
             m_dragPosX=Fl::event_x();
             m_dragPosY=Fl::event_y();
             TreeWidget::getInstance()->deselectAllTuileWidgets();
+            TreeWidget::getInstance()->selectTuileWidget(this);
             select();
             return 1;
         }break;

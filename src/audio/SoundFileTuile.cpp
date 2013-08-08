@@ -186,6 +186,7 @@ void SoundFileTuile::processBuffers(const int& nbFrames) {
             m_internalBuffer[c].resize(nbFrames);
             m_internalBuffer[c].assign(m_internalBuffer[c].size(), 0);
         }
+        m_computed=true;
         if(m_procActive) {
             //start new grain ?
             if(m_grainDistanceCounter>=m_grainDistance) {
@@ -226,7 +227,6 @@ void SoundFileTuile::processBuffers(const int& nbFrames) {
                 ++itGrain;
             }
         }
-        m_computed=true;
     }
 }
 

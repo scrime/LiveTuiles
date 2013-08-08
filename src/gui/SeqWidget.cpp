@@ -30,7 +30,7 @@ SeqWidget::~SeqWidget() {}
 
 void SeqWidget::drawComposition() {
     fl_line_style(0);
-	fl_color(m_realColor);
+	fl_color(fl_lighter(FL_BACKGROUND_COLOR));
 	fl_rect(x()+m_real1X, y(), m_real2X-m_real1X, h());
     vector<TuileWidget*>::iterator itChild=m_childrenTuileWidgets.begin();
     for(; itChild!=m_childrenTuileWidgets.end(); ++itChild) {

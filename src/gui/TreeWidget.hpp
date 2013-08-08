@@ -52,6 +52,7 @@ class TreeWidget : public TuileWidget, public Fl_Scroll {
         void removeTuileWidget(TuileWidget*);
         TuileWidget* getTuileWidget(const unsigned int& id);
 
+        void selectTuileWidget(TuileWidget* selected);
         void deselectAllTuileWidgets();
         inline void setParamGroup(TuileParamGroup* paramGroup){ 
             m_paramGroup=paramGroup;
@@ -61,7 +62,7 @@ class TreeWidget : public TuileWidget, public Fl_Scroll {
         void testConnection(AudioTuileWidget*, const int& x, 
                             const int& y, bool drop=false);
 
-        inline void clear(){clear();m_tuileWidgets.clear();}
+        void clear();
 
     private:
         TreeWidget();
@@ -77,6 +78,7 @@ class TreeWidget : public TuileWidget, public Fl_Scroll {
         std::list<TuileWidget*> m_tuileWidgets;
         std::list<AudioTuileWidget*> m_audioTuileWidgets;
         std::map<unsigned int, TuileWidget*> m_tuileWidgetMap;
+        TuileWidget* m_selectedTuile;
 
         unsigned int m_connectionIDCounter;
         std::vector<ConnectionWidget*> m_connections;
