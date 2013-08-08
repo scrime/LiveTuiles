@@ -14,6 +14,7 @@
 #include <jack/types.h>
 
 class UpdateInputTuiles;
+class SetProcVolume;
 
 class AudioTuile: public tuiles::LeafTuile {
     public:
@@ -29,23 +30,28 @@ class AudioTuile: public tuiles::LeafTuile {
             updateInputTuiles();
         }
         void updateInputTuiles();
+        void setVolume(const float&);
 
         inline std::vector<std::vector<jack_default_audio_sample_t> >& 
                     getBuffer(){return m_internalBuffer;}
 
         void procUpdateInputTuiles(const std::vector<AudioTuile*>&);
+        void procSetVolume(const float& vol){m_procVolume=vol;}
 
     protected: 
         std::string m_fileName;
         bool m_loaded;
         float m_lengthInMs;
         bool m_computed;
+        float m_volume;
 
         std::vector<AudioTuile*> m_inputTuiles;
         std::vector<std::vector<jack_default_audio_sample_t> > m_internalBuffer;
 
         UpdateInputTuiles* m_protoUpdateInputTuiles;
         std::vector<AudioTuile*> m_procInputTuiles;
+        SetProcVolume* m_protoSetProcVolume;
+        float m_procVolume;
 };
 
 #endif

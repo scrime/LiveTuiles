@@ -58,8 +58,8 @@ void AudioInputTuile::processBuffers(const int& nbFrames) {
             jack_default_audio_sample_t* bufR=(jack_default_audio_sample_t *)
                             jack_port_get_buffer(m_inputPortRight, nbFrames);
             for(int f=0; f<nbFrames; ++f) {
-                m_internalBuffer[0][f]=bufL[f];
-                m_internalBuffer[1][f]=bufR[f];
+                m_internalBuffer[0][f]=bufL[f]*m_procVolume;
+                m_internalBuffer[1][f]=bufR[f]*m_procVolume;
             }
         }
         m_computed=true;

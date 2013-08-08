@@ -105,7 +105,7 @@ void FaustTuile::processBuffers(const int& nbFrames) {
             m_dsp->compute(nbFrames, m_dspInputBuffer, m_dspOutputBuffer);
             for(unsigned int c=0; c<m_internalBuffer.size(); ++c) {
                 for(int f=0; f<nbFrames && f<m_bufferSize; ++f) {
-                    m_internalBuffer[c][f]=m_dspOutputBuffer[c][f];
+                    m_internalBuffer[c][f]=m_dspOutputBuffer[c][f]*m_procVolume;
                 }
             }
         }

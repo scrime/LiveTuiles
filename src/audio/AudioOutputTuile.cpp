@@ -71,8 +71,8 @@ void AudioOutputTuile::processBuffers(const int& nbFrames) {
             }
         }
         for(int f=0; f<nbFrames; ++f) {
-            bufL[f]=m_internalBuffer[0][f];
-            bufR[f]=m_internalBuffer[1][f];
+            bufL[f]=m_internalBuffer[0][f]*m_procVolume;
+            bufR[f]=m_internalBuffer[1][f]*m_procVolume;
         }
         m_computed=true;
      }

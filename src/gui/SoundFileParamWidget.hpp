@@ -9,30 +9,20 @@
 #ifndef _SoundFileParamWidget_H
 #define _SoundFileParamWidget_H
 
-#include "TuileParamWidget.hpp"
+#include "AudioTuileParamWidget.hpp"
 
 class SoundFileTuile;
 
-class SoundFileParamWidget : public TuileParamWidget{
+class SoundFileParamWidget : public AudioTuileParamWidget {
   public:
 	SoundFileParamWidget(SoundFileTuile*);
 	~SoundFileParamWidget();
 
     void update();
 
-    static void statTuileSoundFileInputs(Fl_Widget* w, void* f){ 
-        SoundFileParamWidget *tpw = static_cast<SoundFileParamWidget *>(f); 
-        tpw->cbTuileSoundFileInputs(w);
-    }	
-    void cbTuileSoundFileInputs(Fl_Widget*);
-
   protected:
     SoundFileTuile* m_sfTuile;
-    HitPack *m_audioPack;
-    Fl_Slider *m_volumeSlider;
     Fl_Value_Input *m_bpmInput;
-    Fl_Choice *m_outputChoice;
-
 
 };
 

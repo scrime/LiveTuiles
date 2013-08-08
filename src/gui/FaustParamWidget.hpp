@@ -13,12 +13,12 @@
 #include <faust/llvm-dsp.h>
 #include <faust/gui/UI.h>
 
-#include "TuileParamWidget.hpp"
+#include "AudioTuileParamWidget.hpp"
 #include "HitPack.hpp"
 
 class FaustTuile;
 
-class FaustParamWidget : public TuileParamWidget, public UI {
+class FaustParamWidget : public AudioTuileParamWidget, public UI {
   public:
 	FaustParamWidget(FaustTuile*);
 	~FaustParamWidget();
@@ -58,12 +58,13 @@ class FaustParamWidget : public TuileParamWidget, public UI {
                                     FAUSTFLOAT max, FAUSTFLOAT step) {
         m_paramsMap[std::string(label)]=zone;
         begin();
-        m_sliders.push_back(new Fl_Slider(100,0,100,20,label));
+        m_sliders.push_back(new Fl_Value_Slider(100,0,100,20,label));
         m_sliders.back()->user_data((void*)zone);
         m_sliders.back()->callback(statParamVal,this);
         m_sliders.back()->bounds(min,max);
         m_sliders.back()->value(init);
         m_sliders.back()->step(step);
+        m_sliders.back()->precision(2);
         m_sliders.back()->labelsize(12);
         m_sliders.back()->align(FL_ALIGN_LEFT|FL_ALIGN_TOP);
         m_sliders.back()->type(FL_HOR_NICE_SLIDER);
@@ -75,11 +76,12 @@ class FaustParamWidget : public TuileParamWidget, public UI {
                                     FAUSTFLOAT max, FAUSTFLOAT step) {
         m_paramsMap[std::string(label)]=zone;
         begin();
-        m_sliders.push_back(new Fl_Slider(100,0,100,20,label));
+        m_sliders.push_back(new Fl_Value_Slider(100,0,100,20,label));
         m_sliders.back()->align(FL_ALIGN_LEFT|FL_ALIGN_TOP);
         m_sliders.back()->bounds(min,max);
         m_sliders.back()->value(init);
         m_sliders.back()->step(step);
+        m_sliders.back()->precision(2);
         m_sliders.back()->user_data((void*)zone);
         m_sliders.back()->callback(statParamVal,this);
         m_sliders.back()->type(FL_HOR_NICE_SLIDER);

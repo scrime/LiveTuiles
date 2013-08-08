@@ -17,7 +17,7 @@ using namespace std;
 
 
 FaustParamWidget::FaustParamWidget(FaustTuile* faustTuile):
-                                TuileParamWidget(faustTuile),
+                                AudioTuileParamWidget(faustTuile),
                                 m_faustTuile(faustTuile) {
     
     m_faustTuile->getDSP()->buildUserInterface(this);

@@ -12,12 +12,14 @@
 #include <cassert>
 
 #include "../audio/AudioInputTuile.hpp"
+#include "AudioTuileParamWidget.hpp"
 
 using namespace std;
 
 AudioInputWidget::AudioInputWidget(const std::string& name, 
                                     AudioInputTuile* tuile): 
                                         AudioTuileWidget(name, tuile) {
+    m_paramWidget=new AudioTuileParamWidget(tuile);
     m_canTakeInput=false;
 }
 

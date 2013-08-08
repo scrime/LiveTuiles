@@ -12,12 +12,15 @@
 #include <cassert>
 
 #include "../audio/AudioOutputTuile.hpp"
+#include "AudioTuileParamWidget.hpp"
 
 using namespace std;
 
 AudioOutputWidget::AudioOutputWidget(const std::string& name, 
                                     AudioOutputTuile* tuile): 
-                                        AudioTuileWidget(name, tuile){}
+                                        AudioTuileWidget(name, tuile){
+    m_paramWidget=new AudioTuileParamWidget(tuile);
+}
 
 AudioOutputWidget::~AudioOutputWidget() {}
 

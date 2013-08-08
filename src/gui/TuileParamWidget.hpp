@@ -18,6 +18,7 @@
 #include <FL/Fl_Scroll.H>
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Slider.H>
+#include <FL/Fl_Value_Slider.H>
 #include <FL/Fl_Value_Input.H>
 #include <FL/Fl_Pack.H>
 #include <FL/Fl_Valuator.H>
