@@ -97,13 +97,17 @@ void TuilesBank::draw() {
                     (*itTui).c_str());
 
     }
-
-    //draw dragged tuile
-    if(m_dragging) {
-        m_draggedTuile->drawComposition();
-    }
+    drawDraggedTuile();
 }
 
+void TuilesBank::drawDraggedTuile() {
+    //draw dragged tuile
+    if(m_dragging) {
+        m_draggedTuile->drawExecution();
+        m_draggedTuile->drawComposition();
+        MainWindow::getInstance()->redraw();
+    }
+}
 
 void TuilesBank::drawTuile(const int& x, const int& y, 
                                 const int& w, const int& h, 

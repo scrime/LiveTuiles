@@ -81,6 +81,7 @@ class MainWindow  : public Fl_Double_Window {
 		MainWindow();
 
 		HitPack* m_pack;
+        std::string m_currentFileName;
 
 		int m_controlHeight;
 		HitPack* m_controlPart;
@@ -106,9 +107,6 @@ class MainWindow  : public Fl_Double_Window {
         Fl_Button* m_saveTreeButton;
         
         TuileParamGroup* m_tuileParamGroup;
-
-        timeval m_curTime, m_prevTime, m_diffTime;
-        float m_timeDiffMs;
 };
 
 #endif

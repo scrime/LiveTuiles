@@ -88,6 +88,7 @@ void AudioManager::setBpm(const float& bpm) {
         com->setStep(m_bpm/60.0);
         m_commandsToProc->runCommand(com);
     }
+    m_defaultLength=4*float(m_sampleRate)/(m_bpm/60.0);
 }
 
 void AudioManager::framesToBeats(const float& frames, float& beats) {
@@ -140,8 +141,7 @@ FaustTuile* AudioManager::addFaustTuile(const std::string& fileName) {
     addLeaf(newTuile);
     newTuile->load(fileName);
     internalAddAudioTuile(newTuile);
-    //default length to one beat
-    newTuile->setLength(4*float(m_sampleRate)/(m_bpm/60.0));
+    newTuile->setLength(m_defaultLength);
     return newTuile;
 }
 
@@ -160,8 +160,7 @@ AudioInputTuile* AudioManager::addAudioInputTuile(const std::string& input) {
     oss<<newTuile->getID();
     newTuile->load("input"+oss.str());
     internalAddAudioTuile(newTuile);
-    //default length to one beat
-    newTuile->setLength(4*float(m_sampleRate)/(m_bpm/60.0));
+    newTuile->setLength(m_defaultLength);
     return newTuile;
 }
 
@@ -172,8 +171,7 @@ AudioOutputTuile* AudioManager::addAudioOutputTuile(const std::string& output) {
     oss<<newTuile->getID();
     newTuile->load("output"+oss.str());
     internalAddAudioTuile(newTuile);
-    //default length to one beat
-    newTuile->setLength(4*float(m_sampleRate)/(m_bpm/60.0));
+    newTuile->setLength(m_defaultLength);
     return newTuile;
 }
 
@@ -186,8 +184,7 @@ SeqTuile* AudioManager::addSeqTuile() {
 LoopTuile* AudioManager::addLoopTuile() {
     LoopTuile* newLoop = new LoopTuile();
     addLoop(newLoop);
-    //default length to one beat
-    newLoop->setLength(4*float(m_sampleRate)/(m_bpm/60.0));
+    newLoop->setLength(m_defaultLength);
     return newLoop;
 }
 
@@ -196,8 +193,7 @@ MidiOscMonitorTuile* AudioManager::addMidiOscMonitorTuile() {
     addMonitor((MonitorTuile*)newMonitor);
     //FIXME
     //internalAddAudioTuile(newMonitor);
-    //default length to one beat
-    newMonitor->setLength(4*float(m_sampleRate)/(m_bpm/60.0));
+    newMonitor->setLength(m_defaultLength);
     return newMonitor;
 }
 
@@ -206,13 +202,11 @@ MidiOscSwitchTuile* AudioManager::addMidiOscSwitchTuile() {
     addSwitch((SwitchTuile*)newSwitch);
     //FIXME
     //internalAddAudioTuile(newSwitch);
-    //default length to one beat
-    newSwitch->setLength(4*float(m_sampleRate)/(m_bpm/60.0));
+    newSwitch->setLength(m_defaultLength);
     return newSwitch;
 }
 
 void AudioManager::procClearTrees() {
-    cout<<"clearing audio tuiles in proc"<<endl;
     m_procAudioTuiles.clear();
     TuilesManager::procClearTrees();
 }

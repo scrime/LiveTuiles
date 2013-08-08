@@ -26,6 +26,7 @@ class LeafTuileWidget: public TuileWidget, public Fl_Widget {
 
     void update();
     virtual void notify();
+    virtual void save(xmlNodePtr);
 
     virtual int handle(int event);
     virtual void draw(){drawComposition();}

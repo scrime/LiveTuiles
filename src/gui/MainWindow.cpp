@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <iostream>
+#include <FL/fl_ask.H>
 
 #include "HitPack.hpp"
 #include "TreeWidget.hpp"
@@ -35,7 +36,6 @@ MainWindow* MainWindow::getInstance() {
 
 void MainWindow::init() {
 	Fl::add_idle(idle, this);
-    gettimeofday(&m_prevTime, NULL);
 
 	//GUI
 	Fl::set_color(FL_BACKGROUND_COLOR,240,240,240);
@@ -85,10 +85,11 @@ void MainWindow::init() {
 	m_tuilesTree = TreeWidget::getInstance();
     m_tuilesTree->resize(m_spacing, 0, w()- 20, m_treeHeight);
 	m_tuilesPart = new HitPack(0, 0, w(), m_treeHeight, "");
+    m_tuilesPart->internalSpacing(0);
+    m_tuilesPart->externalSpacing(0);
     m_tuilesPart->end();
 	m_tuilesPart->type(HitPack::HORIZONTAL);
     m_tuilesPart->add(m_tuilesTree);
-
 
     //EDITION
     m_clearTreeButton = new Fl_Button(0, 20, 
@@ -131,18 +132,12 @@ void MainWindow::init() {
     m_pack->internalSpacing(m_spacing*2);
     m_pack->end();
 	m_pack->type(HitPack::VERTICAL);
-	m_pack->spacing(m_spacing);
 	m_pack->add(m_controlPart);
 	m_pack->add(m_tuilesPart);
 	m_pack->add(m_editPart);
-
 	this->add(m_pack);
 
-    this->resizable(m_pack);
-    //m_pack->resizable(m_tuilesPart);
-    //m_tuilesPart->resizable(m_tuilesTree);
-    m_controlPart->resizable(0);
-    m_editPart->resizable(0);
+    resizable(this);
 
     //clear to add first leaf and loop tuile 
     clearAll();
@@ -158,6 +153,9 @@ void MainWindow::idle(void* pnt) {
     
 void MainWindow::update() {
 	m_tuilesTree->update();
+    if(AudioManager::getInstance()->isPlaying()) {
+        m_tuilesBank->drawDraggedTuile();
+    }
 	usleep(1000);
 }
 
@@ -214,6 +212,13 @@ void MainWindow::cbTreeButtons(Fl_Widget* w) {
         clearAll();
     }
     else if(m_saveTreeButton->contains(w)) {
+        const char* fileName = fl_input("Please enter a filename", 
+                                                    m_currentFileName.c_str());
+        if(fileName && std::string(fileName).compare("")!=0) {
+            m_currentFileName=fileName;
+            AudioManager::getInstance()->saveTrees(
+                    m_tuilesBank->getCurrentDir()+"/"+m_currentFileName+".tui");
+        }
     }
 }
 

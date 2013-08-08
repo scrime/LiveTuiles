@@ -28,7 +28,6 @@ SoundFileParamWidget::SoundFileParamWidget(SoundFileTuile* sfTuile):
     m_volumeSlider->value(1);
     m_volumeSlider->labelsize(12);
     add(m_volumeSlider);
-
 }
 
 SoundFileParamWidget::~SoundFileParamWidget() {}
@@ -36,14 +35,8 @@ SoundFileParamWidget::~SoundFileParamWidget() {}
 void SoundFileParamWidget::update() {}
 
 void SoundFileParamWidget::cbTuileSoundFileInputs(Fl_Widget* w) {
-/*
-    JackProcessesManager* pMan = JackProcessesManager::getInstance();
     if(m_volumeSlider->contains(w)) {
-        pMan->setProcessVolume(m_id, m_volumeSlider->value());
+        m_sfTuile->setVolume(m_volumeSlider->value());
     }
-    else if(m_outputChoice->contains(w)) {
-        pMan->setProcessOutput(m_id, m_outputChoice->value());
-    }
-*/
 }
 

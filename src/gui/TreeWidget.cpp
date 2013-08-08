@@ -42,7 +42,6 @@ TreeWidget::TreeWidget():   TuileWidget(AudioManager::getInstance()),
                             m_zeroPosX(0), 
                             m_connectionIDCounter(0),
                             m_removingConnection(NULL) {
-    m_tuile->addObserver(this);
 	end();
     m_id=-1;
     type(Fl_Scroll::BOTH);

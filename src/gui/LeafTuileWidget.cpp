@@ -10,6 +10,7 @@
 #include <iostream>
 #include <math.h>
 #include <cassert>
+#include <sstream>
 
 #include <Fl/fl_draw.H>
 #include <FL/filename.H>
@@ -225,6 +226,13 @@ void LeafTuileWidget::notify() {
     m_name=fl_filename_name(m_tuile->getName().c_str());
     resize(x(), y(), m_width, h());
 	this->redraw();
+}
+
+void LeafTuileWidget::save(xmlNodePtr node) {
+    ostringstream oss;
+    oss<<y();
+    xmlNewProp(node, BAD_CAST "widget_y_offset", 
+                BAD_CAST oss.str().c_str());
 }
 
 void LeafTuileWidget::select() {

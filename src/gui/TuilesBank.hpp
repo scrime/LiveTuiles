@@ -26,6 +26,7 @@ class TuilesBank : public Fl_Group {
         ~TuilesBank();
 
         void draw();
+        void drawDraggedTuile();
         int handle(int);
 
         void open(std::string,std::string,std::string);
@@ -37,6 +38,7 @@ class TuilesBank : public Fl_Group {
             m_currentDir=dir;
             m_topLine=1;
         }
+        inline const std::string& getCurrentDir(){return m_currentDir;}
 
         static void statPrevButton(Fl_Widget* w,void* f) { 
             TuilesBank *tmpf = static_cast<TuilesBank *>(f);

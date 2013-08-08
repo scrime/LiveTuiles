@@ -103,8 +103,8 @@ bool LoopWidget::testMagnetWithTuile(const int& inX, const int& inY,
         return true;
     }
     if(inY>y()-m_magnetSize && inY<y()+h()+m_magnetSize) {
-        if(inX>x()-m_magnetSize && inX<x()+w()+m_magnetSize) {
-            outX=x();
+        if(inX>x()+m_real1X-m_magnetSize && inX<x()+m_real2X+m_magnetSize) {
+            outX=x()+m_real1X;
             outY=y();
             if(drop) {
                 TreeWidget* tree = TreeWidget::getInstance();

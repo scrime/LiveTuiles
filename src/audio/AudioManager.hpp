@@ -85,6 +85,7 @@ class AudioManager : public tuiles::TuilesManager {
         float m_bpm;
         float m_framesPerBeat;
         float m_playPosInBeats;
+        float m_defaultLength;
 
         std::vector<AudioTuile*> m_procAudioTuiles;
         float m_procStep;
