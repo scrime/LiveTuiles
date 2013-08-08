@@ -3,9 +3,9 @@ LiveTuiles
 
 LiveTuiles is an interactive looper/sequencer based on libTuiles.
 
-ANR INEDIT Project
-SCRIME, LaBRI, Université de Bordeaux, France
-Florent Berthaut - David Janin
+ANR INEDIT Project \\
+SCRIME, LaBRI, Université de Bordeaux, France \\
+Florent Berthaut - David Janin \\
 
 #Requires:
 * FLTK 1.X.X (http://www.fltk.org)
@@ -17,15 +17,23 @@ Florent Berthaut - David Janin
 * libTuiles (https://github.com/scrime/libTuiles)
 
 #Compilation if libTuiles is not already installed:
-mkdir tuiles
+mkdir tuiles;
 cd tuiles
+
 git clone https://github.com/scrime/libTuiles.git libTuiles
+
 git clone https://github.com/scrime/LiveTuiles.git LiveTuiles
+
 cd libTuiles
-./waf configure
+
+./waf configure 
+
 ./waf
+
 cd ../LiveTuiles
+
 ./waf configure
+
 ./waf 
 
 #Compilation if libTuiles has already been installed:
