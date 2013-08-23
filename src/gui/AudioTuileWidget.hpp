@@ -18,6 +18,9 @@ class AudioTuileWidget: public LeafTuileWidget {
 	AudioTuileWidget(const std::string& name, AudioTuile*);
 	virtual ~AudioTuileWidget();
 
+    virtual void load();
+    void notifyDelete();
+
     virtual void drawComposition();
     virtual int handle(int event);
 

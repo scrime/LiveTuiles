@@ -10,14 +10,18 @@
 #include <sstream>
 #include <fstream>
 #include <stdexcept>
+#include <iostream>
 
 #include "AudioManager.hpp"
 
 using namespace std;
 
 FaustTuile::FaustTuile():   AudioTuile(), 
+                            m_dsp(NULL),
                             m_processing(false),
-                            m_bufferSize(4096) {}
+                            m_bufferSize(4096) {
+    m_type="Faust";
+}
 
 FaustTuile::~FaustTuile() {}
 
@@ -62,11 +66,14 @@ void FaustTuile::load(const std::string& fileName) {
 
     m_internalBuffer.resize(m_outputChannels, vector<float>(m_bufferSize, 0));
 
+    DEBUG("FaustTuile "<<m_name<<" loaded");
     m_loaded=true;
+    updateLoaded();
 }
 
 void FaustTuile::unload() {
 	m_loaded=false;
+    updateLoaded();
 }
 
 void FaustTuile::activate() {
@@ -81,7 +88,7 @@ void FaustTuile::deactivate() {
 }
 
 void FaustTuile::processBuffers(const int& nbFrames) {
-    if(!m_computed) {
+    if(!m_computed && m_loaded) {
         for(unsigned int c=0; c<m_internalBuffer.size(); ++c) {
             m_internalBuffer[c].assign(nbFrames, 0);
             for(int f=0; f<nbFrames && f<m_bufferSize; ++f) {
@@ -112,4 +119,18 @@ void FaustTuile::processBuffers(const int& nbFrames) {
     }
 }
 
+xmlNodePtr FaustTuile::save(xmlNodePtr parentNode) {
+    xmlNodePtr node = AudioTuile::save(parentNode);
+    xmlNewProp(node, BAD_CAST "file", BAD_CAST m_fileName.c_str());
+    return node;
+}
+
+void FaustTuile::load(xmlNodePtr node) {
+    char* value=NULL;
+    value=NULL;
+    value = (char*)xmlGetProp(node,(xmlChar*)"file");
+    if(value) {
+        load(std::string(value));
+    }
+}
 

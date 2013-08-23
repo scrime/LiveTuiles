@@ -11,6 +11,7 @@
 #include <vector>
 #include <string>
 #include <FL/Fl_Widget.H>
+#include <libxml/tree.h>
 #include <tuiles/Observer.hpp>
 
 class TuileParamWidget;
@@ -24,7 +25,10 @@ class TuileWidget: public tuiles::Observer {
     inline const int& getID(){return m_id;}
     inline tuiles::Tuile* getTuile(){return m_tuile;}
 
-    virtual void notify();
+    inline virtual void save(xmlNodePtr parentNode){}
+    virtual void load(xmlNodePtr node);
+    inline virtual void load(){}
+    virtual void notifyUpdate();
 
     inline virtual void drawComposition(){}
     inline virtual void drawExecution(const int& offset=0){}
@@ -35,8 +39,10 @@ class TuileWidget: public tuiles::Observer {
     inline virtual int getRealIn() {return m_real1X;}
     inline virtual int getRealOut(){return m_real2X;}
     inline virtual int getCenterReal(){return 0;}
-    inline void setSync1Y(const int& y){m_sync1Y=y;}
-    inline void setSync2Y(const int& y){m_sync2Y=y;}
+    inline virtual void setSync1Y(const int& y){m_sync1Y=y;}
+    inline virtual void setSync2Y(const int& y){m_sync2Y=y;}
+    inline virtual int getSync1Y(){return m_sync1Y;}
+    inline virtual int getSync2Y(){return m_sync2Y;}
 
     inline virtual void select(){}
     inline virtual void deselect(){}

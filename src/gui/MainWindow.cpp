@@ -216,7 +216,7 @@ void MainWindow::cbTreeButtons(Fl_Widget* w) {
                                                     m_currentFileName.c_str());
         if(fileName && std::string(fileName).compare("")!=0) {
             m_currentFileName=fileName;
-            AudioManager::getInstance()->saveTrees(
+            m_tuilesTree->save(
                     m_tuilesBank->getCurrentDir()+"/"+m_currentFileName+".tui");
         }
     }

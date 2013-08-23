@@ -18,11 +18,21 @@ using namespace tuiles;
 
 SoundFileWidget::SoundFileWidget(const std::string& name, 
                                 SoundFileTuile* tuile): 
-                                AudioTuileWidget(name, tuile) {
+                                AudioTuileWidget(name, tuile),
+                                m_soundFileTuile(tuile) {
     m_canTakeInput=false;
     m_paramWidget=new SoundFileParamWidget(tuile);
 }
 
 SoundFileWidget::~SoundFileWidget() {}
 
+void SoundFileWidget::load() {
+    LeafTuileWidget::load();
+    m_soundFileTuile->load(m_name);
+}
+
+void SoundFileWidget::load(xmlNodePtr node) {
+    LeafTuileWidget::load(node);
+    load();
+}
 

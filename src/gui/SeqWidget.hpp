@@ -18,9 +18,15 @@ class SeqWidget: public OpWidget {
 	SeqWidget(const std::string& name, tuiles::SeqTuile*);
 	virtual ~SeqWidget();
 
+    virtual void load(xmlNodePtr node);
+
     void drawComposition();
     virtual int handle(int event);
-    virtual void notify();
+    virtual void notifyUpdate();
+    int getSync1Y();
+    int getSync2Y();
+    virtual void setSync1Y(const int& y);
+    virtual void setSync2Y(const int& y);
 
   private:
     tuiles::SeqTuile* m_seqTuile;

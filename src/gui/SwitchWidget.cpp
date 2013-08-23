@@ -22,5 +22,9 @@ SwitchWidget::SwitchWidget(const std::string& name,
 
 SwitchWidget::~SwitchWidget() {}
 
+void SwitchWidget::notifyUpdate() {
+    TuileWidget::notifyUpdate();
+
+}
 
 

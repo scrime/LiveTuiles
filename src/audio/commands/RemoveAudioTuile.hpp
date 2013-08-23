@@ -16,16 +16,7 @@ class RemoveAudioTuile: public tuiles::Command {
 		inline RemoveAudioTuile(){m_name="RemoveAudioTuile";}
 		inline virtual ~RemoveAudioTuile(){};
 		virtual void run() {
-            std::vector<AudioTuile*>::iterator itTui
-                    =m_audioManager->m_procAudioTuiles.begin();
-            for(; itTui!=m_audioManager->m_procAudioTuiles.end(); ) {
-                if((*itTui)->getID()==m_audioTuile->getID()) {
-                    itTui=m_audioManager->m_procAudioTuiles.erase(itTui);
-                }
-                else {
-                    itTui++;
-                }
-            }
+            m_audioManager->procRemoveAudioTuile(m_audioTuile);
         }
         virtual void createClones(const unsigned int& nbClones) {
             for(unsigned int c=0; c<nbClones; ++c) {
@@ -33,11 +24,13 @@ class RemoveAudioTuile: public tuiles::Command {
                 m_clones.back()->setModel(this);
             }
         }
-        inline void setTuile(AudioTuile* tuile){m_audioTuile=tuile;}
+        inline void setAudioTuile(AudioTuile* tuile){m_audioTuile=tuile;}
+        inline void setAudioManager(AudioManager* man){m_audioManager=man;}
 
 	protected:
         AudioTuile* m_audioTuile;
         AudioManager* m_audioManager;
+        
 };
 
 #endif

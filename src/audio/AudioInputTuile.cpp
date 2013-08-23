@@ -10,12 +10,15 @@
 #include <sstream>
 #include <fstream>
 #include <stdexcept>
+#include <iostream>
 
 #include "AudioManager.hpp"
 
 using namespace std;
 
-AudioInputTuile::AudioInputTuile(): AudioTuile() {}
+AudioInputTuile::AudioInputTuile(): AudioTuile() {
+    m_type="AudioInput";
+}
 
 AudioInputTuile::~AudioInputTuile() {
     AudioManager* man=AudioManager::getInstance();
@@ -41,15 +44,18 @@ void AudioInputTuile::load(const std::string& input) {
                                 string("LiveTuiles:"+input+"-L").c_str());
     jack_connect(man->getJackClient(),"system:capture_2", 
                                 string("LiveTuiles:"+input+"-R").c_str());
+    DEBUG("AudioInputTuile "<<m_name<<" loaded");
 	m_loaded=true;
+    updateLoaded();
 }
 
 void AudioInputTuile::unload() {
 	m_loaded=false;
+    updateLoaded();
 }
 
 void AudioInputTuile::processBuffers(const int& nbFrames) {
-    if(!m_computed) {
+    if(!m_computed && m_procLoaded) {
         m_internalBuffer[0].assign(nbFrames, 0);
         m_internalBuffer[1].assign(nbFrames, 0);
         if(m_procActive) {
@@ -66,4 +72,9 @@ void AudioInputTuile::processBuffers(const int& nbFrames) {
      }
 }
 
+void AudioInputTuile::load(xmlNodePtr node) {
+    ostringstream oss;
+    oss<<m_id;
+    load("input"+oss.str());
+}
 

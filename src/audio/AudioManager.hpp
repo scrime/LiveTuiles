@@ -55,7 +55,8 @@ class AudioManager : public tuiles::TuilesManager {
         tuiles::LoopTuile* addLoopTuile();
         MidiOscMonitorTuile* addMidiOscMonitorTuile();
         MidiOscSwitchTuile* addMidiOscSwitchTuile();
-        virtual void deleteTuile(Tuile*);
+        virtual void deleteAudioTuile(AudioTuile*);
+        virtual void extractAudioTuile(AudioTuile*);
 
         const float& getPlayPositionInBeats();
         const float& getBpm(){return m_bpm;}
@@ -72,6 +73,8 @@ class AudioManager : public tuiles::TuilesManager {
         RemoveAudioTuile* m_protoRemoveAudioTuile;
         friend class SetProcStep;
         SetProcStep* m_protoSetProcStep;
+
+        void procRemoveAudioTuile(AudioTuile*);
 
     private:
         void internalAddAudioTuile(AudioTuile*);
@@ -90,6 +93,7 @@ class AudioManager : public tuiles::TuilesManager {
         std::vector<AudioTuile*> m_procAudioTuiles;
         float m_procStep;
 
+		jack_port_t *m_midiInputProc;
 		static const char MIDI_NOTE_ON=0x90;
 		static const char MIDI_NOTE_OFF=0x80;
 		static const char MIDI_PROGRAM_CHANGE=0xC0;

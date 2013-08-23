@@ -16,7 +16,6 @@ class SetSoundFileProperties: public tuiles::Command {
 		inline SetSoundFileProperties(){m_name="SetSoundFileProperties";}
 		inline virtual ~SetSoundFileProperties(){};
 		virtual void run() {
-            m_tuile->m_procVolume=m_volume;
             m_tuile->m_procSpeed=m_speed;
         }
         virtual void createClones(const unsigned int& nbClones) {
@@ -26,12 +25,10 @@ class SetSoundFileProperties: public tuiles::Command {
             }
         }
         inline void setSoundFileTuile(SoundFileTuile* tuile){m_tuile=tuile;}
-        inline void setVolume(const float& vol){m_volume=vol;}
         inline void setSpeed(const float& speed){m_speed=speed;}
 
 	protected:
         SoundFileTuile* m_tuile; 
-        float m_volume;
         float m_speed;
 };
 

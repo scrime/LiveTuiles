@@ -22,7 +22,7 @@ class LoopWidget: public OpWidget {
     void drawExecution(const int&);
     int handle(int);
 
-    void notify();
+    virtual void notifyUpdate();
     virtual bool testMagnetWithTuile(const int& inX, const int& inY,
                                     int& outX, int& outY,     
                                     const std::string& tuileName,

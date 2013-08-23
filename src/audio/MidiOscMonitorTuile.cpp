@@ -16,7 +16,9 @@
 using namespace std;
 using namespace tuiles;
 
-MidiOscMonitorTuile::MidiOscMonitorTuile(): MonitorTuile() {}
+MidiOscMonitorTuile::MidiOscMonitorTuile(): MonitorTuile() {
+    m_type="MidiOscMonitor";
+}
 
 MidiOscMonitorTuile::~MidiOscMonitorTuile() {}
 

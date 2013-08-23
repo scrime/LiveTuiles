@@ -22,5 +22,8 @@ MonitorWidget::MonitorWidget(const std::string& name,
 
 MonitorWidget::~MonitorWidget() {}
 
+void MonitorWidget::notifyUpdate() {
+    TuileWidget::notifyUpdate();
 
+}
 

@@ -24,6 +24,10 @@ class SoundFileTuile : public AudioTuile {
 
 		virtual void load(const std::string&);
 		void unload();
+
+        xmlNodePtr save(xmlNodePtr parentNode);
+        void load(xmlNodePtr);
+
 		void setSampleRate(const unsigned int&);
 
 		void activate();
@@ -33,8 +37,6 @@ class SoundFileTuile : public AudioTuile {
         inline virtual void setPositionRatio(const float& ratio){
             m_position=ratio*(float)m_framesCount;
         }
-        const float& getVolume(){return m_volume;}
-        void setVolume(const float& vol);
 
 		virtual void processBuffers(const int& nbFrames);
 
@@ -46,9 +48,6 @@ class SoundFileTuile : public AudioTuile {
         void updateSoundFileProperties();
 
 	private:
-        float m_volume;
-
-        float m_procVolume;
 		jack_default_audio_sample_t** m_buffers;
 		unsigned int m_channelsCount;
 		unsigned int m_sampleRate;

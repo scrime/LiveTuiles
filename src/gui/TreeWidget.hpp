@@ -31,7 +31,11 @@ class TreeWidget : public TuileWidget, public Fl_Scroll {
         ~TreeWidget();
 
         void update();
-		void notify();
+		void notifyUpdate();
+        inline void notifyDelete(){}
+        void save(const std::string& fileName);
+        TuileWidget* load(const std::string& fileName);
+
         void refreshTuiles();
         void refreshChildrenTuileWidgets();
         void zoom(const float&);
@@ -49,7 +53,8 @@ class TreeWidget : public TuileWidget, public Fl_Scroll {
         TuileWidget* createTuileWidget(const std::string& tuileName);
         SeqWidget* createSeqWidget(TuileWidget*, TuileWidget*);
         void addTuileWidget(TuileWidget*);
-        void removeTuileWidget(TuileWidget*);
+        void removeConnectionsWithWidget(AudioTuileWidget*);
+        void markWidgetForRemoval(TuileWidget*);
         TuileWidget* getTuileWidget(const unsigned int& id);
 
         void selectTuileWidget(TuileWidget* selected);
@@ -75,10 +80,10 @@ class TreeWidget : public TuileWidget, public Fl_Scroll {
         int m_magnetSize;
         int m_zeroPosX;
 
-        std::list<TuileWidget*> m_tuileWidgets;
         std::list<AudioTuileWidget*> m_audioTuileWidgets;
         std::map<unsigned int, TuileWidget*> m_tuileWidgetMap;
         TuileWidget* m_selectedTuile;
+        std::vector<TuileWidget*> m_removingWidgets;
 
         unsigned int m_connectionIDCounter;
         std::vector<ConnectionWidget*> m_connections;

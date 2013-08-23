@@ -18,8 +18,10 @@ class FaustTuile : public AudioTuile {
 		FaustTuile();
 		~FaustTuile();
 
+        xmlNodePtr save(xmlNodePtr parentNode);
 		virtual void load(const std::string&);
 		void unload();
+        virtual void load(xmlNodePtr node);
 	
 		void activate();
 		void deactivate();

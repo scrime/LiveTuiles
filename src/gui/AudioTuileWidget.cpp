@@ -28,6 +28,14 @@ AudioTuileWidget::AudioTuileWidget(const std::string& name,
 
 AudioTuileWidget::~AudioTuileWidget() {}
 
+void AudioTuileWidget::load() {
+}
+
+void AudioTuileWidget::notifyDelete() {
+    TreeWidget::getInstance()->removeConnectionsWithWidget(this);
+    LeafTuileWidget::notifyDelete();
+}
+
 void AudioTuileWidget::drawComposition() {
     LeafTuileWidget::drawComposition();
     fl_color(FL_BLUE);

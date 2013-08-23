@@ -22,6 +22,7 @@ class FaustParamWidget : public AudioTuileParamWidget, public UI {
   public:
 	FaustParamWidget(FaustTuile*);
 	~FaustParamWidget();
+    void load();
 
     static void statParamVal(Fl_Widget* w,void* f) { 
         FaustParamWidget *fpw = static_cast<FaustParamWidget *>(f);
@@ -88,6 +89,7 @@ class FaustParamWidget : public AudioTuileParamWidget, public UI {
         m_sliders.back()->labelsize(12);
         end();
     }
+
     inline void addNumEntry(const char* label, FAUSTFLOAT* zone, 
                             FAUSTFLOAT init, FAUSTFLOAT min, 
                             FAUSTFLOAT max, FAUSTFLOAT step) {

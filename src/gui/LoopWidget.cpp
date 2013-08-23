@@ -73,10 +73,10 @@ int LoopWidget::handle(int event) {
     }
 }
 
-void LoopWidget::notify() {
-    TuileWidget::notify();
+void LoopWidget::notifyUpdate() {
+    TuileWidget::notifyUpdate();
     if(m_childrenTuileWidgets.size()>=1) {
-        m_childrenTuileWidgets[0]->notify();
+        m_childrenTuileWidgets[0]->notifyUpdate();
         float pixPerFrame=TreeWidget::getInstance()->getPixelsPerFrame();
         float childPos=-m_loopTuile->getChildPositionAtPos(0, 0);
         childPos=min<float>(childPos, 
@@ -110,6 +110,8 @@ bool LoopWidget::testMagnetWithTuile(const int& inX, const int& inY,
                 TreeWidget* tree = TreeWidget::getInstance();
                 TuileWidget* newWidget = tree->createTuileWidget(tuileName);
                 if(newWidget) {
+                    newWidget->getTuile()->setName(tuileName);
+                    newWidget->load();
                     newWidget->getWidget()->position(x(), y());
                     m_loopTuile->setChild(newWidget->getTuile());
                     tree->refreshChildrenTuileWidgets();

@@ -23,6 +23,8 @@ class ConnectionWidget: public Fl_Widget {
         int handle(int);
         void update();
         const unsigned int& getID(){return m_id;}
+        inline AudioTuileWidget* getFromWidget(){return m_fromWidget;}
+        inline AudioTuileWidget* getToWidget(){return m_toWidget;}
 
     protected:
         unsigned int m_id;

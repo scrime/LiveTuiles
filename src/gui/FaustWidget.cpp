@@ -17,12 +17,24 @@
 using namespace std;
 
 FaustWidget::FaustWidget(const std::string& name, 
-                            FaustTuile* tuile): AudioTuileWidget(name, tuile) {
-    m_paramWidget=new FaustParamWidget(tuile);
+                            FaustTuile* tuile): 
+                            AudioTuileWidget(name, tuile),
+                            m_faustTuile(tuile) {
+    m_faustParamWidget=new FaustParamWidget(tuile);
+    m_paramWidget=m_faustParamWidget;
 }
-
 
 FaustWidget::~FaustWidget() {}
 
+void FaustWidget::load(xmlNodePtr node) {
+    LeafTuileWidget::load(node);
+    load();
+}
+
+void FaustWidget::load() {
+    LeafTuileWidget::load();
+    m_faustTuile->load(m_name);
+    m_faustParamWidget->load();
+}
 
 

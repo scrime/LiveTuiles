@@ -17,6 +17,7 @@ class AudioOutputTuile : public AudioTuile {
 
 		virtual void load(const std::string&);
 		void unload();
+        virtual void load(xmlNodePtr node);
 	
         virtual void processBuffers(const int& nbFrames);
 

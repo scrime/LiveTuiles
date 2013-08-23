@@ -64,18 +64,15 @@ void AudioManager::init() {
 	m_bufferSize = jack_get_buffer_size(m_jackClient);	
     setBpm(60);
 
-/*
-    m_midiInputProc = new MidiInputProcess(0, 
-                        jack_port_register(m_jackClient, "Midi-In", 
-                        JACK_DEFAULT_MIDI_TYPE, JackPortIsInput, 0));
-*/
+    //midi input
+    m_midiInputProc = jack_port_register(m_jackClient, "Midi-In", 
+                        JACK_DEFAULT_MIDI_TYPE, JackPortIsInput, 0);
 
 	//process callback
 	jack_set_process_callback (m_jackClient, jackCallback, this);
 
 	//activate the client
 	jack_activate(m_jackClient);
-
 }
 
 void AudioManager::setBpm(const float& bpm) {
@@ -121,6 +118,7 @@ void AudioManager::process(const int& nbFrames) {
     }
 }
 
+
 void AudioManager::internalAddAudioTuile(AudioTuile* tuile) {
     AddAudioTuile* com = 
         static_cast<AddAudioTuile*>(m_protoAddAudioTuile->popClone());
@@ -131,15 +129,38 @@ void AudioManager::internalAddAudioTuile(AudioTuile* tuile) {
     }
 }
 
-void AudioManager::deleteTuile(Tuile* tuile) {
+void AudioManager::deleteAudioTuile(AudioTuile* tuile) {
+    RemoveAudioTuile* com = 
+        static_cast<RemoveAudioTuile*>(m_protoRemoveAudioTuile->popClone());
+    if(com) {
+        com->setAudioTuile(tuile); 
+        com->setAudioManager(this);
+        m_commandsToProc->runCommand(com);
+    }
     TuilesManager::deleteTuile(tuile);
+}
 
+void AudioManager::extractAudioTuile(AudioTuile* tuile) {
+    RemoveAudioTuile* com = 
+        static_cast<RemoveAudioTuile*>(m_protoRemoveAudioTuile->popClone());
+    if(com) {
+        com->setAudioTuile(tuile); 
+        com->setAudioManager(this);
+        m_commandsToProc->runCommand(com);
+    }
+    TuilesManager::extractTuile(tuile);
+}
+
+void AudioManager::procRemoveAudioTuile(AudioTuile* tuile) {
+    vector<AudioTuile*>::iterator itTui = m_procAudioTuiles.begin();
+    for(; itTui!=m_procAudioTuiles.end(); ++itTui) {
+        (*itTui)->removeInputTuile(tuile);
+    }
 }
 
 FaustTuile* AudioManager::addFaustTuile(const std::string& fileName) {
     FaustTuile* newTuile = new FaustTuile();
     addLeaf(newTuile);
-    newTuile->load(fileName);
     internalAddAudioTuile(newTuile);
     newTuile->setLength(m_defaultLength);
     return newTuile;
@@ -148,7 +169,6 @@ FaustTuile* AudioManager::addFaustTuile(const std::string& fileName) {
 SoundFileTuile* AudioManager::addSoundFileTuile(const std::string& fileName) {
     SoundFileTuile* newTuile = new SoundFileTuile();
     addLeaf(newTuile);
-    newTuile->load(fileName);
     internalAddAudioTuile(newTuile);
     return newTuile;
 }
@@ -156,9 +176,6 @@ SoundFileTuile* AudioManager::addSoundFileTuile(const std::string& fileName) {
 AudioInputTuile* AudioManager::addAudioInputTuile(const std::string& input) {
     AudioInputTuile* newTuile = new AudioInputTuile();
     addLeaf(newTuile);
-    ostringstream oss;
-    oss<<newTuile->getID();
-    newTuile->load("input"+oss.str());
     internalAddAudioTuile(newTuile);
     newTuile->setLength(m_defaultLength);
     return newTuile;
@@ -167,9 +184,6 @@ AudioInputTuile* AudioManager::addAudioInputTuile(const std::string& input) {
 AudioOutputTuile* AudioManager::addAudioOutputTuile(const std::string& output) {
     AudioOutputTuile* newTuile = new AudioOutputTuile();
     addLeaf(newTuile);
-    ostringstream oss;
-    oss<<newTuile->getID();
-    newTuile->load("output"+oss.str());
     internalAddAudioTuile(newTuile);
     newTuile->setLength(m_defaultLength);
     return newTuile;

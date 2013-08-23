@@ -18,7 +18,11 @@ class AudioInputWidget: public AudioTuileWidget {
 	AudioInputWidget(const std::string& name, AudioInputTuile*);
 	~AudioInputWidget();
 
+    void load();
+    void load(xmlNodePtr);
+
   private:
+    AudioInputTuile* m_audioInputTuile;
     
 };
 

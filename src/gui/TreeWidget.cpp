@@ -5,7 +5,6 @@
  *  This file is part of LiveTuiles
  ****************************************************************************/
 
-
 #include "TreeWidget.hpp"
 
 #include <iostream>
@@ -45,6 +44,7 @@ TreeWidget::TreeWidget():   TuileWidget(AudioManager::getInstance()),
 	end();
     m_id=-1;
     type(Fl_Scroll::BOTH);
+    m_tuile->addObserver(this);
     zoom(0);
 }
 
@@ -59,19 +59,6 @@ void TreeWidget::update() {
     //update cursor
     m_cursorX = (AudioManager::getInstance()->getPlayPositionInBeats()) 
                     *m_pixelsPerBeat;
-    if(AudioManager::getInstance()->isPlaying()) {
-        redraw();
-    }
-}
-
-void TreeWidget::zoom(const float& zoom) {
-    m_pixelsPerBeat=10.0+zoom*100;
-    refreshTuiles();
-}
-
-void TreeWidget::draw() {
-    Fl_Scroll::draw();
-
     //remove connection
     if(m_removingConnection) {
         vector<ConnectionWidget*>::iterator itCon=m_connections.begin();
@@ -88,6 +75,42 @@ void TreeWidget::draw() {
         m_removingConnection=NULL;
         MainWindow::getInstance()->redraw();
     }
+    //remove widgets
+    if(m_removingWidgets.size()>0) {
+        vector<TuileWidget*>::iterator itWid=m_removingWidgets.begin();
+        for(; itWid!=m_removingWidgets.end(); itWid++) {
+            m_tuileWidgetMap.erase((*itWid)->getID());
+            list<AudioTuileWidget*>::iterator itWidget=
+                    m_audioTuileWidgets.begin();
+            for(;itWidget!=m_audioTuileWidgets.end(); ++itWidget) {
+                if((*itWidget)->getID()==(*itWid)->getID()) {
+                    itWidget=m_audioTuileWidgets.erase(itWidget);
+                }
+            }
+        }
+        refreshChildrenTuileWidgets();
+        itWid=m_removingWidgets.begin();
+        for(; itWid!=m_removingWidgets.end(); itWid++) {
+            delete (*itWid);
+        }
+        m_paramGroup->clear();
+        MainWindow::getInstance()->redraw();
+        m_removingWidgets.clear();
+    }
+    //redraw if playing
+    if(AudioManager::getInstance()->isPlaying()) {
+        redraw();
+    }
+}
+
+void TreeWidget::zoom(const float& zoom) {
+    m_pixelsPerBeat=10.0+zoom*100;
+    refreshTuiles();
+}
+
+void TreeWidget::draw() {
+    Fl_Scroll::draw();
+
 
 	//box
 	fl_draw_box(FL_DOWN_BOX, x(), y(), w(), h(), FL_BACKGROUND_COLOR);
@@ -96,10 +119,12 @@ void TreeWidget::draw() {
 	//score and beat lines
 	fl_rectf(x()+(m_zeroPosX-xposition()), y(), 
             w()-(m_zeroPosX-xposition()), h(), FL_BACKGROUND2_COLOR);
+/*
 	fl_color(FL_WHITE);
 	for(int i=x()+(m_zeroPosX-xposition()); i<x()+w(); i+=m_pixelsPerBeat) {
 		fl_line(i, y(), i, y()+h());
 	}
+*/
 
     //connections between tuiles 
     vector<ConnectionWidget*>::iterator itCon=m_connections.begin();
@@ -142,9 +167,9 @@ void TreeWidget::refreshChildrenTuileWidgets() {
         }
     }
     //update the children of all the tuilewidgets
-    list<TuileWidget*>::iterator itWid=m_tuileWidgets.begin();
-    for(; itWid!=m_tuileWidgets.end(); ++itWid) {
-        (*itWid)->refreshChildrenTuileWidgets();
+    map<unsigned int, TuileWidget*>::iterator itWid=m_tuileWidgetMap.begin();
+    for(; itWid!=m_tuileWidgetMap.end(); ++itWid) {
+        itWid->second->refreshChildrenTuileWidgets();
     }
     //print the trees
     man->printTrees();
@@ -157,10 +182,10 @@ void TreeWidget::refreshTuiles() {
     m_pixelsPerFrame=m_pixelsPerBeat
                         /AudioManager::getInstance()->getFramesPerBeat();
     //notify
-    notify();
+    notifyUpdate();
 }
 
-void TreeWidget::notify() {
+void TreeWidget::notifyUpdate() {
     //update tuiles positions 
     m_zeroPosX = m_tuile->getLeftOffset()*m_pixelsPerFrame;
     for(unsigned int i=0; i<m_childrenTuileWidgets.size(); ++i) {
@@ -174,9 +199,9 @@ void TreeWidget::notify() {
             m_childrenTuileWidgets[i]->getWidget()->y());
     }
     //notify all tuiles
-    list<TuileWidget*>::const_iterator itWidget=m_tuileWidgets.begin();
-    for(;itWidget!=m_tuileWidgets.end(); ++itWidget) {
-        (*itWidget)->notify();
+    map<unsigned int, TuileWidget*>::iterator itWidget=m_tuileWidgetMap.begin();
+    for(;itWidget!=m_tuileWidgetMap.end(); ++itWidget) {
+        itWidget->second->notifyUpdate();
     }
     //update all connections
     vector<ConnectionWidget*>::iterator itCon=m_connections.begin();
@@ -203,7 +228,9 @@ int TreeWidget::handle(int event) {
             switch(Fl::event_key()) {
                 case FL_BackSpace: {
                     if(m_selectedTuile) {
-                        removeTuileWidget(m_selectedTuile);
+                        AudioManager::getInstance()
+                                            ->deleteTuile(
+                                                   m_selectedTuile->getTuile());
                         m_selectedTuile=NULL;
                     }
                     return 1;
@@ -258,17 +285,20 @@ void TreeWidget::clear() {
     for(; itCon!=m_connections.end(); ++itCon) {
         delete (*itCon);
     }
-    list<TuileWidget*>::iterator itWid=m_tuileWidgets.begin();
-    for(; itWid!=m_tuileWidgets.end(); ++itWid) {
-        delete (*itWid);
-    }
-    m_tuileWidgets.clear();
-    m_childrenTuileWidgets.clear();
-    m_audioTuileWidgets.clear();
     m_connections.clear();
+    vector<TuileWidget*>::iterator itWid=m_childrenTuileWidgets.begin();
+    for(; itWid!=m_childrenTuileWidgets.end(); ++itWid) {
+        remove((*itWid)->getWidget());
+    }
+    m_childrenTuileWidgets.clear();
+	map<unsigned int, TuileWidget*>::iterator itWidget=m_tuileWidgetMap.begin();
+	for(;itWidget!=m_tuileWidgetMap.end(); ++itWidget) {
+        delete itWidget->second;
+    }
+    m_tuileWidgetMap.clear();
+    m_audioTuileWidgets.clear();
     m_connectionIDCounter=0;
 }
-
 
 void TreeWidget::selectTuileWidget(TuileWidget* selected) {
     m_selectedTuile=selected;
@@ -277,9 +307,9 @@ void TreeWidget::selectTuileWidget(TuileWidget* selected) {
 void TreeWidget::deselectAllTuileWidgets() {
     m_selectedTuile=NULL;
     m_paramGroup->setWidget(NULL);
-	list<TuileWidget*>::const_iterator itWidget=m_tuileWidgets.begin();
-	for(;itWidget!=m_tuileWidgets.end(); ++itWidget) {
-        (*itWidget)->deselect();
+	map<unsigned int, TuileWidget*>::iterator itWidget=m_tuileWidgetMap.begin();
+	for(;itWidget!=m_tuileWidgetMap.end(); ++itWidget) {
+        itWidget->second->deselect();
     }
 }
 
@@ -307,8 +337,13 @@ bool TreeWidget::testMagnetWithTuile(const int& inX, const int& inY,
                                                         /m_pixelsPerFrame);
                 newWidget->getWidget()->position(newWidget->getWidget()->x(), 
                                                 inY);
+                newWidget->getTuile()->setName(tuileName);
+                newWidget->load();
             }
         }
+    }
+    if(drop) {
+        refreshChildrenTuileWidgets();
     }
 
     return false;
@@ -337,7 +372,7 @@ void TreeWidget::testConnection(AudioTuileWidget* tuile,
                                                         *itWidget));
                         m_connectionIDCounter++;
                         add(m_connections.back());
-                        notify();
+                        notifyUpdate();
                     }
                     else {
                         (*itWidget)->highlightReal();
@@ -355,7 +390,6 @@ void TreeWidget::markConnectionForRemoval(ConnectionWidget* con) {
 }
 
 void TreeWidget::addTuileWidget(TuileWidget* newWidget) {
-    m_tuileWidgets.push_back(newWidget);
     m_tuileWidgetMap[newWidget->getID()]=newWidget;
     refreshChildrenTuileWidgets();
     deselectAllTuileWidgets();
@@ -373,16 +407,20 @@ TuileWidget* TreeWidget::getTuileWidget(const unsigned int& id) {
     }
 }
 
-void TreeWidget::removeTuileWidget(TuileWidget* erasedWidget) {
-    AudioManager::getInstance()->deleteTuile(erasedWidget->getTuile());
-    m_tuileWidgetMap.erase(erasedWidget->getID());
-    remove(erasedWidget->getWidget());
-    delete erasedWidget;
-    m_paramGroup->clear();
-    if(m_tuileWidgets.size()==0) {
-        AudioManager::getInstance()->clearTrees();
+void TreeWidget::markWidgetForRemoval(TuileWidget* removedWidget) {
+    m_removingWidgets.push_back(removedWidget);
+}
+
+void TreeWidget::removeConnectionsWithWidget(AudioTuileWidget* widget) {
+    vector<ConnectionWidget*>::iterator itCon=m_connections.begin();
+    for(; itCon!=m_connections.end(); ++itCon) {
+        if((*itCon)->getFromWidget()->getID()==widget->getID() || 
+                (*itCon)->getToWidget()->getID()==widget->getID()) {
+            ConnectionWidget* con = (*itCon);
+            itCon = m_connections.erase(itCon);
+            delete con;
+        }
     }
-    redraw();
 }
 
 SeqWidget* TreeWidget::createSeqWidget(TuileWidget* t1, TuileWidget* t2) {
@@ -396,30 +434,40 @@ SeqWidget* TreeWidget::createSeqWidget(TuileWidget* t1, TuileWidget* t2) {
     return newWidget;
 }
 
-
 TuileWidget* TreeWidget::createTuileWidget(const std::string& tuileName) {
-    //TODO create the associated tuileparamwidget
     AudioManager* audioMan=AudioManager::getInstance();
     TuileWidget* newWidget=NULL;
     Tuile* newTuile=NULL;
     if(tuileName.find(".tui")!=string::npos) {
+        newWidget = load(tuileName);
+        if(newWidget) {
+            newTuile = newWidget->getTuile();
+        }
     }
-    else if(tuileName.compare("loop")==0) {
+    else if(tuileName.compare("Seq")==0) {
+        SeqTuile* newSTuile = audioMan->addSeqTuile();
+        newTuile = (Tuile*)newSTuile;
+        newWidget = new SeqWidget(tuileName, newSTuile);
+    }
+    else if(tuileName.compare("loop")==0 || tuileName.compare("Loop")==0) {
         LoopTuile* newLTuile = audioMan->addLoopTuile();
         newTuile = (Tuile*)newLTuile;
         newWidget = new LoopWidget(tuileName, newLTuile);
     }
-    else if(tuileName.compare("monitor")==0) {
+    else if(tuileName.compare("monitor")==0 
+                || tuileName.compare("MidiOscMonitorTuile")==0) {
         MidiOscMonitorTuile* newMTuile = audioMan->addMidiOscMonitorTuile();
         newTuile = (Tuile*)newMTuile;
         newWidget = new MonitorWidget(tuileName, newMTuile);
     }
-    else if(tuileName.compare("switch")==0) {
+    else if(tuileName.compare("switch")==0 
+                || tuileName.compare("MidiOscSwitchTuile")==0) {
         MidiOscSwitchTuile* newSwTuile = audioMan->addMidiOscSwitchTuile();
         newTuile = (Tuile*)newSwTuile;
         newWidget = new SwitchWidget(tuileName, newSwTuile);
     }
-    else if(tuileName.compare("output")==0) {
+    else if(tuileName.compare("output")==0 
+                || tuileName.compare("AudioOutput")==0) {
         AudioOutputTuile* newAOTuile = audioMan->addAudioOutputTuile(tuileName);
         newTuile = (Tuile*)newAOTuile;
         AudioOutputWidget* newAOWidget = 
@@ -427,7 +475,8 @@ TuileWidget* TreeWidget::createTuileWidget(const std::string& tuileName) {
         newWidget=newAOWidget;
         m_audioTuileWidgets.push_back(newAOWidget);
     }
-    else if(tuileName.compare("input")==0) {
+    else if(tuileName.compare("input")==0 
+                || tuileName.compare("AudioInput")==0) {
         AudioInputTuile* newAITuile = audioMan->addAudioInputTuile(tuileName);
         newTuile = (Tuile*)newAITuile;
         AudioInputWidget* newAIWidget = 
@@ -435,7 +484,8 @@ TuileWidget* TreeWidget::createTuileWidget(const std::string& tuileName) {
         newWidget=newAIWidget;
         m_audioTuileWidgets.push_back(newAIWidget);
     }
-    else if(tuileName.find(".wav")!=string::npos) {
+    else if(tuileName.find(".wav")!=string::npos 
+                || tuileName.compare("SoundFile")==0) {
         SoundFileTuile* newSFTuile = audioMan->addSoundFileTuile(tuileName);
         newTuile = (Tuile*)newSFTuile;
         SoundFileWidget* newSFWidget = 
@@ -443,14 +493,14 @@ TuileWidget* TreeWidget::createTuileWidget(const std::string& tuileName) {
         newWidget=newSFWidget;
         m_audioTuileWidgets.push_back(newSFWidget);
     }
-    else if(tuileName.find(".dsp")!=string::npos) {
+    else if(tuileName.find(".dsp")!=string::npos 
+                || tuileName.compare("Faust")==0) {
         FaustTuile* newFTuile = audioMan->addFaustTuile(tuileName);
         newTuile = (Tuile*)newFTuile;
         FaustWidget* newFWidget = new FaustWidget(tuileName, newFTuile);
         newWidget=newFWidget;
         m_audioTuileWidgets.push_back(newFWidget);
     }
-
     if(newTuile && newWidget) {
         addTuileWidget(newWidget);
         DEBUG("TreeWidget: created the new TuileWidget "<<tuileName);
@@ -459,167 +509,44 @@ TuileWidget* TreeWidget::createTuileWidget(const std::string& tuileName) {
         DEBUG("TreeWidget: could not create the new TuileWidget "<<tuileName);
     }
     return newWidget;
-
-/*
-
-    //LOAD tree file, or single leaf 
-    unsigned int newRootID;
-    vector<unsigned int> newIDs;
-    if(tuileName.find(".tui")!=string::npos) {
-        xmlDocPtr doc = xmlReadFile(tuileName.c_str(),NULL,0);
-        if(doc) {
-            xmlNodePtr rootNode = xmlDocGetRootElement(doc);
-            if(rootNode && string((const char*)rootNode->name)
-                                    .compare("SimpleTuilesLooper")==0) {
-                map<unsigned int, unsigned int> idsMap;
-                xmlNodePtr curNode;
-                for (curNode = rootNode->children; curNode; 
-                                    curNode = curNode->next) {
-                    if(string((const char*)curNode->name).compare("Tuiles")==0){
-                        m_tuilesManager->loadTree(curNode, newRootID, idsMap);
-                        //add tuiles widgets
-                        map<unsigned int, unsigned int>::iterator itIDs;
-                        itIDs=idsMap.begin();
-                        for(;itIDs!=idsMap.end();++itIDs) {
-                            std::string type= m_tuilesManager
-                                                ->getTuileProps(itIDs->second)
-                                                    ->getType();
-                            if(type.compare("leaf")==0 
-                                    ||  type.compare("switch")==0) {
-                                newIDs.push_back(itIDs->second);
-                            }
-                        }
-                    }
-                    else if(string((const char*)curNode->name)
-                                        .compare("Processes")==0) {
-                        m_processesManager->load(curNode, idsMap);
-                    }
-                }
-            }
-            xmlFreeDoc(doc);
-        }
-    }
-    else if(tuileName.compare("loop")==0) {
-        //create the new tuile
-        m_tuilesManager->addLoop(newRootID);
-        newIDs.push_back(newRootID);
-        std::string shortName = fl_filename_name(tuileName.c_str());
-        m_tuilesManager->getTuileProps(newRootID)->editName()=shortName;
-        //create the associated process
-        Process* newProcess = m_processesManager->addProcess(newRootID, 
-                                                                tuileName);
-        if(newProcess) {
-            m_tuilesManager->setTuileLengthInMs(newRootID, 
-                                                newProcess->getLengthInMs());
-        }
-        else {
-            cout<<"Could not load process "<<tuileName<<endl;
-        }
-    }
-    else if(tuileName.compare("switch")==0) {
-        //create the new tuile
-        m_tuilesManager->addSwitch(newRootID);
-        newIDs.push_back(newRootID);
-        std::string shortName = fl_filename_name(tuileName.c_str());
-        m_tuilesManager->getTuileProps(newRootID)->editName()=shortName;
-        //create the associated process
-        Process* newProcess = m_processesManager->addProcess(newRootID, 
-                                                                tuileName);
-        if(newProcess) {
-            m_tuilesManager->setTuileLengthInMs(newRootID, 
-                                                newProcess->getLengthInMs());
-        }
-        else {
-            cout<<"Could not load process "<<tuileName<<endl;
-        }
-    }
-    else if(tuileName.compare("monitor")==0) {
-        //create the new tuile
-        m_tuilesManager->addSwitch(newRootID);
-        newIDs.push_back(newRootID);
-        std::string shortName = fl_filename_name(tuileName.c_str());
-        m_tuilesManager->getTuileProps(newRootID)->editName()=shortName;
-        //create the associated process
-        Process* newProcess = m_processesManager->addProcess(newRootID, 
-                                                                tuileName);
-        if(newProcess) {
-            m_tuilesManager->setTuileLengthInMs(newRootID, 
-                                                newProcess->getLengthInMs());
-        }
-        else {
-            cout<<"Could not load process "<<tuileName<<endl;
-        }
-    }
-    else {
-        //create the new tuile
-        m_tuilesManager->addLeafTuile(4, newRootID);
-        newIDs.push_back(newRootID);
-        std::string shortName = fl_filename_name(tuileName.c_str());
-        m_tuilesManager->getTuileProps(newRootID)->editName()=shortName;
-        //create the associated process
-        Process* newProcess = m_processesManager->addProcess(newRootID, 
-                                                                tuileName);
-        if(newProcess) {
-            m_tuilesManager->setTuileLengthInMs(newRootID, 
-                                                newProcess->getLengthInMs());
-        }
-        else {
-            cout<<"Could not load process "<<tuileName<<endl;
-        }
-    }
-    
-    if(op.size()==0) {
-        if(m_tuilesManager->getNbTuileProps()==1) {
-            cout<<"first tuile"<<endl;
-            m_forkLeafID=newRootID;
-        }
-        else {
-            unsigned int forkID;
-            m_tuilesManager->addForkComposition(m_forkLeafID, newRootID, forkID);
-            m_forkLeafID=newRootID;
-        }
-    }
-    else {
-        TuileProps* props = m_tuilesManager->getTuileProps(id);
-        if(props) {
-            unsigned int opID;
-            if(op.compare("fork")==0) {
-                if(props->getType().compare("switch")==0) { 
-                    m_tuilesManager->addChild(newRootID, id);
-                }
-                else if(props->getType().compare("loop")==0) { 
-                    m_tuilesManager->addChild(newRootID, id);
-                }
-                else {
-                    m_tuilesManager->addForkComposition(id, newRootID, opID);
-                }
-            }
-            else if(op.compare("join")==0) {
-                if(props->getType().compare("switch")==0) { 
-                    m_tuilesManager->addChild(newRootID, id);
-                }
-                else {
-                    m_tuilesManager->addJoinComposition(id, newRootID, opID);
-                }
-            }
-            else if(op.compare("seq")==0) {
-                m_tuilesManager->addSequentialComposition(id, 
-                                                        newRootID, opID);
-            }
-            else if(op.compare("leftseq")==0) {
-                m_tuilesManager->addLeftSeqComposition(id, newRootID, opID);
-            }
-        }
-	}
-
-    vector<unsigned int>::iterator itNewIDs=newIDs.begin();
-    for(;itNewIDs!=newIDs.end(); ++itNewIDs) {
-        addTuileWidget(*itNewIDs);
-    }
-
-    m_tuilesManager->refreshTree();
-*/
 }
 
+void TreeWidget::save(const std::string& fileName) {
+    xmlDocPtr doc = xmlNewDoc(BAD_CAST "1.0");
+    xmlNodePtr rootNode = xmlNewNode(NULL, BAD_CAST "Tuiles");
+    xmlDocSetRootElement(doc, rootNode);
+    for(unsigned int c=0; c<m_childrenTuileWidgets.size(); ++c) {
+        m_childrenTuileWidgets[c]->save(rootNode);
+    }
+    xmlSaveFormatFileEnc(fileName.c_str(), doc, "UTF-8", 1);
+    xmlFreeDoc(doc);
+    xmlCleanupParser();
+}
 
+TuileWidget* TreeWidget::load(const std::string& fileName) {
+    TuileWidget* firstWidget=NULL;
+    int counter=0;
+    xmlDocPtr doc = xmlReadFile(fileName.c_str(), NULL, 0);
+    if(doc) {
+        xmlNodePtr rootNode = xmlDocGetRootElement(doc);
+        if(rootNode && 
+                string((const char*)rootNode->name).compare("Tuiles")==0) {
+            xmlNodePtr curNode;
+            for(curNode= rootNode->children; curNode; 
+                    curNode= curNode->next, counter++) {
+                if(curNode->type == XML_ELEMENT_NODE) {
+                    TuileWidget* newWidget = 
+                        createTuileWidget(string((const char*)curNode->name));
+                    if(newWidget) {
+                        newWidget->load(curNode);
+                        if(counter==0) {
+                            firstWidget=newWidget;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return firstWidget;
+}
 

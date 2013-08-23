@@ -19,8 +19,6 @@
 using namespace std;
 
 SoundFileTuile::SoundFileTuile():   AudioTuile(),
-                                    m_volume(1),
-                                    m_procVolume(1),
                                     m_grainVolume(1),
                                     m_grainSize(4096),
                                     m_windowSize(2),
@@ -31,6 +29,8 @@ SoundFileTuile::SoundFileTuile():   AudioTuile(),
                                     m_speed(1), 
                                     m_setWindowStart(0),
                                     m_lastSetWindowStart(0) {
+
+    m_type="SoundFile";
 
 	m_envelopes[m_grainSize] = new jack_default_audio_sample_t[m_grainSize];
 	for(unsigned int i=0; i<m_grainSize; ++i) {
@@ -45,56 +45,55 @@ SoundFileTuile::SoundFileTuile():   AudioTuile(),
 SoundFileTuile::~SoundFileTuile(){}
 
 void SoundFileTuile::load(const std::string& fileName) {
-
-	m_fileName=fileName;
-    m_name=m_fileName;
-
 	//get the file
 	SF_INFO sfInfo;
 	sfInfo.format=0;
-	SNDFILE* sndFile = sf_open(m_fileName.c_str(), SFM_READ, &sfInfo);
+	SNDFILE* sndFile = sf_open(fileName.c_str(), SFM_READ, &sfInfo);
+    if(sndFile) {
 
-	if(!sndFile) {
-		throw logic_error("Unable to open sound file");
-	}
-	
-	//test the Samplerate
-	m_sampleRate = sfInfo.samplerate;
-	
-	//channels
-	m_channelsCount = sfInfo.channels;
-    m_internalBuffer.resize(m_channelsCount);
-	
-	//frames number
-	m_framesCount = (long)(sfInfo.frames);
-    m_length=m_framesCount;
-    m_lengthInMs = float(m_framesCount)/(float(m_sampleRate)/1000.0);
+        m_fileName=fileName;
+        m_name=m_fileName;
+        
+        //test the Samplerate
+        m_sampleRate = sfInfo.samplerate;
+        
+        //channels
+        m_channelsCount = sfInfo.channels;
+        m_internalBuffer.resize(m_channelsCount);
+        
+        //frames number
+        m_framesCount = (long)(sfInfo.frames);
+        m_length=m_framesCount;
+        m_lengthInMs = float(m_framesCount)/(float(m_sampleRate)/1000.0);
 
-	//create the buffers
-	m_buffers = new jack_default_audio_sample_t*[m_channelsCount];
-	for(unsigned int i=0;i<m_channelsCount;++i) {
-		m_buffers[i] = new jack_default_audio_sample_t[m_framesCount];
-	}
+        //create the buffers
+        m_buffers = new jack_default_audio_sample_t*[m_channelsCount];
+        for(unsigned int i=0;i<m_channelsCount;++i) {
+            m_buffers[i] = new jack_default_audio_sample_t[m_framesCount];
+        }
 
-	int maxNbFramesToRead=1000;
-	float cf[m_channelsCount * maxNbFramesToRead];
-	unsigned int nbFrames;
-	unsigned int pos = 0;
-	while ((nbFrames = sf_readf_float(sndFile,cf,maxNbFramesToRead)) > 0) {
-		for (unsigned int i = 0; i < nbFrames*m_channelsCount; ++pos) {
-			for(unsigned int j=0; j<m_channelsCount; ++j) {
-				m_buffers[j][pos] = jack_default_audio_sample_t(cf[i]);
-				++i;
-			}
-		}
-	}
+        int maxNbFramesToRead=1000;
+        float cf[m_channelsCount * maxNbFramesToRead];
+        unsigned int nbFrames;
+        unsigned int pos = 0;
+        while ((nbFrames = sf_readf_float(sndFile,cf,maxNbFramesToRead)) > 0) {
+            for (unsigned int i = 0; i < nbFrames*m_channelsCount; ++pos) {
+                for(unsigned int j=0; j<m_channelsCount; ++j) {
+                    m_buffers[j][pos] = jack_default_audio_sample_t(cf[i]);
+                    ++i;
+                }
+            }
+        }
 
-	//close the file
-	if(sf_close(sndFile)) {
-		throw logic_error("Unable to close sound file");
-	}
+        //close the file
+        if(sf_close(sndFile)) {
+            throw logic_error("Unable to close sound file");
+        }
 
-	m_loaded=true;
+        DEBUG("SoundFileTuile "<<m_name<<" loaded");
+        m_loaded=true;
+        updateLoaded();
+    }
 }
 
 void SoundFileTuile::setSampleRate(const unsigned int& sr) {
@@ -147,10 +146,10 @@ void SoundFileTuile::unload() {
 		delete [] m_buffers;
 	}
 	m_loaded=false;
+    updateLoaded();
 }
 
 void SoundFileTuile::activate() {
-    //TODO compute position in file from position and speed
     m_filePosition=0;
 
 }
@@ -160,12 +159,7 @@ void SoundFileTuile::deactivate() {
 
 void SoundFileTuile::setLength(const long& length) {
     LeafTuile::setLength(length);
-    m_speed= float(m_framesCount)/float(m_length);
-    updateSoundFileProperties();
-}
-
-void SoundFileTuile::setVolume(const float& vol) {
-    m_volume=vol;
+    m_speed = float(m_framesCount)/float(m_length);
     updateSoundFileProperties();
 }
 
@@ -174,14 +168,13 @@ void SoundFileTuile::updateSoundFileProperties() {
                                                 (m_protoSetSFProps->popClone());
     if(com) {
         com->setSoundFileTuile(this);
-        com->setVolume(m_volume);
         com->setSpeed(m_speed);
         m_commandsToProc->runCommand(com);
     }
 }
 
 void SoundFileTuile::processBuffers(const int& nbFrames) {
-    if(!m_computed) {
+    if(!m_computed && m_procLoaded) {
         for(unsigned int c=0; c<m_channelsCount; ++c) {
             m_internalBuffer[c].resize(nbFrames);
             m_internalBuffer[c].assign(m_internalBuffer[c].size(), 0);
@@ -231,5 +224,18 @@ void SoundFileTuile::processBuffers(const int& nbFrames) {
 }
 
 
+xmlNodePtr SoundFileTuile::save(xmlNodePtr parentNode) {
+    xmlNodePtr node = AudioTuile::save(parentNode);
+    xmlNewProp(node, BAD_CAST "file", BAD_CAST m_fileName.c_str());
+    return node;
+}
 
+void SoundFileTuile::load(xmlNodePtr node) {
+    char* value=NULL;
+    value=NULL;
+    value = (char*)xmlGetProp(node,(xmlChar*)"file");
+    if(value) {
+        load(std::string(value));
+    }
+}
 

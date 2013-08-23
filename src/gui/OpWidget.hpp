@@ -20,6 +20,11 @@ class OpWidget: public TuileWidget, public Fl_Group {
     public:
         OpWidget(const std::string& name, tuiles::OpTuile*);
         virtual ~OpWidget();
+
+        virtual void save(xmlNodePtr parentNode);
+        virtual void load(xmlNodePtr node);
+        virtual void notifyDelete();
+
         inline virtual void draw(){drawComposition();}
         virtual void drawExecution(const int& offset=0);
         void refreshChildrenTuileWidgets();

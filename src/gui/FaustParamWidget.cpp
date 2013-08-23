@@ -15,16 +15,20 @@
 
 using namespace std;
 
-
 FaustParamWidget::FaustParamWidget(FaustTuile* faustTuile):
                                 AudioTuileParamWidget(faustTuile),
                                 m_faustTuile(faustTuile) {
-    
-    m_faustTuile->getDSP()->buildUserInterface(this);
+    load();
     end();
 }
 
 FaustParamWidget::~FaustParamWidget() {}
+
+void FaustParamWidget::load() {
+    if(m_faustTuile->getDSP()) {
+        m_faustTuile->getDSP()->buildUserInterface(this);
+    }
+}
 
 void FaustParamWidget::cbParamVal(Fl_Valuator* val) {
     if(m_paramsMap.find(std::string(val->label()))!=m_paramsMap.end()) {

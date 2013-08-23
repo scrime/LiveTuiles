@@ -17,6 +17,7 @@ class SwitchWidget: public OpWidget {
   public:
 	SwitchWidget(const std::string& name, MidiOscSwitchTuile*);
 	~SwitchWidget();
+    virtual void notifyUpdate();
 
   private:
 

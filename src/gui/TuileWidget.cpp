@@ -44,8 +44,7 @@ TuileWidget::TuileWidget(Tuile* tuile):
 
 TuileWidget::~TuileWidget() {}
 
-
-void TuileWidget::notify() {
+void TuileWidget::notifyUpdate() {
     DEBUG("TuileWidget "<<m_id<<" modified, "
             <<" left offset: "<<m_tuile->getLeftOffset()
             <<" right offset: "<<m_tuile->getRightOffset()
@@ -59,5 +58,10 @@ void TuileWidget::notify() {
     m_sync2X=m_width-max<float>(0, m_tuile->getRightOffset())*pixPerFrame;
     m_real1X=max<float>(0, -m_tuile->getLeftOffset())*pixPerFrame;
     m_real2X=m_width-max<float>(0, -m_tuile->getRightOffset())*pixPerFrame;
+}
+
+void TuileWidget::load(xmlNodePtr node) {
+    m_tuile->load(node);
+    notifyUpdate();
 }
 

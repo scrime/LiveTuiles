@@ -44,7 +44,7 @@ void OpWidget::refreshChildrenTuileWidgets() {
             add(wid->getWidget());
         }
     }
-    notify();
+    notifyUpdate();
 }
 
 
@@ -68,5 +68,31 @@ bool OpWidget::testMagnetWithTuile(const int& inX, const int& inY,
         }
     }
     return magnetized;
+}
+
+void OpWidget::save(xmlNodePtr parentNode) {
+    xmlNodePtr node = m_opTuile->save(parentNode);
+    for(unsigned int c=0; c<m_childrenTuileWidgets.size(); ++c) {
+        m_childrenTuileWidgets[c]->save(node);
+    }
+}
+
+void OpWidget::load(xmlNodePtr node) {
+    TuileWidget::load(node);
+    xmlNodePtr childNode;
+    for(childNode= node->children; childNode; childNode= childNode->next) {
+        if(childNode->type == XML_ELEMENT_NODE) {
+            TuileWidget* newWidget = 
+                TreeWidget::getInstance()
+                    ->createTuileWidget(string((const char*)childNode->name));
+            if(newWidget) {
+                newWidget->load(childNode);
+            }
+        }
+    }
+}
+
+void OpWidget::notifyDelete() {
+    TreeWidget::getInstance()->markWidgetForRemoval(this);
 }
 

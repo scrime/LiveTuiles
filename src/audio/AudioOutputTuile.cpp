@@ -8,13 +8,16 @@
 #include "AudioOutputTuile.hpp"
 
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 
 #include "AudioManager.hpp"
 
 using namespace std;
 
-AudioOutputTuile::AudioOutputTuile(): AudioTuile(){}
+AudioOutputTuile::AudioOutputTuile(): AudioTuile(){
+    m_type="AudioOutput";
+}
 
 AudioOutputTuile::~AudioOutputTuile() {
     AudioManager* man=AudioManager::getInstance();
@@ -42,15 +45,18 @@ void AudioOutputTuile::load(const std::string& output) {
     jack_connect(man->getJackClient(), 
                     string("LiveTuiles:"+output+"-R").c_str(), 
                     "system:playback_2");
+    DEBUG("AudioOutputTuile "<<m_name<<" loaded");
 	m_loaded=true;
+    updateLoaded();
 }
 
 void AudioOutputTuile::unload() {
 	m_loaded=false;
+    updateLoaded();
 }
 
 void AudioOutputTuile::processBuffers(const int& nbFrames) {
-    if(!m_computed) {
+    if(!m_computed && m_procLoaded) {
         m_internalBuffer[0].assign(nbFrames, 0);
         m_internalBuffer[1].assign(nbFrames, 0);
         jack_default_audio_sample_t* bufL=(jack_default_audio_sample_t *)
@@ -76,5 +82,10 @@ void AudioOutputTuile::processBuffers(const int& nbFrames) {
         }
         m_computed=true;
      }
+}
+
+void AudioOutputTuile::load(xmlNodePtr node) {
+    AudioTuile::load(node);
+    load(m_name);
 }
 

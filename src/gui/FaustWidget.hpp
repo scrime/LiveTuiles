@@ -12,13 +12,19 @@
 #include "AudioTuileWidget.hpp"
 
 class FaustTuile;
+class FaustParamWidget;
 
 class FaustWidget: public AudioTuileWidget {
   public:
 	FaustWidget(const std::string& name, FaustTuile*);
 	~FaustWidget();
 
+    void load();
+    void load(xmlNodePtr);
+
   private:
+    FaustTuile* m_faustTuile;
+    FaustParamWidget* m_faustParamWidget;
     
 };
 

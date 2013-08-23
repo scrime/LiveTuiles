@@ -16,7 +16,9 @@
 using namespace std;
 using namespace tuiles;
 
-MidiOscSwitchTuile::MidiOscSwitchTuile():   SwitchTuile() {}
+MidiOscSwitchTuile::MidiOscSwitchTuile(): SwitchTuile() {
+    m_type="MidiOscSwitch";
+}
 
 MidiOscSwitchTuile::~MidiOscSwitchTuile() {}
 

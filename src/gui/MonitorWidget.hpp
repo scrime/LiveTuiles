@@ -17,6 +17,7 @@ class MonitorWidget: public LeafTuileWidget {
   public:
 	MonitorWidget(const std::string& name, MidiOscMonitorTuile*);
 	~MonitorWidget();
+    virtual void notifyUpdate();
 
   private:
     

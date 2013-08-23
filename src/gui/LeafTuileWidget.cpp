@@ -129,6 +129,7 @@ void LeafTuileWidget::drawExecution(const int& offset) {
 	//realwindow
 	fl_color(m_realColor);
 	fl_rectf(x()+m_real1X+offset, y(), m_real2X-m_real1X, h());
+
     //name background
 	fl_color(m_realColor);
 	fl_rectf(x()+m_real1X+2+offset, y(), 
@@ -137,12 +138,14 @@ void LeafTuileWidget::drawExecution(const int& offset) {
     fl_color(fl_darker(m_realColor));
 	fl_font(FL_HELVETICA_ITALIC, 10);
 	fl_draw(m_name.c_str(), x()+m_real1X+2+offset, y()+h()/2-fl_descent());
+
     //realization frame
 	fl_color(fl_darker(m_realColor));
 	fl_rect(x()+m_real1X+offset, y(), m_real2X-m_real1X, h());
 }
 
 int LeafTuileWidget::handle(int event) {
+    fl_cursor(FL_CURSOR_DEFAULT);
     switch(event) { 
         case FL_MOVE: { 
             if(abs(Fl::event_x()-(x()+m_sync2X))<m_magnetSize) {
@@ -168,7 +171,9 @@ int LeafTuileWidget::handle(int event) {
                 }
                 return 1;
             }
+            fl_cursor(FL_CURSOR_DEFAULT);
             m_overPart=TUILE_NONE;
+            return 0;
         }break;
         case FL_DRAG: {
             float diffX = Fl::event_x()-m_dragPosX;
@@ -196,43 +201,64 @@ int LeafTuileWidget::handle(int event) {
             return 1;
         }break;
         case FL_PUSH: {
-            m_dragPosX=Fl::event_x();
-            m_dragPosY=Fl::event_y();
-            TreeWidget::getInstance()->deselectAllTuileWidgets();
-            TreeWidget::getInstance()->selectTuileWidget(this);
-            select();
-            return 1;
+            if(abs(Fl::event_x()-(x()+m_sync2X))<m_magnetSize || 
+                (Fl::event_x()>x()+m_real1X && Fl::event_x()<x()+m_real2X) ) {
+                m_dragPosX=Fl::event_x();
+                m_dragPosY=Fl::event_y();
+                TreeWidget::getInstance()->deselectAllTuileWidgets();
+                TreeWidget::getInstance()->selectTuileWidget(this);
+                select();
+                return 1;
+            }
+            else {
+                resetHighlight();
+                return 0;
+            }
         }break;
         case FL_RELEASE: {
-            return 1;
+            if(abs(Fl::event_x()-(x()+m_sync2X))<m_magnetSize || 
+                (Fl::event_x()>x()+m_real1X && Fl::event_x()<x()+m_real2X) ) {
+                return 1;
+            }
+            return 0;
         }break;
         case FL_ENTER:
         case FL_FOCUS: {
-            return 1;
-        }
+            if(abs(Fl::event_x()-(x()+m_sync2X))<m_magnetSize || 
+                (Fl::event_x()>x()+m_real1X && Fl::event_x()<x()+m_real2X) ) {
+                highlightReal();
+                return 1;
+            }
+            else {
+                resetHighlight();
+                return 0;
+            }
+        }break;
         case FL_LEAVE: 
         case FL_UNFOCUS: {
-            resetHighlight();
             fl_cursor(FL_CURSOR_DEFAULT);
-            return 1;
+            if(abs(Fl::event_x()-(x()+m_sync2X))<m_magnetSize || 
+                (Fl::event_x()>x()+m_real1X && Fl::event_x()<x()+m_real2X) ) {
+                resetHighlight();
+                return 1;
+            }
+            return 0;
         }break;
         default:break;
     }
     return 0;
 }
 
-void LeafTuileWidget::notify() {
-    TuileWidget::notify();
+void LeafTuileWidget::notifyUpdate() {
+    TuileWidget::notifyUpdate();
     m_name=fl_filename_name(m_tuile->getName().c_str());
     resize(x(), y(), m_width, h());
 	this->redraw();
 }
 
-void LeafTuileWidget::save(xmlNodePtr node) {
-    ostringstream oss;
-    oss<<y();
-    xmlNewProp(node, BAD_CAST "widget_y_offset", 
-                BAD_CAST oss.str().c_str());
+void LeafTuileWidget::notifyDelete() {
+    TreeWidget::getInstance()->markWidgetForRemoval(this);
+    cout<<"delete notified"<<endl;
 }
 
 void LeafTuileWidget::select() {
@@ -260,10 +286,12 @@ bool LeafTuileWidget::testMagnetWithTuile(const int& inX, const int& inY,
                 TreeWidget* tree = TreeWidget::getInstance();
                 TuileWidget* newWidget = tree->createTuileWidget(tuileName);
                 if(newWidget) {
+                    newWidget->getTuile()->setName(tuileName);
+                    newWidget->load();
                     newWidget->getWidget()->position(x(), y());
                     SeqWidget* newSeqWidget = 
                         tree->createSeqWidget(this, newWidget);
-                    newSeqWidget->notify();
+                    newSeqWidget->notifyUpdate();
                 }
                 tree->refreshTuiles();
 
@@ -275,4 +303,24 @@ bool LeafTuileWidget::testMagnetWithTuile(const int& inX, const int& inY,
     return false;
 }
 
+void LeafTuileWidget::save(xmlNodePtr parentNode) {
+    xmlNodePtr node = m_tuile->save(parentNode);
+    ostringstream oss;
+    oss<<y();
+    xmlNewProp(node, BAD_CAST "widget_y_offset", BAD_CAST oss.str().c_str());
+}
+
+void LeafTuileWidget::load(xmlNodePtr node) {
+    TuileWidget::load(node);
+    char* value=NULL;
+    value=NULL;
+    value = (char*)xmlGetProp(node,(xmlChar*)"widget_y_offset");
+    if(value) {
+        position(x(), atoi(value));
+    }
+}
+
+void LeafTuileWidget::load() {
+    m_name = m_tuile->getName();
+}
 

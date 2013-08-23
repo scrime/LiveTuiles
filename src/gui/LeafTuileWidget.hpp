@@ -25,8 +25,11 @@ class LeafTuileWidget: public TuileWidget, public Fl_Widget {
 	inline void setName(const std::string& name){m_name=name;}
 
     void update();
-    virtual void notify();
-    virtual void save(xmlNodePtr);
+    virtual void notifyUpdate();
+    virtual void notifyDelete();
+    virtual void save(xmlNodePtr parentNode);
+    virtual void load(xmlNodePtr node);
+    virtual void load();
 
     virtual int handle(int event);
     virtual void draw(){drawComposition();}
@@ -37,6 +40,8 @@ class LeafTuileWidget: public TuileWidget, public Fl_Widget {
     inline int getRealIn() {return x()+m_real1X;}
     inline int getRealOut() {return x()+m_real2X;}
     inline int getCenterReal(){return x()+m_real1X+(m_real2X-m_real1X)/2;}
+    inline int getSync1Y(){return y()+h()/2;}
+    inline int getSync2Y(){return y()+h()/2;}
 
     void select();
     void deselect();

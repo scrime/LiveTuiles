@@ -18,7 +18,11 @@ class SoundFileWidget: public AudioTuileWidget {
 	SoundFileWidget(const std::string& name, SoundFileTuile*);
 	~SoundFileWidget();
 
+    void load();
+    void load(xmlNodePtr);
+
   private:
+    SoundFileTuile* m_soundFileTuile;
     
 };
 
