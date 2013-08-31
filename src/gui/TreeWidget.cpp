@@ -35,7 +35,7 @@ using namespace std;
 using namespace tuiles;
 
 TreeWidget::TreeWidget():   TuileWidget(AudioManager::getInstance()),
-                            Fl_Scroll(0,0,100,100,""),
+                            Fl_Group(0, 0, 100, 100, ""),
                             m_cursorX(0), 
                             m_offsetX(10), m_offsetY(10), m_magnetSize(5),
                             m_zeroPosX(0), 
@@ -44,6 +44,8 @@ TreeWidget::TreeWidget():   TuileWidget(AudioManager::getInstance()),
 	end();
     m_id=-1;
     type(Fl_Scroll::BOTH);
+    clip_children(1);
+    resizable(NULL);
     m_tuile->addObserver(this);
     zoom(0);
 }
@@ -70,7 +72,7 @@ void TreeWidget::update() {
                 itCon++;
             }
         }
-        remove(m_removingConnection);
+//        remove(m_removingConnection);
         delete m_removingConnection;
         m_removingConnection=NULL;
         MainWindow::getInstance()->redraw();
@@ -109,22 +111,21 @@ void TreeWidget::zoom(const float& zoom) {
 }
 
 void TreeWidget::draw() {
-    Fl_Scroll::draw();
-
+    Fl_Group::draw();
 
 	//box
 	fl_draw_box(FL_DOWN_BOX, x(), y(), w(), h(), FL_BACKGROUND_COLOR);
 	fl_push_clip(x()+2, y()+2, w()-4, h()-4);
 
 	//score and beat lines
-	fl_rectf(x()+(m_zeroPosX-xposition()), y(), 
-            w()-(m_zeroPosX-xposition()), h(), FL_BACKGROUND2_COLOR);
-/*
-	fl_color(FL_WHITE);
-	for(int i=x()+(m_zeroPosX-xposition()); i<x()+w(); i+=m_pixelsPerBeat) {
-		fl_line(i, y(), i, y()+h());
-	}
-*/
+	//fl_rectf(x()+(m_zeroPosX-xposition()), y(), 
+    //        w()-(m_zeroPosX-xposition()), h(), FL_BACKGROUND2_COLOR);
+	fl_rectf(x()+(m_zeroPosX), y(), 
+            w()-(m_zeroPosX), h(), FL_BACKGROUND2_COLOR);
+//	fl_color(FL_WHITE);
+//	for(int i=x()+(m_zeroPosX-xposition()); i<x()+w(); i+=m_pixelsPerBeat) {
+//		fl_line(i, y(), i, y()+h());
+//	}
 
     //connections between tuiles 
     vector<ConnectionWidget*>::iterator itCon=m_connections.begin();
@@ -139,22 +140,29 @@ void TreeWidget::draw() {
         (*itWidgetNode)->drawExecution();
     }
 
-    //then draw composition tuiles and scrollbar
-	draw_children();
+    //then draw composition tuiles
+    itWidgetNode=m_childrenTuileWidgets.begin();
+    for(; itWidgetNode!=m_childrenTuileWidgets.end(); ++itWidgetNode) {
+        (*itWidgetNode)->drawComposition();
+    }
 
     //cursor
 	fl_color(FL_RED);
-    fl_line(x()+m_cursorX+(m_zeroPosX-xposition()), y(), 
-            x()+m_cursorX+(m_zeroPosX-xposition()), y()+h());
+    //fl_line(x()+m_cursorX+(m_zeroPosX-xposition()), y(), 
+    //        x()+m_cursorX+(m_zeroPosX-xposition()), y()+h());
+    fl_line(x()+m_cursorX+(m_zeroPosX), y(), 
+            x()+m_cursorX+(m_zeroPosX), y()+h());
 	fl_pop_clip();
 }
 
 void TreeWidget::refreshChildrenTuileWidgets() {
+/*
     //remove all children tuile widgets
     vector<TuileWidget*>::iterator itChWid=m_childrenTuileWidgets.begin();
     for(; itChWid!=m_childrenTuileWidgets.end(); ++itChWid) {
         remove((*itChWid)->getWidget());
     }
+*/
     m_childrenTuileWidgets.clear();
     //get new children tuile widgets
     AudioManager* man = AudioManager::getInstance();
@@ -163,7 +171,7 @@ void TreeWidget::refreshChildrenTuileWidgets() {
         if(m_tuileWidgetMap.find((*itChild)->getID())!=m_tuileWidgetMap.end()){
             m_childrenTuileWidgets.push_back(
                                         m_tuileWidgetMap[(*itChild)->getID()]);
-            add(m_tuileWidgetMap[(*itChild)->getID()]->getWidget());
+            //add(m_tuileWidgetMap[(*itChild)->getID()]->getWidget());
         }
     }
     //update the children of all the tuilewidgets
@@ -188,12 +196,20 @@ void TreeWidget::refreshTuiles() {
 void TreeWidget::notifyUpdate() {
     //update tuiles positions 
     m_zeroPosX = m_tuile->getLeftOffset()*m_pixelsPerFrame;
+    cout<<m_zeroPosX<<endl;
     for(unsigned int i=0; i<m_childrenTuileWidgets.size(); ++i) {
+/*
         m_childrenTuileWidgets[i]->getWidget()->position(
             min<float>(m_tuile->getLeftOffset(), 
                         m_tuile->getLeftOffset()
                             -m_childrenTuileWidgets[i]
                                 ->getTuile()->getLeftOffset())
+                *m_pixelsPerFrame
+                +x(), 
+*/
+        m_childrenTuileWidgets[i]->getWidget()->position(
+            (m_tuile->getLeftOffset()
+            -m_childrenTuileWidgets[i]->getTuile()->getLeftOffset())
                 *m_pixelsPerFrame
                 +x(), 
             m_childrenTuileWidgets[i]->getWidget()->y());
@@ -212,6 +228,21 @@ void TreeWidget::notifyUpdate() {
 }
 
 int TreeWidget::handle(int event) {
+    bool handled=false;
+    vector<TuileWidget*>::iterator itChWid=m_childrenTuileWidgets.begin();
+    for(; itChWid!=m_childrenTuileWidgets.end() && !handled; ++itChWid) {
+        handled=(*itChWid)->getWidget()->handle(event);
+    }
+    if(handled) {
+        return 1;
+    }
+    vector<ConnectionWidget*>::iterator itCon=m_connections.begin();
+    for(; itCon!=m_connections.end() && !handled; ++itCon) {
+        handled=(*itCon)->handle(event);
+    }
+    if(handled) {
+        return 1;
+    }
     switch(event) { 
         case FL_MOUSEWHEEL: {
             if(Fl::event_state(FL_CTRL|FL_COMMAND)) {
@@ -220,7 +251,7 @@ int TreeWidget::handle(int event) {
             }
             else {
                 redraw();
-                return Fl_Scroll::handle(event);
+                return Fl_Group::handle(event);
             }
         }
         break;
@@ -276,7 +307,7 @@ int TreeWidget::handle(int event) {
         }break;
         default:break;
     }
-    return Fl_Scroll::handle(event);
+    return 0;
 }
 
 void TreeWidget::clear() { 
@@ -286,18 +317,23 @@ void TreeWidget::clear() {
         delete (*itCon);
     }
     m_connections.clear();
+    m_removingConnection = NULL;
+    m_connectionIDCounter=0;
     vector<TuileWidget*>::iterator itWid=m_childrenTuileWidgets.begin();
     for(; itWid!=m_childrenTuileWidgets.end(); ++itWid) {
+        cout<<"removing from group "<<(*itWid)->getID()<<endl;
         remove((*itWid)->getWidget());
     }
     m_childrenTuileWidgets.clear();
 	map<unsigned int, TuileWidget*>::iterator itWidget=m_tuileWidgetMap.begin();
 	for(;itWidget!=m_tuileWidgetMap.end(); ++itWidget) {
+        cout<<"deleting from map "<<itWidget->second->getID()<<endl;
         delete itWidget->second;
     }
     m_tuileWidgetMap.clear();
     m_audioTuileWidgets.clear();
-    m_connectionIDCounter=0;
+    m_removingWidgets.clear();
+    cout<<"cleared tree widget"<<endl;
 }
 
 void TreeWidget::selectTuileWidget(TuileWidget* selected) {
@@ -371,7 +407,7 @@ void TreeWidget::testConnection(AudioTuileWidget* tuile,
                                                     tuile, 
                                                         *itWidget));
                         m_connectionIDCounter++;
-                        add(m_connections.back());
+                        //add(m_connections.back());
                         notifyUpdate();
                     }
                     else {

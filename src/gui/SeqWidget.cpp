@@ -30,19 +30,20 @@ SeqWidget::~SeqWidget() {}
 
 void SeqWidget::drawComposition() {
     fl_line_style(0);
-	fl_color(fl_lighter(FL_BACKGROUND_COLOR));
-	fl_rect(x()+m_real1X, y(), m_real2X-m_real1X, h());
+	fl_color(fl_darker(FL_BACKGROUND_COLOR));
+	fl_rect(x(), y(), w(), h());
     vector<TuileWidget*>::iterator itChild=m_childrenTuileWidgets.begin();
     for(; itChild!=m_childrenTuileWidgets.end(); ++itChild) {
         (*itChild)->drawComposition();
     }
 }
 
+/*
 int SeqWidget::handle(int event) {
     Fl_Group::handle(event);
     return 1;
 
-/*
+
     if(!Fl_Group::handle(event)) {
         //TODO allow clicking on borders
         switch(event) { 
@@ -70,8 +71,8 @@ int SeqWidget::handle(int event) {
     else {
         return 1;
     }
-*/
 }
+*/
 
 void SeqWidget::notifyUpdate() {
     TuileWidget::notifyUpdate();
@@ -85,10 +86,10 @@ void SeqWidget::notifyUpdate() {
         if(*itChild) {
             (*itChild)->notifyUpdate();
             float childPos=-m_seqTuile->getChildPositionAtPos(childID, 0);
-            childPos=min<float>(childPos, 
-                            childPos+(*itChild)->getTuile()->getLeftOffset());
+            //childPos=min<float>(childPos, 
+            //                childPos+(*itChild)->getTuile()->getLeftOffset());
             Fl_Widget* wid = (*itChild)->getWidget();
-            wid->resize(x()+m_real1X+childPos*pixPerFrame, 
+            wid->resize(x()+childPos*pixPerFrame, 
                                             wid->y(),
                                             wid->w(),
                                             wid->h());

@@ -50,14 +50,9 @@ void TuileWidget::notifyUpdate() {
             <<" right offset: "<<m_tuile->getRightOffset()
             <<" length: "<<m_tuile->getLength());
     float pixPerFrame=TreeWidget::getInstance()->getPixelsPerFrame();
-    m_width=(m_tuile->getLength()
-                    +max<float>(0, -m_tuile->getLeftOffset())+
-                    +max<float>(0, -m_tuile->getRightOffset()))
-                *pixPerFrame;
-    m_sync1X=max<float>(0, m_tuile->getLeftOffset())*pixPerFrame;
-    m_sync2X=m_width-max<float>(0, m_tuile->getRightOffset())*pixPerFrame;
-    m_real1X=max<float>(0, -m_tuile->getLeftOffset())*pixPerFrame;
-    m_real2X=m_width-max<float>(0, -m_tuile->getRightOffset())*pixPerFrame;
+    m_width=m_tuile->getLength()*pixPerFrame;
+    m_sync1X=m_tuile->getLeftOffset()*pixPerFrame;
+    m_sync2X=m_width-m_tuile->getRightOffset()*pixPerFrame;
 }
 
 void TuileWidget::load(xmlNodePtr node) {

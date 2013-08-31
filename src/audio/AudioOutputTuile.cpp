@@ -17,6 +17,7 @@ using namespace std;
 
 AudioOutputTuile::AudioOutputTuile(): AudioTuile(){
     m_type="AudioOutput";
+    DEBUG("Created an audio output tuile");
 }
 
 AudioOutputTuile::~AudioOutputTuile() {

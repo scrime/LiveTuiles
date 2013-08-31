@@ -27,6 +27,7 @@ class OpWidget: public TuileWidget, public Fl_Group {
 
         inline virtual void draw(){drawComposition();}
         virtual void drawExecution(const int& offset=0);
+        virtual int handle(int event);
         void refreshChildrenTuileWidgets();
         inline virtual Fl_Widget* getWidget(){return this;}
         virtual bool testMagnetWithTuile(const int& inX, const int& inY,

@@ -37,9 +37,9 @@ class LeafTuileWidget: public TuileWidget, public Fl_Widget {
     virtual void drawExecution(const int& offset=0);
     inline int getSyncIn() {return x()+m_sync1X;}
     inline int getSyncOut() {return x()+m_sync2X;}
-    inline int getRealIn() {return x()+m_real1X;}
-    inline int getRealOut() {return x()+m_real2X;}
-    inline int getCenterReal(){return x()+m_real1X+(m_real2X-m_real1X)/2;}
+    inline int getRealIn() {return x();}
+    inline int getRealOut() {return x()+w();}
+    inline int getCenterReal(){return x()+w()/2;}
     inline int getSync1Y(){return y()+h()/2;}
     inline int getSync2Y(){return y()+h()/2;}
 
@@ -60,10 +60,8 @@ class LeafTuileWidget: public TuileWidget, public Fl_Widget {
     inline virtual Fl_Widget* getWidget(){return this;}
 
   protected:
-
     std::string m_name;
     std::vector<LeafTuileWidget*> m_inputWidgets;
-
     
 };
 

@@ -25,7 +25,7 @@ class AudioTuileWidget;
 class LeafTuileWidget;
 class ConnectionWidget;
 
-class TreeWidget : public TuileWidget, public Fl_Scroll {
+class TreeWidget : public TuileWidget, public Fl_Group {
     public:
         static TreeWidget* getInstance();
         ~TreeWidget();

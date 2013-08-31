@@ -85,9 +85,11 @@ class TuileWidget: public tuiles::Observer {
     enum TUILE_PART{TUILE_NONE, TUILE_SYNCIN, TUILE_SYNCOUT, TUILE_LENGTH};
     TUILE_PART m_overPart;
     TUILE_PART m_draggedPart;
+    bool m_dragging;
 
 	int m_dragPosX;
 	int m_dragPosY;
+    float m_dragFrame;
 	int m_magnetSize;
 	int m_measureDiv;
     bool m_connecting;

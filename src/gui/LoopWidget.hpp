@@ -27,6 +27,10 @@ class LoopWidget: public OpWidget {
                                     int& outX, int& outY,     
                                     const std::string& tuileName,
                                     const bool& drop);
+    virtual void setSync1Y(const int& y);
+    virtual void setSync2Y(const int& y);
+    int getSync1Y();
+    int getSync2Y();
 
   private:
     tuiles::LoopTuile* m_loopTuile;

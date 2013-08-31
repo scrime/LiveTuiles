@@ -28,8 +28,7 @@ AudioTuileWidget::AudioTuileWidget(const std::string& name,
 
 AudioTuileWidget::~AudioTuileWidget() {}
 
-void AudioTuileWidget::load() {
-}
+void AudioTuileWidget::load() {}
 
 void AudioTuileWidget::notifyDelete() {
     TreeWidget::getInstance()->removeConnectionsWithWidget(this);

@@ -137,7 +137,9 @@ void MainWindow::init() {
 	m_pack->add(m_editPart);
 	this->add(m_pack);
 
-    resizable(this);
+    resizable(m_pack);
+    //m_pack->resizable(m_tuilesPart);
+    m_tuilesPart->resizable(m_tuilesTree);
 
     //clear to add first leaf and loop tuile 
     clearAll();

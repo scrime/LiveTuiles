@@ -54,28 +54,20 @@ void ConnectionWidget::drawConnection() {
 
 int ConnectionWidget::handle(int event) {
     switch(event) { 
-        case FL_ENTER:
-        case FL_FOCUS: {
-            m_deleting=true;
-            TreeWidget::getInstance()->redraw();
-            return 1;
-        }
-        case FL_LEAVE: 
-        case FL_UNFOCUS: {
+        case FL_MOVE: {
             m_deleting=false;
-            TreeWidget::getInstance()->redraw();
-            return 1;
+            if(Fl::event_x()>x() && Fl::event_x()<x()+w() 
+                    && Fl::event_y()>y() && Fl::event_y()<y()+h()) {
+
+                m_deleting=true;
+                return 1;
+            }
+                //TreeWidget::getInstance()->redraw();
         }break;
         case FL_PUSH: {
             if(m_deleting) {
                 TreeWidget::getInstance()->markConnectionForRemoval(this);
             }
-            return 1;
-        }break;
-        case FL_DRAG: {
-            return 1;
-        }break;
-        case FL_RELEASE: {
             return 1;
         }break;
         default:break;

@@ -41,7 +41,7 @@ void OpWidget::refreshChildrenTuileWidgets() {
         if(wid) {
             cout<<"added child widget to op"<<endl;
             m_childrenTuileWidgets.push_back(wid);
-            add(wid->getWidget());
+            //add(wid->getWidget());
         }
     }
     notifyUpdate();
@@ -94,5 +94,15 @@ void OpWidget::load(xmlNodePtr node) {
 
 void OpWidget::notifyDelete() {
     TreeWidget::getInstance()->markWidgetForRemoval(this);
+    cout<<"op widget delete notified"<<endl;
+}
+
+int OpWidget::handle(int event) {
+    bool handled=false;
+    vector<TuileWidget*>::iterator itChWid=m_childrenTuileWidgets.begin();
+    for(; itChWid!=m_childrenTuileWidgets.end() && !handled; ++itChWid) {
+        handled=(*itChWid)->getWidget()->handle(event);
+    }
+    return handled;
 }
 
