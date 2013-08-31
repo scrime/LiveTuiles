@@ -53,26 +53,6 @@ void LoopWidget::drawExecution(const int& offset) {
     }
 }
 
-int LoopWidget::handle(int event) {
-    if(!Fl_Group::handle(event)) {
-        switch(event) { 
-            case FL_ENTER:
-            case FL_FOCUS: {
-                return 1;
-            }
-            case FL_LEAVE: 
-            case FL_UNFOCUS: {
-                return 1;
-            }break;
-            default:break;
-        }
-        return 0;
-    }
-    else {
-        return 1;
-    }
-}
-
 void LoopWidget::notifyUpdate() {
     TuileWidget::notifyUpdate();
     if(m_childrenTuileWidgets.size()>=1) {

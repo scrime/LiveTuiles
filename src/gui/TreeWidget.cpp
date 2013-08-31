@@ -46,7 +46,6 @@ TreeWidget::TreeWidget():   TuileWidget(AudioManager::getInstance()),
     type(Fl_Scroll::BOTH);
     clip_children(1);
     resizable(NULL);
-    m_tuile->addObserver(this);
     zoom(0);
 }
 
@@ -196,17 +195,8 @@ void TreeWidget::refreshTuiles() {
 void TreeWidget::notifyUpdate() {
     //update tuiles positions 
     m_zeroPosX = m_tuile->getLeftOffset()*m_pixelsPerFrame;
-    cout<<m_zeroPosX<<endl;
     for(unsigned int i=0; i<m_childrenTuileWidgets.size(); ++i) {
-/*
-        m_childrenTuileWidgets[i]->getWidget()->position(
-            min<float>(m_tuile->getLeftOffset(), 
-                        m_tuile->getLeftOffset()
-                            -m_childrenTuileWidgets[i]
-                                ->getTuile()->getLeftOffset())
-                *m_pixelsPerFrame
-                +x(), 
-*/
+    cout<<"notifiying child "<<m_childrenTuileWidgets[i]->getID()<<endl;
         m_childrenTuileWidgets[i]->getWidget()->position(
             (m_tuile->getLeftOffset()
             -m_childrenTuileWidgets[i]->getTuile()->getLeftOffset())
@@ -229,16 +219,16 @@ void TreeWidget::notifyUpdate() {
 
 int TreeWidget::handle(int event) {
     bool handled=false;
-    vector<TuileWidget*>::iterator itChWid=m_childrenTuileWidgets.begin();
-    for(; itChWid!=m_childrenTuileWidgets.end() && !handled; ++itChWid) {
-        handled=(*itChWid)->getWidget()->handle(event);
+    vector<ConnectionWidget*>::iterator itCon=m_connections.begin();
+    for(; itCon!=m_connections.end() && !handled; ++itCon) {
+        handled=(*itCon)->handle(event);
     }
     if(handled) {
         return 1;
     }
-    vector<ConnectionWidget*>::iterator itCon=m_connections.begin();
-    for(; itCon!=m_connections.end() && !handled; ++itCon) {
-        handled=(*itCon)->handle(event);
+    vector<TuileWidget*>::iterator itChWid=m_childrenTuileWidgets.begin();
+    for(; itChWid!=m_childrenTuileWidgets.end() && !handled; ++itChWid) {
+        handled=(*itChWid)->getWidget()->handle(event);
     }
     if(handled) {
         return 1;
@@ -321,19 +311,16 @@ void TreeWidget::clear() {
     m_connectionIDCounter=0;
     vector<TuileWidget*>::iterator itWid=m_childrenTuileWidgets.begin();
     for(; itWid!=m_childrenTuileWidgets.end(); ++itWid) {
-        cout<<"removing from group "<<(*itWid)->getID()<<endl;
         remove((*itWid)->getWidget());
     }
     m_childrenTuileWidgets.clear();
 	map<unsigned int, TuileWidget*>::iterator itWidget=m_tuileWidgetMap.begin();
 	for(;itWidget!=m_tuileWidgetMap.end(); ++itWidget) {
-        cout<<"deleting from map "<<itWidget->second->getID()<<endl;
         delete itWidget->second;
     }
     m_tuileWidgetMap.clear();
     m_audioTuileWidgets.clear();
     m_removingWidgets.clear();
-    cout<<"cleared tree widget"<<endl;
 }
 
 void TreeWidget::selectTuileWidget(TuileWidget* selected) {
@@ -538,6 +525,7 @@ TuileWidget* TreeWidget::createTuileWidget(const std::string& tuileName) {
         m_audioTuileWidgets.push_back(newFWidget);
     }
     if(newTuile && newWidget) {
+        newTuile->addObserver(newWidget);
         addTuileWidget(newWidget);
         DEBUG("TreeWidget: created the new TuileWidget "<<tuileName);
     }

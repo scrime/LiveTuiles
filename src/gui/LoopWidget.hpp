@@ -20,7 +20,6 @@ class LoopWidget: public OpWidget {
 
     void drawComposition();
     void drawExecution(const int&);
-    int handle(int);
 
     virtual void notifyUpdate();
     virtual bool testMagnetWithTuile(const int& inX, const int& inY,

@@ -25,14 +25,12 @@ OpWidget::OpWidget(const std::string& name,
                                                 m_opTuile(opTuile) {
     clip_children(1);
     resizable(NULL);
+    end();
 }
 
 OpWidget::~OpWidget() {}
 
 void OpWidget::refreshChildrenTuileWidgets() {
-    while(children()>0) {
-        remove(child(0));
-    }
     m_childrenTuileWidgets.clear();
     TreeWidget* tree=TreeWidget::getInstance();
     vector<Tuile*>::const_iterator itChild=m_opTuile->getChildren().begin();
@@ -41,7 +39,6 @@ void OpWidget::refreshChildrenTuileWidgets() {
         if(wid) {
             cout<<"added child widget to op"<<endl;
             m_childrenTuileWidgets.push_back(wid);
-            //add(wid->getWidget());
         }
     }
     notifyUpdate();

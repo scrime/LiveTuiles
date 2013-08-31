@@ -27,7 +27,7 @@ using namespace std;
 using namespace tuiles;
 
 LeafTuileWidget::LeafTuileWidget(const std::string& name, 
-                                Tuile* tuile):TuileWidget(tuile),
+                                Tuile* tuile): TuileWidget(tuile),
                                                 Fl_Widget(0, 0, 100, 20),
                                                 m_name(name) {
     if(tuile) {
@@ -36,10 +36,13 @@ LeafTuileWidget::LeafTuileWidget(const std::string& name,
     }
     m_sync2X=w();
     m_real2X=w();
-    type(0);
 }
 
-LeafTuileWidget::~LeafTuileWidget() {}
+LeafTuileWidget::~LeafTuileWidget() {
+    if(m_paramWidget) {
+        delete m_paramWidget;
+    }
+}
 
 void LeafTuileWidget::update() {
 
@@ -97,12 +100,11 @@ void LeafTuileWidget::highlightReal(bool high) {
 void LeafTuileWidget::drawComposition() {
     //real frame
 	fl_color(FL_FOREGROUND_COLOR);
-	//fl_rect(x()+m_real1X, y(), m_real2X-m_real1X, h());
 	fl_rect(x(), y(), w(), h());
 
     //stretch line
+	fl_color(fl_darker(m_realColor));
     fl_line_style(FL_DOT, h()/3);
-	//fl_line(x()+m_real1X, y()+3*h()/4, x()+m_real2X, y()+3*h()/4);
 	fl_line(x(), y()+3*h()/4, x()+w(), y()+3*h()/4);
 
 	//syncwindow
@@ -207,6 +209,7 @@ int LeafTuileWidget::handle(int event) {
                     }
                     default:break;
                 }
+                cout<<"dragging"<<endl;
                 return 1;
             }
             return 0;
@@ -230,9 +233,11 @@ int LeafTuileWidget::handle(int event) {
             }
         }break;
         case FL_RELEASE: {
-            m_dragging=false;
-            if(abs(Fl::event_x()-(x()+m_sync2X))<m_magnetSize || 
-                (Fl::event_x()>x()+m_real1X && Fl::event_x()<x()+m_real2X) ) {
+            if(m_dragging && 
+                    Fl::event_y()>y() && Fl::event_y()<y()+h() && 
+                    (abs(Fl::event_x()-(x()+m_sync2X))<m_magnetSize || 
+                        (Fl::event_x()>x() && Fl::event_x()<x()+w())) ) {
+                m_dragging=false;
                 return 1;
             }
             return 0;
@@ -246,7 +251,6 @@ void LeafTuileWidget::notifyUpdate() {
     TuileWidget::notifyUpdate();
     m_name=fl_filename_name(m_tuile->getName().c_str());
     resize(x(), y(), m_width, h());
-	this->redraw();
 }
 
 void LeafTuileWidget::notifyDelete() {

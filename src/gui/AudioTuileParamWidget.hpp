@@ -16,7 +16,7 @@ class AudioTuile;
 class AudioTuileParamWidget : public TuileParamWidget {
   public:
 	AudioTuileParamWidget(AudioTuile*);
-	~AudioTuileParamWidget();
+	virtual ~AudioTuileParamWidget();
 
     void update();
 

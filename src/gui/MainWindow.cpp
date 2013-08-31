@@ -83,6 +83,7 @@ void MainWindow::init() {
 
     //TREE/SCORE
 	m_tuilesTree = TreeWidget::getInstance();
+    AudioManager::getInstance()->addObserver(m_tuilesTree);
     m_tuilesTree->resize(m_spacing, 0, w()- 20, m_treeHeight);
 	m_tuilesPart = new HitPack(0, 0, w(), m_treeHeight, "");
     m_tuilesPart->internalSpacing(0);
@@ -227,8 +228,8 @@ void MainWindow::cbTreeButtons(Fl_Widget* w) {
 void MainWindow::clearAll() {
     m_playPauseButton->value(0);
     m_playPauseButton->label("@|>");
-    m_tuilesTree->clear();
     AudioManager::getInstance()->clearTrees();
+    m_tuilesTree->clear();
     redraw();
 }
 

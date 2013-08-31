@@ -35,7 +35,7 @@ namespace tuiles{class Tuile;}
 class TuileParamWidget : public HitPack {
   public:
 	TuileParamWidget(tuiles::Tuile*);
-	~TuileParamWidget();
+	virtual ~TuileParamWidget();
 
     inline virtual void init(){}
     virtual void update();

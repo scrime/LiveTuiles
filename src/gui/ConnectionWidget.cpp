@@ -58,17 +58,16 @@ int ConnectionWidget::handle(int event) {
             m_deleting=false;
             if(Fl::event_x()>x() && Fl::event_x()<x()+w() 
                     && Fl::event_y()>y() && Fl::event_y()<y()+h()) {
-
                 m_deleting=true;
+                TreeWidget::getInstance()->redraw();
                 return 1;
             }
-                //TreeWidget::getInstance()->redraw();
         }break;
         case FL_PUSH: {
             if(m_deleting) {
                 TreeWidget::getInstance()->markConnectionForRemoval(this);
+                return 1;
             }
-            return 1;
         }break;
         default:break;
     }

@@ -16,7 +16,7 @@ namespace tuiles{class SeqTuile;}
 class SeqWidget: public OpWidget {
   public:
 	SeqWidget(const std::string& name, tuiles::SeqTuile*);
-	virtual ~SeqWidget();
+	~SeqWidget();
 
     virtual void load(xmlNodePtr node);
 

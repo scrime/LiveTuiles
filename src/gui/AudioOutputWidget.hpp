@@ -20,6 +20,7 @@ class AudioOutputWidget: public AudioTuileWidget {
 
     void load();
     void load(xmlNodePtr);
+    int handle(int event);
 
   private:
     AudioOutputTuile* m_audioOutputTuile;

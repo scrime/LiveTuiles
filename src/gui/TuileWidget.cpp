@@ -38,11 +38,12 @@ TuileWidget::TuileWidget(Tuile* tuile):
                                     m_paramWidget(NULL) {
     if(m_tuile) {
         m_id=m_tuile->getID();
-        m_tuile->addObserver(this);
     }
 }
 
-TuileWidget::~TuileWidget() {}
+TuileWidget::~TuileWidget() {
+    cout<<"destroying tuilewidget "<<m_id<<endl;
+}
 
 void TuileWidget::notifyUpdate() {
     DEBUG("TuileWidget "<<m_id<<" modified, "

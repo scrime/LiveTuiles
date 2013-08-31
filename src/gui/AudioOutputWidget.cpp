@@ -38,3 +38,18 @@ void AudioOutputWidget::load(xmlNodePtr node) {
     load();
 }
 
+int AudioOutputWidget::handle(int event) {
+    switch(event) { 
+        case FL_PUSH: { 
+            if(Fl::event_state(FL_CTRL|FL_COMMAND)
+                    && Fl::event_y()>y() && Fl::event_y()<y()+h()
+                    && Fl::event_x()>x() && Fl::event_x()<x()+w()) {
+                resetHighlight();
+                return 0;
+            }
+        }break;
+        default:break;
+    }
+    return AudioTuileWidget::handle(event);
+}
+

@@ -19,7 +19,7 @@
 class HitPack : public Fl_Pack{
   public:
 	HitPack(int, int, int, int, const char*);
-	~HitPack();
+	virtual ~HitPack();
 
     void draw();
     void add(Fl_Widget*);

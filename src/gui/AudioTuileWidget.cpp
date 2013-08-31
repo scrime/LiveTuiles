@@ -52,12 +52,11 @@ int AudioTuileWidget::handle(int event) {
     switch(event) { 
         case FL_MOVE: { 
             if(Fl::event_state(FL_CTRL|FL_COMMAND) 
-                && Fl::event_x()>x()+m_real1X && Fl::event_x()<x()+m_real2X) {
+                && Fl::event_y()>y() && Fl::event_y()<y()+h()
+                && Fl::event_x()>x() && Fl::event_x()<x()+w()) {
                 return 1;
             }
-            else {
-                return LeafTuileWidget::handle(event);
-            }
+            return LeafTuileWidget::handle(event);
         }break;
         case FL_DRAG: {
             if(m_connecting) {
@@ -71,24 +70,32 @@ int AudioTuileWidget::handle(int event) {
             return LeafTuileWidget::handle(event);
         }break;
         case FL_PUSH: {
-            if(Fl::event_state(FL_CTRL|FL_COMMAND)) {
+            if(Fl::event_state(FL_CTRL|FL_COMMAND)
+                    && Fl::event_y()>y() && Fl::event_y()<y()+h()
+                    && Fl::event_x()>x() && Fl::event_x()<x()+w()) {
+                m_dragPosX=Fl::event_x();
+                m_dragPosY=Fl::event_y();
                 m_connecting=true;
+                TreeWidget::getInstance()->redraw();
+                return 1;
             }
-            else {
-                m_connecting=false;
-            }
+            m_connecting=false;
             return LeafTuileWidget::handle(event);
         }break;
         case FL_RELEASE: {
             if(m_connecting) {
+                cout<<"test connection"<<endl;
                 TreeWidget::getInstance()->testConnection(this, 
                                                             Fl::event_x(),
                                                             Fl::event_y(), 
                                                             true);
+                m_connecting=false;
+                TreeWidget::getInstance()->redraw();
+                return 1;
             }
-            m_connecting=false;
         }break;
         default:break;
     }
     return LeafTuileWidget::handle(event);
 }
+
