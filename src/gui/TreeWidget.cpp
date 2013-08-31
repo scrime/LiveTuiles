@@ -196,7 +196,6 @@ void TreeWidget::notifyUpdate() {
     //update tuiles positions 
     m_zeroPosX = m_tuile->getLeftOffset()*m_pixelsPerFrame;
     for(unsigned int i=0; i<m_childrenTuileWidgets.size(); ++i) {
-    cout<<"notifiying child "<<m_childrenTuileWidgets[i]->getID()<<endl;
         m_childrenTuileWidgets[i]->getWidget()->position(
             (m_tuile->getLeftOffset()
             -m_childrenTuileWidgets[i]->getTuile()->getLeftOffset())
@@ -394,7 +393,6 @@ void TreeWidget::testConnection(AudioTuileWidget* tuile,
                                                     tuile, 
                                                         *itWidget));
                         m_connectionIDCounter++;
-                        //add(m_connections.back());
                         notifyUpdate();
                     }
                     else {

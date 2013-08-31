@@ -38,42 +38,6 @@ void SeqWidget::drawComposition() {
     }
 }
 
-/*
-int SeqWidget::handle(int event) {
-    Fl_Group::handle(event);
-    return 1;
-
-
-    if(!Fl_Group::handle(event)) {
-        //TODO allow clicking on borders
-        switch(event) { 
-            case FL_ENTER:
-            case FL_FOCUS: {
-                return 0;
-            }break;
-            case FL_LEAVE: 
-            case FL_UNFOCUS: {
-                return 0;
-            }break;
-            case FL_PUSH: {
-                return 0;
-            }break;
-            case FL_DRAG: {
-                return 0;
-            }break;
-            case FL_RELEASE: {
-                return 0;
-            }break;
-            default:break;
-        }
-        return 0;
-    }
-    else {
-        return 1;
-    }
-}
-*/
-
 void SeqWidget::notifyUpdate() {
     TuileWidget::notifyUpdate();
     float pixPerFrame=TreeWidget::getInstance()->getPixelsPerFrame();
@@ -86,8 +50,6 @@ void SeqWidget::notifyUpdate() {
         if(*itChild) {
             (*itChild)->notifyUpdate();
             float childPos=-m_seqTuile->getChildPositionAtPos(childID, 0);
-            //childPos=min<float>(childPos, 
-            //                childPos+(*itChild)->getTuile()->getLeftOffset());
             Fl_Widget* wid = (*itChild)->getWidget();
             wid->resize(x()+childPos*pixPerFrame, 
                                             wid->y(),
@@ -103,7 +65,6 @@ void SeqWidget::notifyUpdate() {
     }
     //resize and reposition according to the children
     Fl_Widget::resize(x(), minPosY, m_width, maxPosY-minPosY);
-
     //set children sync Y positions
     if(m_childrenTuileWidgets.size()>=2) {
         m_childrenTuileWidgets[1]
@@ -117,8 +78,7 @@ void SeqWidget::load(xmlNodePtr node) {
     TuileWidget::load(node);
     xmlNodePtr childNode;
     int counter=0;
-    for(childNode= node->children; childNode; 
-            childNode= childNode->next) {
+    for(childNode= node->children; childNode; childNode= childNode->next) {
         if(childNode->type == XML_ELEMENT_NODE) {
             TuileWidget* newWidget = 
                 TreeWidget::getInstance()

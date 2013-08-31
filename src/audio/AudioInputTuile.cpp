@@ -73,8 +73,7 @@ void AudioInputTuile::processBuffers(const int& nbFrames) {
 }
 
 void AudioInputTuile::load(xmlNodePtr node) {
-    ostringstream oss;
-    oss<<m_id;
-    load("input"+oss.str());
+    AudioTuile::load(node);
+    load(m_name);
 }
 

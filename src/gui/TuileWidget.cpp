@@ -41,9 +41,7 @@ TuileWidget::TuileWidget(Tuile* tuile):
     }
 }
 
-TuileWidget::~TuileWidget() {
-    cout<<"destroying tuilewidget "<<m_id<<endl;
-}
+TuileWidget::~TuileWidget() {}
 
 void TuileWidget::notifyUpdate() {
     DEBUG("TuileWidget "<<m_id<<" modified, "

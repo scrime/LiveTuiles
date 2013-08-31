@@ -209,7 +209,6 @@ int LeafTuileWidget::handle(int event) {
                     }
                     default:break;
                 }
-                cout<<"dragging"<<endl;
                 return 1;
             }
             return 0;
@@ -255,7 +254,6 @@ void LeafTuileWidget::notifyUpdate() {
 
 void LeafTuileWidget::notifyDelete() {
     TreeWidget::getInstance()->markWidgetForRemoval(this);
-    cout<<"leaf widget delete notified"<<endl;
 }
 
 void LeafTuileWidget::select() {

@@ -102,6 +102,23 @@ bool LoopWidget::testMagnetWithTuile(const int& inX, const int& inY,
     return false;
 }
 
+void LoopWidget::load(xmlNodePtr node) {
+    TuileWidget::load(node);
+    xmlNodePtr childNode;
+    for(childNode= node->children; childNode; 
+            childNode= childNode->next) {
+        if(childNode->type == XML_ELEMENT_NODE) {
+            TuileWidget* newWidget = 
+                TreeWidget::getInstance()
+                    ->createTuileWidget(string((const char*)childNode->name));
+            if(newWidget) {
+                newWidget->load(childNode);
+                m_loopTuile->setChild(newWidget->getTuile());
+            }
+        }
+    }
+}
+
 int LoopWidget::getSync1Y() {
     if(m_childrenTuileWidgets.size()>0) {
         return m_childrenTuileWidgets[0]->getSync1Y();
