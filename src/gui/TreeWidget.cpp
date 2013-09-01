@@ -74,14 +74,8 @@ void TreeWidget::update() {
     if(m_removingWidgets.size()>0) {
         vector<TuileWidget*>::iterator itWid=m_removingWidgets.begin();
         for(; itWid!=m_removingWidgets.end(); itWid++) {
-            m_tuileWidgetMap.erase((*itWid)->getID());
-            list<AudioTuileWidget*>::iterator itWidget=
-                    m_audioTuileWidgets.begin();
-            for(;itWidget!=m_audioTuileWidgets.end(); ++itWidget) {
-                if((*itWidget)->getID()==(*itWid)->getID()) {
-                    itWidget=m_audioTuileWidgets.erase(itWidget);
-                }
-            }
+            m_tuileWidgets.erase((*itWid)->getID());
+            m_audioTuileWidgets.erase((*itWid)->getID());
         }
         refreshChildrenTuileWidgets();
         itWid=m_removingWidgets.begin();
@@ -110,15 +104,9 @@ void TreeWidget::draw() {
 	fl_draw_box(FL_DOWN_BOX, x(), y(), w(), h(), FL_BACKGROUND_COLOR);
 	fl_push_clip(x()+2, y()+2, w()-4, h()-4);
 
-	//score and beat lines
-	//fl_rectf(x()+(m_zeroPosX-xposition()), y(), 
-    //        w()-(m_zeroPosX-xposition()), h(), FL_BACKGROUND2_COLOR);
+	//score beginning
 	fl_rectf(x()+(m_zeroPosX), y(), 
             w()-(m_zeroPosX), h(), FL_BACKGROUND2_COLOR);
-//	fl_color(FL_WHITE);
-//	for(int i=x()+(m_zeroPosX-xposition()); i<x()+w(); i+=m_pixelsPerBeat) {
-//		fl_line(i, y(), i, y()+h());
-//	}
 
     //connections between tuiles 
     map<unsigned int, ConnectionWidget*>::iterator itCon=m_connections.begin();
@@ -152,14 +140,14 @@ void TreeWidget::refreshChildrenTuileWidgets() {
     AudioManager* man = AudioManager::getInstance();
     vector<Tuile*>::const_iterator itChild=man->getChildren().begin();
     for(; itChild!=man->getChildren().end(); ++itChild) {
-        if(m_tuileWidgetMap.find((*itChild)->getID())!=m_tuileWidgetMap.end()){
+        if(m_tuileWidgets.find((*itChild)->getID())!=m_tuileWidgets.end()){
             m_childrenTuileWidgets.push_back(
-                                        m_tuileWidgetMap[(*itChild)->getID()]);
+                                        m_tuileWidgets[(*itChild)->getID()]);
         }
     }
     //update the children of all the tuilewidgets
-    map<unsigned int, TuileWidget*>::iterator itWid=m_tuileWidgetMap.begin();
-    for(; itWid!=m_tuileWidgetMap.end(); ++itWid) {
+    map<unsigned int, TuileWidget*>::iterator itWid=m_tuileWidgets.begin();
+    for(; itWid!=m_tuileWidgets.end(); ++itWid) {
         itWid->second->refreshChildrenTuileWidgets();
     }
     //print the trees
@@ -188,8 +176,8 @@ void TreeWidget::notifyUpdate() {
             m_childrenTuileWidgets[i]->getWidget()->y());
     }
     //notify all tuiles
-    map<unsigned int, TuileWidget*>::iterator itWidget=m_tuileWidgetMap.begin();
-    for(;itWidget!=m_tuileWidgetMap.end(); ++itWidget) {
+    map<unsigned int, TuileWidget*>::iterator itWidget=m_tuileWidgets.begin();
+    for(;itWidget!=m_tuileWidgets.end(); ++itWidget) {
         itWidget->second->notifyUpdate();
     }
     //update all connections
@@ -297,11 +285,11 @@ void TreeWidget::clear() {
         remove((*itWid)->getWidget());
     }
     m_childrenTuileWidgets.clear();
-	map<unsigned int, TuileWidget*>::iterator itWidget=m_tuileWidgetMap.begin();
-	for(;itWidget!=m_tuileWidgetMap.end(); ++itWidget) {
+	map<unsigned int, TuileWidget*>::iterator itWidget=m_tuileWidgets.begin();
+	for(;itWidget!=m_tuileWidgets.end(); ++itWidget) {
         delete itWidget->second;
     }
-    m_tuileWidgetMap.clear();
+    m_tuileWidgets.clear();
     m_audioTuileWidgets.clear();
     m_removingWidgets.clear();
 }
@@ -313,8 +301,8 @@ void TreeWidget::selectTuileWidget(TuileWidget* selected) {
 void TreeWidget::deselectAllTuileWidgets() {
     m_selectedTuile=NULL;
     m_paramGroup->setWidget(NULL);
-	map<unsigned int, TuileWidget*>::iterator itWidget=m_tuileWidgetMap.begin();
-	for(;itWidget!=m_tuileWidgetMap.end(); ++itWidget) {
+	map<unsigned int, TuileWidget*>::iterator itWidget=m_tuileWidgets.begin();
+	for(;itWidget!=m_tuileWidgets.end(); ++itWidget) {
         itWidget->second->deselect();
     }
 }
@@ -360,27 +348,28 @@ void TreeWidget::testConnection(AudioTuileWidget* tuile,
                                             const int& y, 
                                                 bool drop) {
     bool found=false;
-	list<AudioTuileWidget*>::const_iterator itWidget=
-                                                m_audioTuileWidgets.begin();
+	map<unsigned int, AudioTuileWidget*>::iterator itWidget=
+                                                    m_audioTuileWidgets.begin();
 	for(;itWidget!=m_audioTuileWidgets.end() && !found; ++itWidget) {
-        (*itWidget)->resetHighlight(); 
-        if(y>(*itWidget)->y() - (*itWidget)->h()/2 
-                && y<(*itWidget)->y() + 3*(*itWidget)->h()/2) {
-            if(x>(*itWidget)->getRealIn() && x<(*itWidget)->getRealOut()) {
-                if((*itWidget)->canTakeInput()) {
+        AudioTuileWidget* audioWid=itWidget->second;
+        audioWid->resetHighlight(); 
+        if(y>audioWid->y() - audioWid->h()/2 
+                && y<audioWid->y() + 3*audioWid->h()/2) {
+            if(x>audioWid->getRealIn() && x<audioWid->getRealOut()) {
+                if(audioWid->canTakeInput()) {
                     if(drop) {
                         DEBUG("Connecting tuile "<<tuile->getID()
-                                <<" to "<<(*itWidget)->getID());
-                        (*itWidget)->highlightReal(false);
+                                <<" to "<<audioWid->getID());
+                        audioWid->highlightReal(false);
                         m_connections[m_connectionIDCounter]=
                             new ConnectionWidget(m_connectionIDCounter,
                                                     tuile, 
-                                                        *itWidget);
+                                                        audioWid);
                         m_connectionIDCounter++;
                         notifyUpdate();
                     }
                     else {
-                        (*itWidget)->highlightReal();
+                        audioWid->highlightReal();
                     }
                     found=true;
                 }
@@ -395,7 +384,7 @@ void TreeWidget::markConnectionForRemoval(ConnectionWidget* con) {
 }
 
 void TreeWidget::addTuileWidget(TuileWidget* newWidget) {
-    m_tuileWidgetMap[newWidget->getID()]=newWidget;
+    m_tuileWidgets[newWidget->getID()]=newWidget;
     refreshChildrenTuileWidgets();
     deselectAllTuileWidgets();
     newWidget->select();
@@ -404,8 +393,8 @@ void TreeWidget::addTuileWidget(TuileWidget* newWidget) {
 }
 
 TuileWidget* TreeWidget::getTuileWidget(const unsigned int& id) {
-    if(m_tuileWidgetMap.find(id)!=m_tuileWidgetMap.end()) {
-        return m_tuileWidgetMap[id];
+    if(m_tuileWidgets.find(id)!=m_tuileWidgets.end()) {
+        return m_tuileWidgets[id];
     }
     else {
         return NULL;
@@ -466,7 +455,7 @@ TuileWidget* TreeWidget::createTuileWidget(const std::string& tuileName) {
         AudioOutputWidget* newAOWidget = 
                                 new AudioOutputWidget(tuileName, newAOTuile);
         newWidget=newAOWidget;
-        m_audioTuileWidgets.push_back(newAOWidget);
+        m_audioTuileWidgets[newAOWidget->getID()]=newAOWidget;
     }
     else if(tuileName.compare("input")==0 
                 || tuileName.compare("AudioInput")==0) {
@@ -475,7 +464,7 @@ TuileWidget* TreeWidget::createTuileWidget(const std::string& tuileName) {
         AudioInputWidget* newAIWidget = 
                             new AudioInputWidget(tuileName, newAITuile);
         newWidget=newAIWidget;
-        m_audioTuileWidgets.push_back(newAIWidget);
+        m_audioTuileWidgets[newAIWidget->getID()]=newAIWidget;
     }
     else if(tuileName.find(".wav")!=string::npos 
                 || tuileName.compare("SoundFile")==0) {
@@ -484,7 +473,7 @@ TuileWidget* TreeWidget::createTuileWidget(const std::string& tuileName) {
         SoundFileWidget* newSFWidget = 
                                 new SoundFileWidget(tuileName, newSFTuile);
         newWidget=newSFWidget;
-        m_audioTuileWidgets.push_back(newSFWidget);
+        m_audioTuileWidgets[newSFWidget->getID()]=newSFWidget;
     }
     else if(tuileName.find(".dsp")!=string::npos 
                 || tuileName.compare("Faust")==0) {
@@ -492,7 +481,7 @@ TuileWidget* TreeWidget::createTuileWidget(const std::string& tuileName) {
         newTuile = (Tuile*)newFTuile;
         FaustWidget* newFWidget = new FaustWidget(tuileName, newFTuile);
         newWidget=newFWidget;
-        m_audioTuileWidgets.push_back(newFWidget);
+        m_audioTuileWidgets[newFWidget->getID()]=newFWidget;
     }
     if(newTuile && newWidget) {
         newTuile->addObserver(newWidget);
@@ -509,8 +498,14 @@ void TreeWidget::save(const std::string& fileName) {
     xmlDocPtr doc = xmlNewDoc(BAD_CAST "1.0");
     xmlNodePtr rootNode = xmlNewNode(NULL, BAD_CAST "Tuiles");
     xmlDocSetRootElement(doc, rootNode);
+    //save the tuiles
     for(unsigned int c=0; c<m_childrenTuileWidgets.size(); ++c) {
         m_childrenTuileWidgets[c]->save(rootNode);
+    }
+    //save the connections
+    map<unsigned int, ConnectionWidget*>::iterator itCon=m_connections.begin();
+    for(; itCon!=m_connections.end(); ++itCon) {
+        itCon->second->save(rootNode);
     }
     xmlSaveFormatFileEnc(fileName.c_str(), doc, "UTF-8", 1);
     xmlFreeDoc(doc);
@@ -520,6 +515,7 @@ void TreeWidget::save(const std::string& fileName) {
 TuileWidget* TreeWidget::load(const std::string& fileName) {
     TuileWidget* firstWidget=NULL;
     int counter=0;
+    unsigned int curIDCounter=AudioManager::getInstance()->getTuileIDCounter();
     xmlDocPtr doc = xmlReadFile(fileName.c_str(), NULL, 0);
     if(doc) {
         xmlNodePtr rootNode = xmlDocGetRootElement(doc);
@@ -529,6 +525,7 @@ TuileWidget* TreeWidget::load(const std::string& fileName) {
             for(curNode= rootNode->children; curNode; 
                     curNode= curNode->next, counter++) {
                 if(curNode->type == XML_ELEMENT_NODE) {
+                    //try tuile
                     TuileWidget* newWidget = 
                         createTuileWidget(string((const char*)curNode->name));
                     if(newWidget) {
@@ -536,11 +533,36 @@ TuileWidget* TreeWidget::load(const std::string& fileName) {
                         if(counter==0) {
                             firstWidget=newWidget;
                         }
+                    }//otherwise maybe it is a connection
+                    else if(string((const char*)curNode->name).
+                                                compare("Connection")==0) {
+                        loadConnection(curNode, curIDCounter);
                     }
                 }
             }
         }
     }
     return firstWidget;
+}
+
+void TreeWidget::loadConnection(xmlNodePtr node, const unsigned int& idOffset) {
+    char* from=NULL;
+    char* to=NULL;
+    from = (char*)xmlGetProp(node,(xmlChar*)"from");
+    to = (char*)xmlGetProp(node,(xmlChar*)"to");
+    if(from && to) {
+        unsigned int fromID=atoi(from)+idOffset;
+        unsigned int toID=atoi(to)+idOffset;
+        if(m_audioTuileWidgets.find(fromID)!=m_audioTuileWidgets.end()
+                && m_audioTuileWidgets.find(toID)!=m_audioTuileWidgets.end()) {
+            AudioTuileWidget* fromWid= m_audioTuileWidgets[fromID];
+            AudioTuileWidget* toWid= m_audioTuileWidgets[toID];
+                
+            m_connections[m_connectionIDCounter]=
+                            new ConnectionWidget(m_connectionIDCounter, 
+                                                    fromWid, toWid);
+            m_connectionIDCounter++;
+        }
+    }
 }
 

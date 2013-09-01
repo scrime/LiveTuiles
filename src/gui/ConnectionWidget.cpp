@@ -8,6 +8,7 @@
 #include "ConnectionWidget.hpp"
 
 #include <iostream>
+#include <sstream>
 #include <math.h>
 #include <cassert>
 #include <Fl/fl_draw.H>
@@ -83,4 +84,13 @@ void ConnectionWidget::update() {
         (m_fromWidget->y()+m_toWidget->y())/2+h()/2);
 }
 
+void ConnectionWidget::save(xmlNodePtr parentNode) {
+    xmlNodePtr conNode = xmlNewChild(parentNode, NULL, 
+                                        BAD_CAST "Connection", NULL);
+    ostringstream oss, oss1;
+    oss<<m_fromWidget->getID();
+    oss1<<m_toWidget->getID();
+    xmlNewProp(conNode, BAD_CAST "from", BAD_CAST oss.str().c_str());
+    xmlNewProp(conNode, BAD_CAST "to", BAD_CAST oss1.str().c_str());
+}
 

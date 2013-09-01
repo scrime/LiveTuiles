@@ -18,6 +18,7 @@ class ConnectionWidget: public Fl_Widget {
                             AudioTuileWidget*, 
                                 AudioTuileWidget*);
         virtual ~ConnectionWidget();
+        void save(xmlNodePtr parentNode);
         inline void draw(){}
         void drawConnection();
         int handle(int);

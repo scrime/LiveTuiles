@@ -35,6 +35,7 @@ class TreeWidget : public TuileWidget, public Fl_Group {
         inline void notifyDelete(){}
         void save(const std::string& fileName);
         TuileWidget* load(const std::string& fileName);
+        void loadConnection(xmlNodePtr, const unsigned int&);
 
         void refreshTuiles();
         void refreshChildrenTuileWidgets();
@@ -79,8 +80,8 @@ class TreeWidget : public TuileWidget, public Fl_Group {
         int m_magnetSize;
         int m_zeroPosX;
 
-        std::list<AudioTuileWidget*> m_audioTuileWidgets;
-        std::map<unsigned int, TuileWidget*> m_tuileWidgetMap;
+        std::map<unsigned int, AudioTuileWidget*> m_audioTuileWidgets;
+        std::map<unsigned int, TuileWidget*> m_tuileWidgets;
         TuileWidget* m_selectedTuile;
         std::vector<TuileWidget*> m_removingWidgets;
 
