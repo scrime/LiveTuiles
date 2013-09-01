@@ -9,9 +9,12 @@
 #ifndef _AudioTuileWidget_H
 #define _AudioTuileWidget_H
 
+#include <map>
+
 #include "LeafTuileWidget.hpp"
 
 class AudioTuile;
+class ConnectionWidget;
 
 class AudioTuileWidget: public LeafTuileWidget {
   public:
@@ -26,11 +29,15 @@ class AudioTuileWidget: public LeafTuileWidget {
 
     bool canTakeInput(){return m_canTakeInput;}
     inline AudioTuile* getAudioTuile(){return m_audioTuile;}
+
+    void addConnection(ConnectionWidget*);
+    void removeConnection(ConnectionWidget*);
     
   protected:
     AudioTuile* m_audioTuile;
     bool m_canTakeInput;
     bool m_connecting;
+    std::map<unsigned int, ConnectionWidget*> m_connections;
     
 };
 

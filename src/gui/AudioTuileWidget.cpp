@@ -15,6 +15,7 @@
 
 #include "../audio/AudioTuile.hpp"
 #include "TreeWidget.hpp"
+#include "ConnectionWidget.hpp"
 
 using namespace std;
 
@@ -31,7 +32,11 @@ AudioTuileWidget::~AudioTuileWidget() {}
 void AudioTuileWidget::load() {}
 
 void AudioTuileWidget::notifyDelete() {
-    TreeWidget::getInstance()->removeConnectionsWithWidget(this);
+    map<unsigned int, ConnectionWidget*>::iterator itCon=m_connections.begin();
+    for(; itCon!=m_connections.end(); ++itCon) {
+        TreeWidget::getInstance()->markConnectionForRemoval(itCon->second);
+    }
+    m_connections.clear();
     LeafTuileWidget::notifyDelete();
 }
 
@@ -97,5 +102,13 @@ int AudioTuileWidget::handle(int event) {
         default:break;
     }
     return LeafTuileWidget::handle(event);
+}
+
+void AudioTuileWidget::addConnection(ConnectionWidget* conWid) {
+    m_connections[conWid->getID()]=conWid;
+}
+
+void AudioTuileWidget::removeConnection(ConnectionWidget* conWid) {
+    m_connections.erase(conWid->getID());
 }
 

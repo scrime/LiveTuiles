@@ -53,7 +53,6 @@ class TreeWidget : public TuileWidget, public Fl_Group {
         TuileWidget* createTuileWidget(const std::string& tuileName);
         SeqWidget* createSeqWidget(TuileWidget*, TuileWidget*);
         void addTuileWidget(TuileWidget*);
-        void removeConnectionsWithWidget(AudioTuileWidget*);
         void markWidgetForRemoval(TuileWidget*);
         TuileWidget* getTuileWidget(const unsigned int& id);
 
@@ -86,8 +85,8 @@ class TreeWidget : public TuileWidget, public Fl_Group {
         std::vector<TuileWidget*> m_removingWidgets;
 
         unsigned int m_connectionIDCounter;
-        std::vector<ConnectionWidget*> m_connections;
-        ConnectionWidget* m_removingConnection;
+        std::map<unsigned int, ConnectionWidget*> m_connections;
+        std::vector<ConnectionWidget*> m_removingConnections;
 
         TuileParamGroup* m_paramGroup;
 };

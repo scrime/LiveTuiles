@@ -39,8 +39,7 @@ TreeWidget::TreeWidget():   TuileWidget(AudioManager::getInstance()),
                             m_cursorX(0), 
                             m_offsetX(10), m_offsetY(10), m_magnetSize(5),
                             m_zeroPosX(0), 
-                            m_connectionIDCounter(0),
-                            m_removingConnection(NULL) {
+                            m_connectionIDCounter(0) {
 	end();
     m_id=-1;
     type(Fl_Scroll::BOTH);
@@ -60,20 +59,15 @@ void TreeWidget::update() {
     //update cursor
     m_cursorX = (AudioManager::getInstance()->getPlayPositionInBeats()) 
                     *m_pixelsPerBeat;
-    //remove connection
-    if(m_removingConnection) {
-        vector<ConnectionWidget*>::iterator itCon=m_connections.begin();
-        for(; itCon!=m_connections.end();) {
-            if((*itCon)->getID()==m_removingConnection->getID()) {
-                itCon=m_connections.erase(itCon);
-            }
-            else {
-                itCon++;
-            }
+    //remove connections
+    if(m_removingConnections.size()>0) {
+        vector<ConnectionWidget*>::iterator itConWid= 
+                                                m_removingConnections.begin();
+        for(; itConWid!=m_removingConnections.end(); ++itConWid) {
+            m_connections.erase((*itConWid)->getID());
+            delete (*itConWid);
         }
-//        remove(m_removingConnection);
-        delete m_removingConnection;
-        m_removingConnection=NULL;
+        m_removingConnections.clear();
         MainWindow::getInstance()->redraw();
     }
     //remove widgets
@@ -127,9 +121,9 @@ void TreeWidget::draw() {
 //	}
 
     //connections between tuiles 
-    vector<ConnectionWidget*>::iterator itCon=m_connections.begin();
+    map<unsigned int, ConnectionWidget*>::iterator itCon=m_connections.begin();
     for(; itCon!=m_connections.end(); ++itCon) {
-        (*itCon)->drawConnection();
+        itCon->second->drawConnection();
     }
 
 	//draw background execution tuiles
@@ -147,21 +141,12 @@ void TreeWidget::draw() {
 
     //cursor
 	fl_color(FL_RED);
-    //fl_line(x()+m_cursorX+(m_zeroPosX-xposition()), y(), 
-    //        x()+m_cursorX+(m_zeroPosX-xposition()), y()+h());
     fl_line(x()+m_cursorX+(m_zeroPosX), y(), 
             x()+m_cursorX+(m_zeroPosX), y()+h());
 	fl_pop_clip();
 }
 
 void TreeWidget::refreshChildrenTuileWidgets() {
-/*
-    //remove all children tuile widgets
-    vector<TuileWidget*>::iterator itChWid=m_childrenTuileWidgets.begin();
-    for(; itChWid!=m_childrenTuileWidgets.end(); ++itChWid) {
-        remove((*itChWid)->getWidget());
-    }
-*/
     m_childrenTuileWidgets.clear();
     //get new children tuile widgets
     AudioManager* man = AudioManager::getInstance();
@@ -170,7 +155,6 @@ void TreeWidget::refreshChildrenTuileWidgets() {
         if(m_tuileWidgetMap.find((*itChild)->getID())!=m_tuileWidgetMap.end()){
             m_childrenTuileWidgets.push_back(
                                         m_tuileWidgetMap[(*itChild)->getID()]);
-            //add(m_tuileWidgetMap[(*itChild)->getID()]->getWidget());
         }
     }
     //update the children of all the tuilewidgets
@@ -209,18 +193,18 @@ void TreeWidget::notifyUpdate() {
         itWidget->second->notifyUpdate();
     }
     //update all connections
-    vector<ConnectionWidget*>::iterator itCon=m_connections.begin();
+    map<unsigned int, ConnectionWidget*>::iterator itCon=m_connections.begin();
     for(; itCon!=m_connections.end(); ++itCon) {
-        (*itCon)->update();
+        itCon->second->update();
     }
     redraw();
 }
 
 int TreeWidget::handle(int event) {
     bool handled=false;
-    vector<ConnectionWidget*>::iterator itCon=m_connections.begin();
+    map<unsigned int, ConnectionWidget*>::iterator itCon=m_connections.begin();
     for(; itCon!=m_connections.end() && !handled; ++itCon) {
-        handled=(*itCon)->handle(event);
+        handled=itCon->second->handle(event);
     }
     if(handled) {
         return 1;
@@ -301,12 +285,12 @@ int TreeWidget::handle(int event) {
 
 void TreeWidget::clear() { 
     selectTuileWidget(NULL);
-    vector<ConnectionWidget*>::iterator itCon=m_connections.begin();
+    map<unsigned int, ConnectionWidget*>::iterator itCon=m_connections.begin();
     for(; itCon!=m_connections.end(); ++itCon) {
-        delete (*itCon);
+        delete itCon->second;
     }
     m_connections.clear();
-    m_removingConnection = NULL;
+    m_removingConnections.clear();
     m_connectionIDCounter=0;
     vector<TuileWidget*>::iterator itWid=m_childrenTuileWidgets.begin();
     for(; itWid!=m_childrenTuileWidgets.end(); ++itWid) {
@@ -388,10 +372,10 @@ void TreeWidget::testConnection(AudioTuileWidget* tuile,
                         DEBUG("Connecting tuile "<<tuile->getID()
                                 <<" to "<<(*itWidget)->getID());
                         (*itWidget)->highlightReal(false);
-                        m_connections.push_back(
+                        m_connections[m_connectionIDCounter]=
                             new ConnectionWidget(m_connectionIDCounter,
                                                     tuile, 
-                                                        *itWidget));
+                                                        *itWidget);
                         m_connectionIDCounter++;
                         notifyUpdate();
                     }
@@ -406,7 +390,7 @@ void TreeWidget::testConnection(AudioTuileWidget* tuile,
 }
 
 void TreeWidget::markConnectionForRemoval(ConnectionWidget* con) {
-    m_removingConnection=con;
+    m_removingConnections.push_back(con);
     redraw();
 }
 
@@ -430,18 +414,6 @@ TuileWidget* TreeWidget::getTuileWidget(const unsigned int& id) {
 
 void TreeWidget::markWidgetForRemoval(TuileWidget* removedWidget) {
     m_removingWidgets.push_back(removedWidget);
-}
-
-void TreeWidget::removeConnectionsWithWidget(AudioTuileWidget* widget) {
-    vector<ConnectionWidget*>::iterator itCon=m_connections.begin();
-    for(; itCon!=m_connections.end(); ++itCon) {
-        if((*itCon)->getFromWidget()->getID()==widget->getID() || 
-                (*itCon)->getToWidget()->getID()==widget->getID()) {
-            ConnectionWidget* con = (*itCon);
-            itCon = m_connections.erase(itCon);
-            delete con;
-        }
-    }
 }
 
 SeqWidget* TreeWidget::createSeqWidget(TuileWidget* t1, TuileWidget* t2) {

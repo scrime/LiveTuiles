@@ -28,11 +28,14 @@ ConnectionWidget::ConnectionWidget(const unsigned int& id,
                                                       m_color(FL_BLUE), 
                                                       m_deleting(false) {
     m_toWidget->getAudioTuile()->addInputTuile(m_fromWidget->getAudioTuile());
+    m_toWidget->addConnection(this);
+    m_fromWidget->addConnection(this);
 }
 
 ConnectionWidget::~ConnectionWidget() {
-    m_toWidget->getAudioTuile()->removeInputTuile(
-                                    m_fromWidget->getAudioTuile());
+   m_toWidget->removeConnection(this);
+   m_fromWidget->removeConnection(this);
+   m_toWidget->getAudioTuile()->removeInputTuile(m_fromWidget->getAudioTuile());
 }
 
 void ConnectionWidget::drawConnection() {
