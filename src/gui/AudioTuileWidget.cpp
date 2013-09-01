@@ -13,6 +13,7 @@
 
 #include <Fl/fl_draw.H>
 
+#include "../audio/AudioManager.hpp"
 #include "../audio/AudioTuile.hpp"
 #include "TreeWidget.hpp"
 #include "ConnectionWidget.hpp"
@@ -38,6 +39,11 @@ void AudioTuileWidget::notifyDelete() {
     }
     m_connections.clear();
     LeafTuileWidget::notifyDelete();
+}
+
+void AudioTuileWidget::extract() {
+    cout<<"extracting the audio tuile"<<endl;
+    AudioManager::getInstance()->extractAudioTuile(m_audioTuile);
 }
 
 void AudioTuileWidget::drawComposition() {

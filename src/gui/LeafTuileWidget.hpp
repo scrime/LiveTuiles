@@ -27,6 +27,7 @@ class LeafTuileWidget: public TuileWidget, public Fl_Widget {
     void update();
     virtual void notifyUpdate();
     virtual void notifyDelete();
+    virtual void extract();
     virtual void save(xmlNodePtr parentNode);
     virtual void load(xmlNodePtr node);
     virtual void load();

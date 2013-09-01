@@ -29,6 +29,7 @@ class TuileWidget: public tuiles::Observer {
     virtual void load(xmlNodePtr node);
     inline virtual void load(){}
     virtual void notifyUpdate();
+    inline virtual void extract(){}
 
     inline virtual void drawComposition(){}
     inline virtual void drawExecution(const int& offset=0){}

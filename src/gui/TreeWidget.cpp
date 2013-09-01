@@ -220,9 +220,7 @@ int TreeWidget::handle(int event) {
             switch(Fl::event_key()) {
                 case FL_BackSpace: {
                     if(m_selectedTuile) {
-                        AudioManager::getInstance()
-                                            ->deleteTuile(
-                                                   m_selectedTuile->getTuile());
+                        m_selectedTuile->extract();
                         m_selectedTuile=NULL;
                     }
                     return 1;
@@ -484,7 +482,6 @@ TuileWidget* TreeWidget::createTuileWidget(const std::string& tuileName) {
         m_audioTuileWidgets[newFWidget->getID()]=newFWidget;
     }
     if(newTuile && newWidget) {
-        newTuile->addObserver(newWidget);
         addTuileWidget(newWidget);
         DEBUG("TreeWidget: created the new TuileWidget "<<tuileName);
     }

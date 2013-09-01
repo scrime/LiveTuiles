@@ -21,7 +21,7 @@
 #include "SeqWidget.hpp"
 
 #include <tuiles/SeqTuile.hpp>
-#include "../audio/AudioTuile.hpp"
+#include "../audio/AudioManager.hpp"
 
 using namespace std;
 using namespace tuiles;
@@ -254,6 +254,10 @@ void LeafTuileWidget::notifyUpdate() {
 
 void LeafTuileWidget::notifyDelete() {
     TreeWidget::getInstance()->markWidgetForRemoval(this);
+}
+
+void LeafTuileWidget::extract() {
+    AudioManager::getInstance()->extractTuile(m_tuile);
 }
 
 void LeafTuileWidget::select() {

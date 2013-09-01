@@ -38,6 +38,7 @@ TuileWidget::TuileWidget(Tuile* tuile):
                                     m_paramWidget(NULL) {
     if(m_tuile) {
         m_id=m_tuile->getID();
+        m_tuile->addObserver(this);
     }
 }
 

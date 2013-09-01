@@ -152,9 +152,20 @@ void AudioManager::extractAudioTuile(AudioTuile* tuile) {
 }
 
 void AudioManager::procRemoveAudioTuile(AudioTuile* tuile) {
+    //remove potential connections
     vector<AudioTuile*>::iterator itTui = m_procAudioTuiles.begin();
     for(; itTui!=m_procAudioTuiles.end(); ++itTui) {
         (*itTui)->removeInputTuile(tuile);
+    }
+    //remove the audio tuile
+    itTui = m_procAudioTuiles.begin();
+    for(; itTui!=m_procAudioTuiles.end(); ) {
+        if((*itTui)->getID()==tuile->getID()) {
+            itTui=m_procAudioTuiles.erase(itTui);
+        }
+        else {
+            ++itTui;
+        }
     }
 }
 

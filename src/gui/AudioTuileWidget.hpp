@@ -22,6 +22,7 @@ class AudioTuileWidget: public LeafTuileWidget {
 	virtual ~AudioTuileWidget();
 
     virtual void load();
+    virtual void extract();
     void notifyDelete();
 
     virtual void drawComposition();
