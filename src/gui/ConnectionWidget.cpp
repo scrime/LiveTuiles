@@ -41,12 +41,14 @@ ConnectionWidget::~ConnectionWidget() {
 
 void ConnectionWidget::drawConnection() {
     fl_color(m_color);
+    fl_line_style(FL_SOLID, 3);
     fl_begin_line();
     fl_curve(m_fromWidget->getCenterReal(), m_fromWidget->y()+m_fromWidget->h(),
         m_fromWidget->getCenterReal(), m_fromWidget->y()+m_fromWidget->h()*2,
         m_toWidget->getCenterReal(), m_toWidget->y()-m_toWidget->h(),
         m_toWidget->getCenterReal(), m_toWidget->y());
     fl_end_line();
+    fl_line_style(0);
     if(m_deleting) {
         fl_line(x(), y(), x()+w(), y()+h()); 
         fl_line(x()+w(), y(), x(), y()+h()); 

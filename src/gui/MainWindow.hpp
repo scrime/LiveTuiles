@@ -24,6 +24,7 @@
 #include <FL/Fl_File_Chooser.H>
 #include <FL/Fl_Output.H>
 #include <FL/Fl_Button.H>
+#include <FL/Fl_Pack.H>
 #include <FL/Fl_Toggle_Button.H>
 #include <FL/Fl_Value_Slider.H>
 #include <FL/Fl_Value_Input.H>
@@ -43,6 +44,7 @@ class MainWindow  : public Fl_Double_Window {
 		void init();
 
 		static void idle(void* pnt);
+        int handle(int);
         void update();
 
 		static void statPlayPause(Fl_Widget* w,void* f) { 
@@ -91,7 +93,6 @@ class MainWindow  : public Fl_Double_Window {
 		std::string m_bpmInputTooltip;
         Fl_Slider *m_treeZoomSlider;
 
-		HitPack* m_tuilesPart;
 		TreeWidget* m_tuilesTree;
 
 		int m_editHeight;

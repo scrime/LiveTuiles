@@ -16,12 +16,13 @@
 
 using namespace std;
 
-AudioTuileParamWidget::AudioTuileParamWidget(AudioTuile* audioTuile):
-                                TuileParamWidget(audioTuile), 
+AudioTuileParamWidget::AudioTuileParamWidget(TuileWidget* widget, 
+                                            AudioTuile* audioTuile):
+                                TuileParamWidget(widget, audioTuile), 
                                 m_audioTuile(audioTuile) {
     end();
 
-    m_volumeSlider = new Fl_Value_Slider(0, 0, 50, 20, "Volume");
+    m_volumeSlider = new Fl_Value_Slider(0, 0, 40, 20, "Volume");
     m_volumeSlider->callback(statAudioTuileInputs,this);
     m_volumeSlider->align(FL_ALIGN_LEFT|FL_ALIGN_TOP);
     m_volumeSlider->type(FL_HOR_NICE_SLIDER);

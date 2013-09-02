@@ -16,8 +16,9 @@
 
 using namespace std;
 
-SoundFileParamWidget::SoundFileParamWidget(SoundFileTuile* sfTuile):
-                                AudioTuileParamWidget(sfTuile), 
+SoundFileParamWidget::SoundFileParamWidget(TuileWidget* widget, 
+                                            SoundFileTuile* sfTuile):
+                                AudioTuileParamWidget(widget, sfTuile), 
                                 m_sfTuile(sfTuile) {
     end();
 }

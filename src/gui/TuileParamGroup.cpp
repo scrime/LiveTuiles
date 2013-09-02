@@ -13,7 +13,6 @@ using namespace std;
 TuileParamGroup::TuileParamGroup(): Fl_Scroll(0, 0, 100, 100, "Edit Tuile"), 
                                     m_childWidget(NULL) { 
     align(FL_ALIGN_TOP|FL_ALIGN_LEFT);
-    color(fl_darker(fl_darker(FL_GREEN)));
     type(Fl_Scroll::VERTICAL_ALWAYS);
     end();
 }

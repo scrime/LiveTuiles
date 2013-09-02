@@ -15,8 +15,8 @@
 
 using namespace std;
 
-FaustParamWidget::FaustParamWidget(FaustTuile* faustTuile):
-                                AudioTuileParamWidget(faustTuile),
+FaustParamWidget::FaustParamWidget(TuileWidget* widget, FaustTuile* faustTuile):
+                                AudioTuileParamWidget(widget, faustTuile),
                                 m_faustTuile(faustTuile) {
     load();
     end();

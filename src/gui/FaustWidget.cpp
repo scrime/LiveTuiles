@@ -20,7 +20,7 @@ FaustWidget::FaustWidget(const std::string& name,
                             FaustTuile* tuile): 
                             AudioTuileWidget(name, tuile),
                             m_faustTuile(tuile) {
-    m_faustParamWidget=new FaustParamWidget(tuile);
+    m_faustParamWidget=new FaustParamWidget(this, tuile);
     m_paramWidget=m_faustParamWidget;
 }
 

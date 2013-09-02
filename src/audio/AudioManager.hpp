@@ -35,7 +35,8 @@ class AudioManager : public tuiles::TuilesManager {
 		static AudioManager* getInstance();
 		~AudioManager();
 
-		virtual void init();
+		void init();
+        void close();
 
         void togglePlay();
         void setBpm(const float&);
@@ -55,8 +56,8 @@ class AudioManager : public tuiles::TuilesManager {
         tuiles::LoopTuile* addLoopTuile();
         MidiOscMonitorTuile* addMidiOscMonitorTuile();
         MidiOscSwitchTuile* addMidiOscSwitchTuile();
-        virtual void deleteAudioTuile(AudioTuile*);
-        virtual void extractAudioTuile(AudioTuile*);
+        void deleteAudioTuile(AudioTuile*);
+        void extractAudioTuile(AudioTuile*);
 
         const float& getPlayPositionInBeats();
         const float& getBpm(){return m_bpm;}
@@ -64,7 +65,7 @@ class AudioManager : public tuiles::TuilesManager {
         void framesToBeats(const float& frames, float& beats);
 
     protected:
-        virtual void procClearTrees();
+        void procClearTrees();
 
     protected:
         friend class AddAudioTuile;

@@ -23,11 +23,15 @@
 using namespace std;
 
 MainWindow::MainWindow(): Fl_Double_Window(800, 600, "LiveTuiles") {
+    size_range(800, 600);
     Fl::scheme("gtk+");
 	end();
 }
 
-MainWindow::~MainWindow() {}
+MainWindow::~MainWindow() {
+   clearAll(); 
+   AudioManager::getInstance()->close();
+}
 
 MainWindow* MainWindow::getInstance() {
     static MainWindow instance;
@@ -78,19 +82,14 @@ void MainWindow::init() {
     m_controlPart->add(m_stopButton);
     m_controlPart->add(m_playPauseButton);
     m_controlPart->add(m_bpmInput);
-    m_controlPart->add(new Fl_Group(0,0,w()-270,0,""));
+    Fl_Group* sep = new Fl_Group(0,0,w()-270,0,"");
+    m_controlPart->add(sep);
     m_controlPart->add(m_treeZoomSlider);
+    m_controlPart->resizable(sep);
 
     //TREE/SCORE
 	m_tuilesTree = TreeWidget::getInstance();
-    AudioManager::getInstance()->addObserver(m_tuilesTree);
     m_tuilesTree->resize(m_spacing, 0, w()- 20, m_treeHeight);
-	m_tuilesPart = new HitPack(0, 0, w(), m_treeHeight, "");
-    m_tuilesPart->internalSpacing(0);
-    m_tuilesPart->externalSpacing(0);
-    m_tuilesPart->end();
-	m_tuilesPart->type(HitPack::HORIZONTAL);
-    m_tuilesPart->add(m_tuilesTree);
 
     //EDITION
     m_clearTreeButton = new Fl_Button(0, 20, 
@@ -115,7 +114,7 @@ void MainWindow::init() {
     m_tuilesBank->setTreeWidget(m_tuilesTree);
 
     m_tuileParamGroup= TuileParamGroup::getInstance();
-    m_tuileParamGroup->resize(0, 15, w()-m_browserWidth-130, m_editHeight);
+    m_tuileParamGroup->resize(0, 15, w(), m_editHeight);
     m_tuileParamGroup->color(fl_darker(FL_BACKGROUND2_COLOR));
     m_tuileParamGroup->box(FL_DOWN_BOX);
     m_tuilesTree->setParamGroup(m_tuileParamGroup);
@@ -126,6 +125,8 @@ void MainWindow::init() {
 	m_editPart->add(m_editScoreButtonsPart);
 	m_editPart->add(m_tuilesBank);
     m_editPart->add(m_tuileParamGroup);
+    m_editPart->internalSpacing(10);
+    m_editPart->externalSpacing(0);
 
     //MAIN
 	m_pack = new HitPack(0,0,w(),h(),"");
@@ -134,13 +135,13 @@ void MainWindow::init() {
     m_pack->end();
 	m_pack->type(HitPack::VERTICAL);
 	m_pack->add(m_controlPart);
-	m_pack->add(m_tuilesPart);
+	m_pack->add(m_tuilesTree);
 	m_pack->add(m_editPart);
 	this->add(m_pack);
 
     resizable(m_pack);
-    //m_pack->resizable(m_tuilesPart);
-    m_tuilesPart->resizable(m_tuilesTree);
+    m_pack->resizable(m_tuilesTree);
+    m_editPart->resizable(m_tuileParamGroup);
 
     //clear to add first leaf and loop tuile 
     clearAll();
@@ -160,6 +161,22 @@ void MainWindow::update() {
         m_tuilesBank->drawDraggedTuile();
     }
 	usleep(1000);
+}
+
+int MainWindow::handle(int event) {
+    switch(event) {
+        case FL_SHORTCUT:
+        case FL_KEYDOWN: {
+            switch(Fl::event_key()) {
+                case FL_Escape: {
+                    return 1;
+                }break;
+                default:break;
+            }
+        }break;
+        default:break;
+    }
+    return Fl_Double_Window::handle(event);
 }
 
 void MainWindow::cbBpm(Fl_Widget*) {

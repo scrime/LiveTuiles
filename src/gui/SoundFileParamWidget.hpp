@@ -15,7 +15,7 @@ class SoundFileTuile;
 
 class SoundFileParamWidget : public AudioTuileParamWidget {
   public:
-	SoundFileParamWidget(SoundFileTuile*);
+	SoundFileParamWidget(TuileWidget*, SoundFileTuile*);
 	~SoundFileParamWidget();
 
     void update();

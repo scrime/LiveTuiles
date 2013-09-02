@@ -39,8 +39,9 @@ AudioManager::AudioManager() {
 }
 
 AudioManager::~AudioManager() {
-    jack_deactivate(m_jackClient);
-    jack_client_close(m_jackClient);
+    delete m_protoAddAudioTuile;
+    delete m_protoRemoveAudioTuile;
+    delete m_protoSetProcStep;
 }
 
 AudioManager* AudioManager::getInstance() {
@@ -73,6 +74,11 @@ void AudioManager::init() {
 
 	//activate the client
 	jack_activate(m_jackClient);
+}
+
+void AudioManager::close() {
+    jack_deactivate(m_jackClient);
+    jack_client_close(m_jackClient);
 }
 
 void AudioManager::setBpm(const float& bpm) {

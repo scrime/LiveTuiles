@@ -42,13 +42,13 @@ void AudioTuileWidget::notifyDelete() {
 }
 
 void AudioTuileWidget::extract() {
-    cout<<"extracting the audio tuile"<<endl;
     AudioManager::getInstance()->extractAudioTuile(m_audioTuile);
 }
 
 void AudioTuileWidget::drawComposition() {
     LeafTuileWidget::drawComposition();
     fl_color(FL_BLUE);
+    fl_line_style(FL_SOLID, 3);
     if(m_connecting) {
         fl_begin_line();
         fl_curve(getCenterReal(), y()+h(),
@@ -57,6 +57,7 @@ void AudioTuileWidget::drawComposition() {
                     m_dragPosX, m_dragPosY);
         fl_end_line();
     }
+    fl_line_style(0);
 }
 
 int AudioTuileWidget::handle(int event) {
@@ -95,7 +96,6 @@ int AudioTuileWidget::handle(int event) {
         }break;
         case FL_RELEASE: {
             if(m_connecting) {
-                cout<<"test connection"<<endl;
                 TreeWidget::getInstance()->testConnection(this, 
                                                             Fl::event_x(),
                                                             Fl::event_y(), 

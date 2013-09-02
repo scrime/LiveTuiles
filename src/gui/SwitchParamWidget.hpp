@@ -17,7 +17,7 @@ class MidiOscSwitchTuile;
 
 class SwitchParamWidget : public TuileParamWidget{
   public:
-	SwitchParamWidget(MidiOscSwitchTuile*);
+	SwitchParamWidget(TuileWidget*, MidiOscSwitchTuile*);
 	~SwitchParamWidget();
 
     void update();

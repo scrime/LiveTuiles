@@ -21,7 +21,7 @@ AudioOutputWidget::AudioOutputWidget(const std::string& name,
                                     AudioOutputTuile* tuile): 
                                         AudioTuileWidget(name, tuile), 
                                         m_audioOutputTuile(tuile) {
-    m_paramWidget=new AudioTuileParamWidget(tuile);
+    m_paramWidget=new AudioTuileParamWidget(this, tuile);
 }
 
 AudioOutputWidget::~AudioOutputWidget() {}

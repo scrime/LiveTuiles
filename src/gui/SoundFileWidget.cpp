@@ -21,7 +21,7 @@ SoundFileWidget::SoundFileWidget(const std::string& name,
                                 AudioTuileWidget(name, tuile),
                                 m_soundFileTuile(tuile) {
     m_canTakeInput=false;
-    m_paramWidget=new SoundFileParamWidget(tuile);
+    m_paramWidget=new SoundFileParamWidget(this, tuile);
 }
 
 SoundFileWidget::~SoundFileWidget() {}

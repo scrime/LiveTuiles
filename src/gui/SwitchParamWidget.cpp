@@ -16,8 +16,10 @@
 
 using namespace std;
 
-SwitchParamWidget::SwitchParamWidget(MidiOscSwitchTuile* switchTuile):
-                                            TuileParamWidget(switchTuile),
+SwitchParamWidget::SwitchParamWidget(TuileWidget* widget, 
+                                        MidiOscSwitchTuile* switchTuile):
+                                            TuileParamWidget(widget,
+                                                             switchTuile),
                                             m_switchTuile(switchTuile) {
 
     m_selectInput = new Fl_Simple_Counter(0, 0, 50, 20, "Selected Child");

@@ -21,7 +21,7 @@ AudioInputWidget::AudioInputWidget(const std::string& name,
                                     AudioInputTuile* tuile): 
                                         AudioTuileWidget(name, tuile),
                                         m_audioInputTuile(tuile) {
-    m_paramWidget=new AudioTuileParamWidget(tuile);
+    m_paramWidget=new AudioTuileParamWidget(this, tuile);
     m_canTakeInput=false;
 }
 

@@ -196,10 +196,12 @@ int LeafTuileWidget::handle(int event) {
                         TreeWidget::getInstance()->getPixelsPerFrame();
                 switch(m_overPart) {
                     case TUILE_SYNCOUT: {
-                        m_tuile->setRightOffset(m_dragFrame-diffX/pixPerFrame);
+                        m_tuile->setSubdivisedRightOffset(
+                                    m_dragFrame-diffX/pixPerFrame);
                     }break;
                     case TUILE_SYNCIN: {
-                        m_tuile->setLeftOffset(m_dragFrame-diffX/pixPerFrame);
+                        m_tuile->setSubdivisedLeftOffset(
+                                    m_dragFrame-diffX/pixPerFrame);
                         position(x(), Fl::event_y());
                         highlightReal();
                     }break;
@@ -250,6 +252,7 @@ void LeafTuileWidget::notifyUpdate() {
     TuileWidget::notifyUpdate();
     m_name=fl_filename_name(m_tuile->getName().c_str());
     resize(x(), y(), m_width, h());
+    TreeWidget::getInstance()->redraw();
 }
 
 void LeafTuileWidget::notifyDelete() {

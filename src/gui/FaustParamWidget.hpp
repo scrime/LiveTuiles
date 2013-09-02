@@ -20,7 +20,7 @@ class FaustTuile;
 
 class FaustParamWidget : public AudioTuileParamWidget, public UI {
   public:
-	FaustParamWidget(FaustTuile*);
+	FaustParamWidget(TuileWidget*, FaustTuile*);
 	~FaustParamWidget();
     void load();
 
