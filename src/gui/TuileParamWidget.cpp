@@ -14,6 +14,7 @@
 #include "TuileWidget.hpp"
 
 #include <tuiles/Tuile.hpp>
+#include "../audio/AudioManager.hpp"
 
 using namespace std;
 using namespace tuiles;
@@ -28,14 +29,16 @@ TuileParamWidget::TuileParamWidget(TuileWidget* widget,
     color(fl_rgb_color(70, 90, 70));
     type(Fl_Pack::VERTICAL);
     internalSpacing(15);
-    externalSpacing(10);
+    externalXSpacing(10);
+    externalYSpacing(10);
     end();
 
     m_tuilePack = new HitPack(0, y(), w(), 30, "");
     m_tuilePack->end();
     m_tuilePack->type(Fl_Pack::HORIZONTAL);
     m_tuilePack->internalSpacing(10);
-    m_tuilePack->externalSpacing(5);
+    m_tuilePack->externalXSpacing(5);
+    m_tuilePack->externalYSpacing(5);
 
     m_nameInput = new Fl_Input(0, 0, 120, 20, "Name");
     m_nameInput->labelsize(12);
@@ -84,19 +87,18 @@ void TuileParamWidget::update() {}
 
 void TuileParamWidget::cbTuileInputs(Fl_Widget* w) {
     if(m_tuile) {
+        float fpb=AudioManager::getInstance()->getFramesPerBeat();
         if(m_nameInput->contains(w)) {
             m_tuile->setName(std::string(m_nameInput->value()));        
         }
         else if(m_lengthInput->contains(w)) {
-            m_tuile->setLength(m_lengthInput->value());
+            m_tuile->setLength(m_lengthInput->value()*fpb);
         }
         else if(m_lOffsetInput->contains(w)) {
-            m_tuile->setLeftOffset(m_lOffsetInput->value()
-                                    *m_tuile->getLength());
+            m_tuile->setLeftOffset(m_lOffsetInput->value()*fpb);
         }
         else if(m_rOffsetInput->contains(w)) {
-            m_tuile->setRightOffset(m_rOffsetInput->value()
-                                    *m_tuile->getLength());
+            m_tuile->setRightOffset(m_rOffsetInput->value()*fpb);
         }
         else if(m_removeButton->contains(w)) {
             m_tuileWidget->extract();
@@ -107,10 +109,11 @@ void TuileParamWidget::cbTuileInputs(Fl_Widget* w) {
 
 void TuileParamWidget::notifyUpdate() {
     if(m_tuile) {
+        float fpb=AudioManager::getInstance()->getFramesPerBeat();
         m_nameInput->value(m_tuile->getName().c_str());
-        m_lengthInput->value(m_tuile->getLength());
-        m_lOffsetInput->value(m_tuile->getLeftOffset()/m_tuile->getLength());
-        m_rOffsetInput->value(m_tuile->getRightOffset()/m_tuile->getLength());
+        m_lengthInput->value(m_tuile->getLength()/fpb);
+        m_lOffsetInput->value(m_tuile->getLeftOffset()/fpb);
+        m_rOffsetInput->value(m_tuile->getRightOffset()/fpb);
     }
     TuileParamGroup::getInstance()->redraw();
 }

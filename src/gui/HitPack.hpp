@@ -25,7 +25,8 @@ class HitPack : public Fl_Pack {
     void draw();
     void add(Fl_Widget*);
     inline void internalSpacing(int s){m_internalSpacing=s;}
-    inline void externalSpacing(int s){m_externalSpacing=s;}
+    inline void externalXSpacing(int s){m_externalXSpacing=s;}
+    inline void externalYSpacing(int s){m_externalYSpacing=s;}
     inline void resize(int x, int y, int w, int h) { 
         Fl_Group::resize(x,y,w,h);
     }
@@ -34,7 +35,8 @@ class HitPack : public Fl_Pack {
 
     void repositionWidgets();
     int m_internalSpacing;
-    int m_externalSpacing;
+    int m_externalXSpacing;
+    int m_externalYSpacing;
     std::vector<float> m_initWidths;
     std::vector<float> m_initHeights;
 

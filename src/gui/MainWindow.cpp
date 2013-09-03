@@ -104,7 +104,8 @@ void MainWindow::init() {
     m_editScoreButtonsPart->box(FL_DOWN_BOX);
     m_editScoreButtonsPart->align(FL_ALIGN_LEFT|FL_ALIGN_TOP);
 	m_editScoreButtonsPart->type(HitPack::VERTICAL);
-	m_editScoreButtonsPart->externalSpacing(5);
+	m_editScoreButtonsPart->externalYSpacing(5);
+	m_editScoreButtonsPart->externalXSpacing(5);
 	m_editScoreButtonsPart->internalSpacing(5);
 	m_editScoreButtonsPart->add(m_saveTreeButton);
 	m_editScoreButtonsPart->add(m_clearTreeButton);
@@ -126,12 +127,13 @@ void MainWindow::init() {
 	m_editPart->add(m_tuilesBank);
     m_editPart->add(m_tuileParamGroup);
     m_editPart->internalSpacing(10);
-    m_editPart->externalSpacing(0);
+    m_editPart->externalYSpacing(10);
 
     //MAIN
 	m_pack = new HitPack(0,0,w(),h(),"");
-    m_pack->externalSpacing(m_spacing);
-    m_pack->internalSpacing(m_spacing*2);
+    m_pack->externalXSpacing(m_spacing);
+    m_pack->externalYSpacing(m_spacing);
+    m_pack->internalSpacing(m_spacing);
     m_pack->end();
 	m_pack->type(HitPack::VERTICAL);
 	m_pack->add(m_controlPart);
