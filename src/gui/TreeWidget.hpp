@@ -37,7 +37,6 @@ class TreeWidget : public TuileWidget, public Fl_Group {
         TuileWidget* load(const std::string& fileName);
         void loadConnection(xmlNodePtr, const unsigned int&);
 
-        void refreshTuiles();
         void refreshChildrenTuileWidgets();
         void zoom(const float&);
 

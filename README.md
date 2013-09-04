@@ -5,13 +5,13 @@ LiveTuiles is an interactive looper/sequencer based on libTuiles.
 
 ANR INEDIT Project  
 SCRIME, LaBRI, Université de Bordeaux, France  
-Florent Berthaut - David Janin  
+Florent Berthaut (hitmuri.net) - David Janin  
 
 ##Requires: 
-* FLTK 1.X.X (http://www.fltk.org)
+* FLTK 1.X.Y (http://www.fltk.org)
 * libJack (http://jackaudio.org/)
 * LLVM (http://llvm.org/)
-* FAUST (http://faust.grame.fr/)
+* FAUST (http://faust.grame.fr/  branch faust2) 
 * libsndfile (http://www.mega-nerd.com/libsndfile/)
 * libsamplerate (http://www.mega-nerd.com/SRC/)
 * libTuiles (https://github.com/scrime/libTuiles)

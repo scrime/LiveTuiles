@@ -57,8 +57,8 @@ TreeWidget* TreeWidget::getInstance() {
 
 void TreeWidget::update() {
     //update cursor
-    m_cursorX = (AudioManager::getInstance()->getPlayPositionInBeats()) 
-                    *m_pixelsPerBeat;
+    m_cursorX = (AudioManager::getInstance()->getPlayingPos()) 
+                    *m_pixelsPerFrame;
     //remove connections
     if(m_removingConnections.size()>0) {
         vector<ConnectionWidget*>::iterator itConWid= 
@@ -93,8 +93,8 @@ void TreeWidget::update() {
 }
 
 void TreeWidget::zoom(const float& zoom) {
-    m_pixelsPerBeat=10.0+zoom*100;
-    refreshTuiles();
+    m_pixelsPerFrame=0.0001+zoom/100;
+    notifyUpdate();
 }
 
 void TreeWidget::draw() {
@@ -153,14 +153,6 @@ void TreeWidget::refreshChildrenTuileWidgets() {
     //print the trees
     man->printTrees();
     //refresh tuiles
-    refreshTuiles();
-}
-
-void TreeWidget::refreshTuiles() {
-    //get new pix per frames
-    m_pixelsPerFrame=m_pixelsPerBeat
-                        /AudioManager::getInstance()->getFramesPerBeat();
-    //notify
     notifyUpdate();
 }
 

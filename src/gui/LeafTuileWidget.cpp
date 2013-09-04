@@ -295,8 +295,6 @@ bool LeafTuileWidget::testMagnetWithTuile(const int& inX, const int& inY,
                         tree->createSeqWidget(this, newWidget);
                     newSeqWidget->notifyUpdate();
                 }
-                tree->refreshTuiles();
-
             }
             return true;
         }

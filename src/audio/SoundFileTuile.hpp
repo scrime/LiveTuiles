@@ -12,8 +12,17 @@
 #include <list>
 #include <map>
 
+#include <tuiles/Voice.hpp>
 #include "AudioTuile.hpp"
 #include "Grain.hpp"
+
+class SoundFileVoice {
+    public:
+        float& editProcPosition(){return m_procPosition;}
+        const float& getProcPosition(){return m_procPosition;}
+    private:
+        float m_procPosition;
+};
 
 class SetSoundFileProperties;
 
@@ -30,8 +39,9 @@ class SoundFileTuile : public AudioTuile {
 
 		void setSampleRate(const unsigned int&);
 
-		void activate();
-		void deactivate();
+        virtual void processPos(const float& pos, const tuiles::Voice&);
+		void activate(const tuiles::Voice&);
+		void deactivate(const tuiles::Voice&);
 
         void setLength(const long&);
         inline virtual void setPositionRatio(const float& ratio){
@@ -53,8 +63,9 @@ class SoundFileTuile : public AudioTuile {
 		unsigned int m_sampleRate;
 		unsigned long m_framesCount; 
 		float m_floatFramesCount;
-        unsigned int m_filePosition;
+		float m_sfSpeed;
 
+        std::map<std::string, SoundFileVoice> m_voices;
 		std::list<Grain> m_grains;
 
 		float m_grainVolume;
@@ -63,9 +74,8 @@ class SoundFileTuile : public AudioTuile {
 		unsigned long m_windowStart;
 		unsigned long m_grainDistance;
 		unsigned long m_grainDistanceCounter;
-
+        float m_procSfSpeed;
 		unsigned long m_elapsedFrames;
-		float m_speed;
 		unsigned long m_setWindowStart;
 		unsigned long m_lastSetWindowStart;
 

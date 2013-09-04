@@ -17,27 +17,26 @@
 #include "commands/SetSoundFileProperties.hpp"
 
 using namespace std;
+using namespace tuiles;
 
 SoundFileTuile::SoundFileTuile():   AudioTuile(),
+                                    m_sfSpeed(1), 
                                     m_grainVolume(1),
                                     m_grainSize(4096),
                                     m_windowSize(2),
                                     m_windowStart(0),
                                     m_grainDistance(2048),
                                     m_grainDistanceCounter(0),
+                                    m_procSfSpeed(1),
                                     m_elapsedFrames(64),
-                                    m_speed(1), 
                                     m_setWindowStart(0),
                                     m_lastSetWindowStart(0) {
-
     m_type="SoundFile";
-
 	m_envelopes[m_grainSize] = new jack_default_audio_sample_t[m_grainSize];
 	for(unsigned int i=0; i<m_grainSize; ++i) {
 		m_envelopes[m_grainSize][i]=0.5*(1.0 - cos((2.0*M_PI*float(i))
                                                         /(m_grainSize-1)));
 	}
-
     m_protoSetSFProps = new SetSoundFileProperties();
     m_protoSetSFProps->createClones(m_nbCommands);
 }
@@ -149,12 +148,28 @@ void SoundFileTuile::unload() {
     updateLoaded();
 }
 
-void SoundFileTuile::activate() {
-    m_filePosition=0;
-
+void SoundFileTuile::processPos(const float& pos, const Voice& voice) {
+    LeafTuile::processPos(pos, voice);
+    //FIXME should be able to use activate/deactivate for voices
+    if(m_voices.find(voice.getID())==m_voices.end()) {
+        m_voices[voice.getID()]=SoundFileVoice();
+        m_voices[voice.getID()].editProcPosition()=m_procPosition;
+    }
 }
 
-void SoundFileTuile::deactivate() {
+//FIXME should be able to use activate/deactivate for voices 
+void SoundFileTuile::activate(const Voice& voice) {
+/*
+    if(m_voices.find(voice.getID())==m_voices.end()) {
+        cout<<"activate voice "<<voice.getID()<<endl;
+        m_voices[voice.getID()] = SoundFileVoice();
+    }
+*/
+}
+void SoundFileTuile::deactivate(const Voice& voice) {
+/*
+    m_voices.erase(voice.getID());
+*/
 }
 
 void SoundFileTuile::setLength(const long& length) {
@@ -168,7 +183,7 @@ void SoundFileTuile::updateSoundFileProperties() {
                                                 (m_protoSetSFProps->popClone());
     if(com) {
         com->setSoundFileTuile(this);
-        com->setSpeed(m_speed);
+        com->setSpeed(m_sfSpeed);
         m_commandsToProc->runCommand(com);
     }
 }
@@ -180,6 +195,7 @@ void SoundFileTuile::processBuffers(const int& nbFrames) {
             m_internalBuffer[c].assign(m_internalBuffer[c].size(), 0);
         }
         m_computed=true;
+/*
         if(m_procActive) {
             //start new grain ?
             if(m_grainDistanceCounter>=m_grainDistance) {
@@ -209,6 +225,39 @@ void SoundFileTuile::processBuffers(const int& nbFrames) {
                 m_grainDistanceCounter+=nbFrames;
             }
         }
+*/
+
+        if(m_grainDistanceCounter>=m_grainDistance) {
+            if(m_procSfSpeed<1.0) {
+                m_windowSize=1000.0*(1.0-m_speed)+1;
+                m_grainDistance = m_grainSize/3.0;
+            }
+            else if(m_procSfSpeed>1.0) {
+                m_windowSize=1;
+                m_grainDistance = m_grainSize/3.0;
+            }
+            else {
+                m_windowSize=1;
+                m_grainDistance = m_grainSize/2.0;
+            }
+            map<string, SoundFileVoice>::iterator itVoice = m_voices.begin();
+            for(; itVoice!=m_voices.end(); ++itVoice) {
+                m_grains.push_back(Grain(m_grainVolume*m_procVolume, 
+                                            m_grainSize, 
+                                            rand()%m_windowSize
+                                            +(itVoice->second.getProcPosition()
+                                                / m_procLength)
+                                            *float(m_framesCount),
+                                            m_envelopes[m_grainSize],
+                                            m_buffers, m_framesCount, 
+                                            m_channelsCount));
+            }
+            m_grainDistanceCounter=nbFrames;
+        }
+        else {
+            m_grainDistanceCounter+=nbFrames;
+        }
+
         //process grains
         list<Grain>::iterator itGrain; 
         for(itGrain=m_grains.begin(); itGrain!=m_grains.end();) {
@@ -220,6 +269,9 @@ void SoundFileTuile::processBuffers(const int& nbFrames) {
                 ++itGrain;
             }
         }
+
+        //FIXME should be able to use activate/deactivate for voices
+        m_voices.clear();
     }
 }
 

@@ -16,7 +16,7 @@ class SetSoundFileProperties: public tuiles::Command {
 		inline SetSoundFileProperties(){m_name="SetSoundFileProperties";}
 		inline virtual ~SetSoundFileProperties(){};
 		virtual void run() {
-            m_tuile->m_procSpeed=m_speed;
+            m_tuile->m_procSfSpeed=m_speed;
         }
         virtual void createClones(const unsigned int& nbClones) {
             for(unsigned int c=0; c<nbClones; ++c) {

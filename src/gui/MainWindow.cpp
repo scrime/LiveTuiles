@@ -183,7 +183,6 @@ int MainWindow::handle(int event) {
 
 void MainWindow::cbBpm(Fl_Widget*) {
 	AudioManager::getInstance()->setBpm(m_bpmInput->value());
-    m_tuilesTree->refreshTuiles();
 }
 
 void MainWindow::cbPlayPause(Fl_Widget*) {

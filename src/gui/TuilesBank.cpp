@@ -127,7 +127,6 @@ int TuilesBank::handle(int event) {
     switch(event) { 
         case FL_DRAG: { 
             if(!m_dragging) {
-                cout<<"starts dragging"<<endl;
                 if(m_selectedFromBank.size()>0) {
                     m_dragging=true;
                     m_draggedTuile->setName(m_selectedFromBank);

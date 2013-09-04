@@ -94,7 +94,6 @@ bool LoopWidget::testMagnetWithTuile(const int& inX, const int& inY,
                     m_loopTuile->setChild(newWidget->getTuile());
                     tree->refreshChildrenTuileWidgets();
                 }
-                tree->refreshTuiles();
             }
             return true;
         }
