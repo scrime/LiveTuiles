@@ -25,6 +25,7 @@ TuileParamWidget::TuileParamWidget(TuileWidget* widget,
                                                 Observer(),
                                                 m_tuile(tuile),
                                                 m_tuileWidget(widget) {
+    clip_children(1);
     box(FL_FLAT_BOX);
     color(fl_rgb_color(70, 90, 70));
     type(Fl_Pack::VERTICAL);
@@ -49,21 +50,21 @@ TuileParamWidget::TuileParamWidget(TuileWidget* widget,
     m_lengthInput->align(FL_ALIGN_TOP|FL_ALIGN_LEFT);
     m_lengthInput->callback(statTuileInputs,this);
     m_lengthInput->labelsize(12);
-    m_lengthInput->step(0.1);
+    m_lengthInput->step(0.001);
     m_lengthInput->bounds(0, 100000000);
     m_lengthInput->soft(0);
     m_lOffsetInput = new Fl_Value_Input(0, 0, 60, 20, "Left Offset");
     m_lOffsetInput->align(FL_ALIGN_TOP|FL_ALIGN_LEFT);
     m_lOffsetInput->callback(statTuileInputs,this);
     m_lOffsetInput->labelsize(12);
-    m_lOffsetInput->step(0.1);
+    m_lOffsetInput->step(0.001);
     m_lOffsetInput->soft(0);
     m_lOffsetInput->bounds(-100000000, 1000000000);
     m_rOffsetInput = new Fl_Value_Input(0, 0, 60, 20, "Right Offset");
     m_rOffsetInput->align(FL_ALIGN_TOP|FL_ALIGN_LEFT);
     m_rOffsetInput->callback(statTuileInputs,this);
     m_rOffsetInput->labelsize(12);
-    m_rOffsetInput->step(0.1);
+    m_rOffsetInput->step(0.001);
     m_rOffsetInput->soft(0);
     m_rOffsetInput->bounds(-100000000, 100000000);
     m_removeButton = new Fl_Button(0,0,60,20,"Remove");

@@ -43,7 +43,6 @@ class TreeWidget : public TuileWidget, public Fl_Group {
         void draw();
         int handle(int);
 
-        inline void setPixelsPerBeat(int ppb){m_pixelsPerBeat=ppb;}
         inline const float& getPixelsPerFrame(){return m_pixelsPerFrame;}
 
         virtual bool testMagnetWithTuile(const int& inX, const int& inY,
@@ -73,8 +72,8 @@ class TreeWidget : public TuileWidget, public Fl_Group {
 
     private:
         int m_cursorX;
-        float m_pixelsPerBeat;
         float m_pixelsPerFrame;
+        float m_minPixPerFrame;
         int m_offsetX, m_offsetY;
         int m_magnetSize;
         int m_zeroPosX;

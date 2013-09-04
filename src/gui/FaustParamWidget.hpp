@@ -38,27 +38,26 @@ class FaustParamWidget : public AudioTuileParamWidget, public UI {
 
     inline void addButton(const char* label, FAUSTFLOAT* zone) {
         m_paramsMap[std::string(label)]=zone;
-        begin();
         m_buttons.push_back(new Fl_Button(0,0,fl_width(label),25,label));
         m_buttons.back()->user_data((void*)zone);
         m_buttons.back()->callback(statParamBut,this);
-        end();
+        size(w(), h()+30);
+        add(m_buttons.back());
     }
 
     inline void addCheckButton(const char* label, FAUSTFLOAT* zone) {
         m_paramsMap[std::string(label)]=zone;
-        begin();
         m_buttons.push_back(new Fl_Toggle_Button(0,0,fl_width(label),25,label));
         m_buttons.back()->user_data(zone);
         m_buttons.back()->callback(statParamBut,this);
-        end();
+        size(w(), h()+30);
+        add(m_buttons.back());
     }
 
     inline void addVerticalSlider(const char* label, FAUSTFLOAT* zone, 
                                     FAUSTFLOAT init, FAUSTFLOAT min, 
                                     FAUSTFLOAT max, FAUSTFLOAT step) {
         m_paramsMap[std::string(label)]=zone;
-        begin();
         m_sliders.push_back(new Fl_Value_Slider(100,0,100,20,label));
         m_sliders.back()->user_data((void*)zone);
         m_sliders.back()->callback(statParamVal,this);
@@ -69,14 +68,14 @@ class FaustParamWidget : public AudioTuileParamWidget, public UI {
         m_sliders.back()->labelsize(12);
         m_sliders.back()->align(FL_ALIGN_LEFT|FL_ALIGN_TOP);
         m_sliders.back()->type(FL_HOR_NICE_SLIDER);
-        end();
+        size(w(), h()+30);
+        add(m_sliders.back());
     }
 
     inline void addHorizontalSlider(const char* label, FAUSTFLOAT* zone, 
                                     FAUSTFLOAT init, FAUSTFLOAT min, 
                                     FAUSTFLOAT max, FAUSTFLOAT step) {
         m_paramsMap[std::string(label)]=zone;
-        begin();
         m_sliders.push_back(new Fl_Value_Slider(100,0,100,20,label));
         m_sliders.back()->align(FL_ALIGN_LEFT|FL_ALIGN_TOP);
         m_sliders.back()->bounds(min,max);
@@ -87,14 +86,14 @@ class FaustParamWidget : public AudioTuileParamWidget, public UI {
         m_sliders.back()->callback(statParamVal,this);
         m_sliders.back()->type(FL_HOR_NICE_SLIDER);
         m_sliders.back()->labelsize(12);
-        end();
+        size(w(), h()+30);
+        add(m_sliders.back());
     }
 
     inline void addNumEntry(const char* label, FAUSTFLOAT* zone, 
                             FAUSTFLOAT init, FAUSTFLOAT min, 
                             FAUSTFLOAT max, FAUSTFLOAT step) {
         m_paramsMap[std::string(label)]=zone;
-        begin();
         m_inputs.push_back(new Fl_Value_Input(100,0,30,20,label));
         m_inputs.back()->align(FL_ALIGN_LEFT|FL_ALIGN_TOP);
         m_inputs.back()->bounds(min,max);
@@ -103,7 +102,7 @@ class FaustParamWidget : public AudioTuileParamWidget, public UI {
         m_inputs.back()->user_data((void*)zone);
         m_inputs.back()->callback(statParamVal,this);
         m_inputs.back()->labelsize(12);
-        end();
+        add(m_inputs.back());
     }
     inline void openTabBox(const char* label){};
     inline void openHorizontalBox(const char* label){};

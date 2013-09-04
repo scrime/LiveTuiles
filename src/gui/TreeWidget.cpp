@@ -37,6 +37,7 @@ using namespace tuiles;
 TreeWidget::TreeWidget():   TuileWidget(AudioManager::getInstance()),
                             Fl_Group(0, 0, 100, 100, ""),
                             m_cursorX(0), 
+                            m_minPixPerFrame(1),
                             m_offsetX(10), m_offsetY(10), m_magnetSize(5),
                             m_zeroPosX(0), 
                             m_connectionIDCounter(0) {
@@ -93,7 +94,7 @@ void TreeWidget::update() {
 }
 
 void TreeWidget::zoom(const float& zoom) {
-    m_pixelsPerFrame=0.0001+zoom/100;
+    m_pixelsPerFrame=(1-m_minPixPerFrame)*zoom+m_minPixPerFrame;
     notifyUpdate();
 }
 
@@ -105,8 +106,7 @@ void TreeWidget::draw() {
 	fl_push_clip(x()+2, y()+2, w()-4, h()-4);
 
 	//score beginning
-	fl_rectf(x()+(m_zeroPosX), y(), 
-            w()-(m_zeroPosX), h(), FL_BACKGROUND2_COLOR);
+	fl_rectf(x()+m_zeroPosX, y(), w()-m_zeroPosX, h(), FL_BACKGROUND2_COLOR);
 
     //connections between tuiles 
     map<unsigned int, ConnectionWidget*>::iterator itCon=m_connections.begin();
@@ -157,21 +157,28 @@ void TreeWidget::refreshChildrenTuileWidgets() {
 }
 
 void TreeWidget::notifyUpdate() {
-    //update tuiles positions 
-    m_zeroPosX = m_tuile->getLeftOffset()*m_pixelsPerFrame;
-    for(unsigned int i=0; i<m_childrenTuileWidgets.size(); ++i) {
-        m_childrenTuileWidgets[i]->getWidget()->position(
-            (m_tuile->getLeftOffset()
-            -m_childrenTuileWidgets[i]->getTuile()->getLeftOffset())
-                *m_pixelsPerFrame
-                +x(), 
-            m_childrenTuileWidgets[i]->getWidget()->y());
-    }
     //notify all tuiles
     map<unsigned int, TuileWidget*>::iterator itWidget=m_tuileWidgets.begin();
     for(;itWidget!=m_tuileWidgets.end(); ++itWidget) {
         itWidget->second->notifyUpdate();
     }
+    //update tuiles positions and get total length
+    float totalLength=0;
+    m_zeroPosX = m_tuile->getLeftOffset()*m_pixelsPerFrame;
+    for(unsigned int i=0; i<m_childrenTuileWidgets.size(); ++i) {
+        Tuile* childTuile = m_childrenTuileWidgets[i]->getTuile();
+        m_childrenTuileWidgets[i]->getWidget()->position(
+            (m_tuile->getLeftOffset()-childTuile->getLeftOffset())
+                *m_pixelsPerFrame+x(), 
+            m_childrenTuileWidgets[i]->getWidget()->y());
+        float childMax = max<float>(-childTuile->getLeftOffset(), 0) +
+                         max<float>(-childTuile->getRightOffset(), 0) +
+                         childTuile->getLength();
+        if(childMax > totalLength) {
+           totalLength = childMax;
+        }
+    }
+    m_minPixPerFrame=float(w())/(totalLength*10.0);
     //update all connections
     map<unsigned int, ConnectionWidget*>::iterator itCon=m_connections.begin();
     for(; itCon!=m_connections.end(); ++itCon) {

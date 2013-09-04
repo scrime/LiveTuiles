@@ -30,8 +30,6 @@ void HitPack::draw() {
 }
 
 void HitPack::add(Fl_Widget* widget) {
-    m_initWidths.push_back(widget->w());
-    m_initHeights.push_back(widget->h());
     Fl_Group::add(widget);
 }
 
