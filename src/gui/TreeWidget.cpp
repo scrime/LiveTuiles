@@ -118,6 +118,12 @@ void TreeWidget::updateZoom() {
     for(;itWidget!=m_tuileWidgets.end(); ++itWidget) {
         itWidget->second->updateWidget(m_scrollX, m_scrollY, m_zoom, x(), y());
     }
+    //update the connections 
+    map<unsigned int, ConnectionWidget*>::iterator itCon;
+    itCon=m_connections.begin();
+    for(; itCon!=m_connections.end(); ++itCon) {
+        itCon->second->update();
+    }
     MainWindow::getInstance()->getScrollZoomWidget()->update();
     redraw();
 }
@@ -207,11 +213,6 @@ void TreeWidget::updateChildrenPositions() {
 void TreeWidget::notifyUpdate() {
     //update children positions
     updateChildrenPositions();
-    //update all connections
-    map<unsigned int, ConnectionWidget*>::iterator itCon=m_connections.begin();
-    for(; itCon!=m_connections.end(); ++itCon) {
-        itCon->second->update();
-    }
     //update the zoom
     updateZoom();
 }
