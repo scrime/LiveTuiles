@@ -95,6 +95,7 @@ class MainWindow : public Fl_Double_Window {
 		Fl_Toggle_Button* m_playPauseButton;
 		Fl_Button* m_stopButton;
 		Fl_Toggle_Button* m_cursorToggle;
+		std::string m_cursorToggleTooltip;
 		Fl_Value_Input *m_bpmInput;
 		std::string m_bpmInputTooltip;
         ScrollZoomWidget* m_treeZoomSlider;

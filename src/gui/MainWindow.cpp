@@ -77,6 +77,8 @@ void MainWindow::init() {
     m_cursorToggle = new Fl_Toggle_Button(50, m_spacing, 20, 30, "@->|");
     m_cursorToggle->clear_visible_focus();
     m_cursorToggle->callback(statCursor, this);
+	m_cursorToggleTooltip = "Follow cursor";
+    m_cursorToggle->tooltip(m_cursorToggleTooltip.c_str());
     Fl_Box* sep0 = new Fl_Box(0, 0, 70, 20, "");
     HitPack* controlButtonsPack = new HitPack(0, 0, 50, 20,"");
     controlButtonsPack->add(m_stopButton);
