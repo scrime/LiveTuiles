@@ -43,6 +43,7 @@ TreeWidget::TreeWidget(): TuileWidget(AudioManager::getInstance()),
                             m_panelWidth(50),
                             m_magnetSize(5),
                             m_zeroPosX(0), 
+                            m_followCursor(false),
                             m_connectionIDCounter(0) {
     m_totalWidth=m_minTotalWidth;
     m_totalHeight=m_minTotalHeight;
@@ -65,6 +66,12 @@ void TreeWidget::update() {
     //update cursor
     float playingPos = AudioManager::getInstance()->getPlayingPos();
     m_cursorX = playingPos*m_zoom+m_zeroPosX;
+    if(m_followCursor) {
+        if(playingPos*m_zoom>w()/2) {
+            m_scrollX=playingPos-(float(w())/2.0)/m_zoom;
+            updateZoom();
+        } 
+    }
 
     //remove connections
     if(m_removingConnections.size()>0) {
@@ -178,7 +185,6 @@ void TreeWidget::updateChildren() {
     for(; itWid!=m_tuileWidgets.end(); ++itWid) {
         itWid->second->updateChildren();
     }
-    cout<<"update children "<<m_childrenTuileWidgets.size()<<endl;
     //print the trees
     man->printTrees();
     //update everything

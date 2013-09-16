@@ -26,6 +26,7 @@
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Pack.H>
 #include <FL/Fl_Toggle_Button.H>
+#include <FL/Fl_Check_Button.H>
 #include <FL/Fl_Value_Slider.H>
 #include <FL/Fl_Value_Input.H>
 #include <FL/Fl_Choice.H>
@@ -67,6 +68,11 @@ class MainWindow : public Fl_Double_Window {
 			tmpf->cbBpm(w);
 		}	
 		void cbBpm(Fl_Widget*);
+		static void statCursor(Fl_Widget* w,void* f) { 
+			MainWindow *tmpf = static_cast<MainWindow *>(f);
+			tmpf->cbCursor(w);
+		}	
+		void cbCursor(Fl_Widget*);
 		static void statTreeButtons(Fl_Widget* w,void* f) { 
 			MainWindow *tmpf = static_cast<MainWindow *>(f);
 			tmpf->cbTreeButtons(w);
@@ -83,9 +89,12 @@ class MainWindow : public Fl_Double_Window {
         std::string m_currentFileName;
 
 		int m_controlHeight;
+        int m_controlWidth;
+        int m_scrollZoomWidth;
 		HitPack* m_controlPart;
 		Fl_Toggle_Button* m_playPauseButton;
 		Fl_Button* m_stopButton;
+		Fl_Toggle_Button* m_cursorToggle;
 		Fl_Value_Input *m_bpmInput;
 		std::string m_bpmInputTooltip;
         ScrollZoomWidget* m_treeZoomSlider;

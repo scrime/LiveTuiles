@@ -48,6 +48,8 @@ void MainWindow::init() {
 	Fl::set_color(FL_INACTIVE_COLOR,40,40,40);
 	Fl::set_color(FL_SELECTION_COLOR,150,150,150);
 	m_controlHeight=50;
+	m_controlWidth=200;
+	m_scrollZoomWidth=500;
 	m_editHeight=160;
 	m_treeHeight=390;
 	m_editScoreButtonsHeight=20;
@@ -56,7 +58,7 @@ void MainWindow::init() {
     m_spacing=10;
 
     //CONTROL
-    m_bpmInput = new Fl_Value_Input(m_spacing, m_spacing, 50, 30, "bpm");
+    m_bpmInput = new Fl_Value_Input(m_spacing, m_spacing, 70, 30, "bpm");
     m_bpmInput->align(FL_ALIGN_RIGHT);
 	m_bpmInput->clear_visible_focus();
     m_bpmInput->value(60);
@@ -72,19 +74,27 @@ void MainWindow::init() {
     m_stopButton = new Fl_Button(30, m_spacing, 20, 30, "@|<");
     m_stopButton->callback(statStop, this);
 	m_stopButton->clear_visible_focus();
+    m_cursorToggle = new Fl_Toggle_Button(50, m_spacing, 20, 30, "@->|");
+    m_cursorToggle->clear_visible_focus();
+    m_cursorToggle->callback(statCursor, this);
+    Fl_Box* sep0 = new Fl_Box(0, 0, 70, 20, "");
     HitPack* controlButtonsPack = new HitPack(0, 0, 50, 20,"");
     controlButtonsPack->add(m_stopButton);
     controlButtonsPack->add(m_playPauseButton);
     controlButtonsPack->add(m_bpmInput);
-    HitPack* controlLevelsPack = new HitPack(0, 0, 50, 20,"");
+    controlButtonsPack->add(sep0);
+    controlButtonsPack->add(m_cursorToggle);
+    controlButtonsPack->resizable(sep0);
+    HitPack* controlLevelsPack = new HitPack(0, 0, m_controlWidth, 20,"");
     controlLevelsPack->type(Fl_Pack::VERTICAL);
-    Fl_Box* sep1 = new Fl_Box(0, 0, w()-270, 20, "");
+    Fl_Box* sep1 = new Fl_Box(0, 0, 70, 20, "");
     controlLevelsPack->add(controlButtonsPack);
     controlLevelsPack->add(sep1);
-    m_treeZoomSlider = new ScrollZoomWidget(0, 0, 500, 20, "Zoom/Scroll");
+    m_treeZoomSlider = new ScrollZoomWidget(0, 0, 
+                                        m_scrollZoomWidth, 20, "Zoom/Scroll");
 	m_controlPart = new HitPack(20, 0, w()-40, m_controlHeight, "");
 	m_controlPart->type(Fl_Pack::HORIZONTAL);
-    Fl_Box* sep2 = new Fl_Box(0, 0, w()-270, 20, "");
+    Fl_Box* sep2 = new Fl_Box(0, 0, 0, 20, "");
     m_controlPart->add(controlLevelsPack);
     m_controlPart->add(sep2);
     m_controlPart->add(m_treeZoomSlider);
@@ -182,6 +192,15 @@ int MainWindow::handle(int event) {
 
 void MainWindow::cbBpm(Fl_Widget*) {
 	AudioManager::getInstance()->setBpm(m_bpmInput->value());
+}
+
+void MainWindow::cbCursor(Fl_Widget*) {
+    if(m_cursorToggle->value()) {
+        m_tuilesTree->followCursor(true);
+    }
+    else {
+        m_tuilesTree->followCursor(false);
+    }
 }
 
 void MainWindow::cbPlayPause(Fl_Widget*) {

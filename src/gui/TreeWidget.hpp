@@ -47,6 +47,7 @@ class TreeWidget : public TuileWidget, public Fl_Group {
         void updateZoom();
         void zoom(const float&);
         void scroll(const float& scrollX, const float& scrollY);
+        inline void followCursor(bool follow){m_followCursor=follow;}
         inline const float& getZoom(){return m_zoom;}
         inline const float& getScrollX(){return m_scrollX;}
         inline const float& getScrollY(){return m_scrollY;}
@@ -94,6 +95,7 @@ class TreeWidget : public TuileWidget, public Fl_Group {
         float m_panelWidth;
         int m_magnetSize;
         int m_zeroPosX;
+        bool m_followCursor;
 
         std::map<unsigned int, AudioTuileWidget*> m_audioTuileWidgets;
         std::map<unsigned int, TuileWidget*> m_tuileWidgets;
