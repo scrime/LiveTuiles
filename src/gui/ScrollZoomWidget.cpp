@@ -44,10 +44,10 @@ void ScrollZoomWidget::draw() {
                                     man->getTuileWidgets().begin();
     fl_color(FL_BLACK);
     for(; itWid!=man->getTuileWidgets().end(); ++itWid) {
-        fl_rectf(x()+m_treeZoomX*itWid->second->getTuilePosX(), 
+        fl_rect(x()+m_treeZoomX*itWid->second->getTuilePosX(), 
                  y()+m_treeZoomY*itWid->second->getTuilePosY(), 
-                 max<float>(1,m_treeZoomX*itWid->second->getTuileLength()), 
-                 max<float>(1,m_treeZoomY*itWid->second->getTuileHeight()));
+                 max<float>(2,m_treeZoomX*itWid->second->getTuileLength()), 
+                 max<float>(2,m_treeZoomY*itWid->second->getTuileHeight()));
     }
 
     //draw the zoom panel

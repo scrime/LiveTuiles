@@ -37,6 +37,7 @@ void OpWidget::updateWidget(const float& scrollX, const float& scrollY,
             (m_tuilePosY-scrollY)*zoom+scoreY, 
             m_tuile->getLength()*zoom, 
             m_tuileHeight*zoom);
+    m_tuileLength=m_tuile->getLength();
     m_sync1X=(m_tuile->getLeftOffset())*zoom;
     m_sync2X=(m_tuile->getLength()-m_tuile->getRightOffset())*zoom;
 }
