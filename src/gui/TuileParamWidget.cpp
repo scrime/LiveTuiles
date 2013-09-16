@@ -20,19 +20,21 @@ using namespace std;
 using namespace tuiles;
 
 TuileParamWidget::TuileParamWidget(TuileWidget* widget, 
-                                    Tuile* tuile):
-                                                HitPack(0, 0, 100, 100, ""), 
-                                                Observer(),
-                                                m_tuile(tuile),
-                                                m_tuileWidget(widget) {
+                                    Tuile* tuile): 
+                                            Fl_Group(0, 0, 100, 100, ""), 
+                                            Observer(),
+                                            m_tuile(tuile),
+                                            m_tuileWidget(widget) {
     clip_children(1);
     box(FL_FLAT_BOX);
     color(fl_rgb_color(70, 90, 70));
-    type(Fl_Pack::VERTICAL);
-    internalSpacing(15);
-    externalXSpacing(10);
-    externalYSpacing(10);
     end();
+
+    m_pack = new HitPack(0, 0, w(), h(), "");
+    m_pack->type(Fl_Pack::VERTICAL);
+    m_pack->internalSpacing(15);
+    m_pack->externalXSpacing(10);
+    m_pack->externalYSpacing(10);
 
     m_tuilePack = new HitPack(0, y(), w(), 30, "");
     m_tuilePack->end();
@@ -75,7 +77,8 @@ TuileParamWidget::TuileParamWidget(TuileWidget* widget,
     m_tuilePack->add(m_rOffsetInput);
     m_tuilePack->add(m_removeButton);
 
-    add(m_tuilePack);
+    m_pack->add(m_tuilePack);
+    add(m_pack);
 
     if(m_tuile) {
         m_tuile->addObserver(this);

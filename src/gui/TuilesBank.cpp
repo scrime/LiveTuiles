@@ -22,11 +22,12 @@ TuilesBank::TuilesBank(int x, int y, int w, int h):
                                 m_offsetY(15), m_topLine(1){
 
     align(FL_ALIGN_TOP|FL_ALIGN_LEFT);
+    end();
 
     //back button
 	m_prevButton = new Fl_Button(m_offsetX, y+5, 20, 10, "@$arrow");
 	m_prevButton->callback(statPrevButton,this);
-    this->add(m_prevButton);
+    add(m_prevButton);
 
     m_tuilesList.push_back(std::string("output"));
     m_tuilesList.push_back(std::string("input"));
@@ -34,7 +35,6 @@ TuilesBank::TuilesBank(int x, int y, int w, int h):
     m_tuilesList.push_back(std::string("switch"));
     m_tuilesList.push_back(std::string("monitor"));
 
-    end();
     m_draggedTuile = new LeafTuileWidget("");
     m_draggedTuile->hide();
 }

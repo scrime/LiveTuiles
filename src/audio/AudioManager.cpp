@@ -124,7 +124,6 @@ void AudioManager::process(const int& nbFrames) {
     }
 }
 
-
 void AudioManager::internalAddAudioTuile(AudioTuile* tuile) {
     AddAudioTuile* com = 
         static_cast<AddAudioTuile*>(m_protoAddAudioTuile->popClone());

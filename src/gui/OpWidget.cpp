@@ -30,7 +30,18 @@ OpWidget::OpWidget(const std::string& name,
 
 OpWidget::~OpWidget() {}
 
-void OpWidget::refreshChildrenTuileWidgets() {
+void OpWidget::updateWidget(const float& scrollX, const float& scrollY, 
+                            const float& zoom, const int& scoreX, 
+                            const int& scoreY) {
+    resize((m_tuilePosX-scrollX)*zoom+scoreX, 
+            (m_tuilePosY-scrollY)*zoom+scoreY, 
+            m_tuile->getLength()*zoom, 
+            m_tuileHeight*zoom);
+    m_sync1X=(m_tuile->getLeftOffset())*zoom;
+    m_sync2X=(m_tuile->getLength()-m_tuile->getRightOffset())*zoom;
+}
+
+void OpWidget::updateChildren() {
     m_childrenTuileWidgets.clear();
     TreeWidget* tree=TreeWidget::getInstance();
     vector<Tuile*>::const_iterator itChild=m_opTuile->getChildren().begin();
@@ -40,9 +51,7 @@ void OpWidget::refreshChildrenTuileWidgets() {
             m_childrenTuileWidgets.push_back(wid);
         }
     }
-    notifyUpdate();
 }
-
 
 void OpWidget::drawExecution(const int& offset) {
     vector<TuileWidget*>::iterator itChild=m_childrenTuileWidgets.begin();

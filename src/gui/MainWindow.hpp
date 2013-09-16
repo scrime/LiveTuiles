@@ -35,8 +35,9 @@ class HitPack;
 class TreeWidget;
 class TuilesBank;
 class TuileParamGroup;
+class ScrollZoomWidget;
 
-class MainWindow  : public Fl_Double_Window {
+class MainWindow : public Fl_Double_Window {
 	public:
 		static MainWindow* getInstance();
 		~MainWindow();
@@ -73,11 +74,7 @@ class MainWindow  : public Fl_Double_Window {
 		void cbTreeButtons(Fl_Widget*);
         void clearAll();
 
-		static void statZoomTree(Fl_Widget* w,void* f) { 
-			MainWindow *tmpf = static_cast<MainWindow *>(f);
-			tmpf->cbZoomTree(w);
-		}	
-		void cbZoomTree(Fl_Widget*);
+        inline ScrollZoomWidget* getScrollZoomWidget(){return m_treeZoomSlider;}
 
 	private:
 		MainWindow();
@@ -91,7 +88,7 @@ class MainWindow  : public Fl_Double_Window {
 		Fl_Button* m_stopButton;
 		Fl_Value_Input *m_bpmInput;
 		std::string m_bpmInputTooltip;
-        Fl_Slider *m_treeZoomSlider;
+        ScrollZoomWidget* m_treeZoomSlider;
 
 		TreeWidget* m_tuilesTree;
 
@@ -100,6 +97,7 @@ class MainWindow  : public Fl_Double_Window {
 		int m_browserWidth;
         int m_spacing;
 		int m_editScoreButtonsHeight;
+        int m_paramWidth;
 		HitPack* m_editPart;
         HitPack* m_loadSavePart;
 		TuilesBank* m_tuilesBank;

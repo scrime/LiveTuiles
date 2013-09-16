@@ -20,15 +20,19 @@ class OpWidget: public TuileWidget, public Fl_Group {
     public:
         OpWidget(const std::string& name, tuiles::OpTuile*);
         virtual ~OpWidget();
+        virtual void notifyDelete();
 
         virtual void save(xmlNodePtr parentNode);
         virtual void load(xmlNodePtr node);
-        virtual void notifyDelete();
+
+        void updateWidget(const float& scrollX, const float& scrollY,
+                            const float& zoom, const int& scoreX, 
+                            const int& scoreY);
+        void updateChildren();
 
         inline virtual void draw(){drawComposition();}
         virtual void drawExecution(const int& offset=0);
         virtual int handle(int event);
-        void refreshChildrenTuileWidgets();
         inline virtual Fl_Widget* getWidget(){return this;}
         virtual bool testMagnetWithTuile(const int& inX, const int& inY,
                                         int& outX, int& outY,     

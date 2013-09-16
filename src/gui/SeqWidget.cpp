@@ -38,9 +38,7 @@ void SeqWidget::drawComposition() {
     }
 }
 
-void SeqWidget::notifyUpdate() {
-    TuileWidget::notifyUpdate();
-    float pixPerFrame=TreeWidget::getInstance()->getPixelsPerFrame();
+void SeqWidget::updateChildrenPositions() {
     int minPosY=numeric_limits<int>::max();
     int maxPosY=0;
     int childID=0;
@@ -48,23 +46,23 @@ void SeqWidget::notifyUpdate() {
     //set the positions of child widgets
     for(; itChild!=m_childrenTuileWidgets.end(); ++itChild, ++childID) {
         if(*itChild) {
-            (*itChild)->notifyUpdate();
-            float childPos=-m_seqTuile->getChildPositionAtPos(childID, 0);
-            Fl_Widget* wid = (*itChild)->getWidget();
-            wid->resize(x()+childPos*pixPerFrame, 
-                                            wid->y(),
-                                            wid->w(),
-                                            wid->h());
-            if(wid->y()<minPosY) {
-                minPosY=wid->y();
+            TuileWidget* child=(*itChild);
+            child->setTuilePosX(m_tuilePosX
+                                  - m_seqTuile
+                                        ->getChildPositionAtPos(childID, 0));
+
+            if(child->getTuilePosY()<minPosY) {
+                minPosY=child->getTuilePosY();
             }
-            if(wid->y()+wid->h()>maxPosY) {
-                maxPosY=wid->y()+wid->h();
+            if(child->getTuilePosY()+child->getTuileHeight()>maxPosY) {
+                maxPosY=child->getTuilePosY()+child->getTuileHeight();
             }
+            child->updateChildrenPositions();
         }
     }
     //resize and reposition according to the children
-    Fl_Widget::resize(x(), minPosY, m_width, maxPosY-minPosY);
+    m_tuilePosY=minPosY;
+    m_tuileHeight=maxPosY-minPosY;
     //set children sync Y positions
     if(m_childrenTuileWidgets.size()>=2) {
         m_childrenTuileWidgets[1]

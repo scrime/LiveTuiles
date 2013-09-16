@@ -18,6 +18,7 @@ class TuileParamGroup : public Fl_Scroll {
     static TuileParamGroup* getInstance();
 	~TuileParamGroup();
     void setWidget(TuileParamWidget*);
+    void resize(int x, int y, int w, int h);
 
   protected:
 	TuileParamGroup();

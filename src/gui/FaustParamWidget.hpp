@@ -42,7 +42,7 @@ class FaustParamWidget : public AudioTuileParamWidget, public UI {
         m_buttons.back()->user_data((void*)zone);
         m_buttons.back()->callback(statParamBut,this);
         size(w(), h()+30);
-        add(m_buttons.back());
+        m_pack->add(m_buttons.back());
     }
 
     inline void addCheckButton(const char* label, FAUSTFLOAT* zone) {
@@ -51,7 +51,7 @@ class FaustParamWidget : public AudioTuileParamWidget, public UI {
         m_buttons.back()->user_data(zone);
         m_buttons.back()->callback(statParamBut,this);
         size(w(), h()+30);
-        add(m_buttons.back());
+        m_pack->add(m_buttons.back());
     }
 
     inline void addVerticalSlider(const char* label, FAUSTFLOAT* zone, 
@@ -69,7 +69,7 @@ class FaustParamWidget : public AudioTuileParamWidget, public UI {
         m_sliders.back()->align(FL_ALIGN_LEFT|FL_ALIGN_TOP);
         m_sliders.back()->type(FL_HOR_NICE_SLIDER);
         size(w(), h()+30);
-        add(m_sliders.back());
+        m_pack->add(m_sliders.back());
     }
 
     inline void addHorizontalSlider(const char* label, FAUSTFLOAT* zone, 
@@ -87,7 +87,7 @@ class FaustParamWidget : public AudioTuileParamWidget, public UI {
         m_sliders.back()->type(FL_HOR_NICE_SLIDER);
         m_sliders.back()->labelsize(12);
         size(w(), h()+30);
-        add(m_sliders.back());
+        m_pack->add(m_sliders.back());
     }
 
     inline void addNumEntry(const char* label, FAUSTFLOAT* zone, 
@@ -102,7 +102,7 @@ class FaustParamWidget : public AudioTuileParamWidget, public UI {
         m_inputs.back()->user_data((void*)zone);
         m_inputs.back()->callback(statParamVal,this);
         m_inputs.back()->labelsize(12);
-        add(m_inputs.back());
+        m_pack->add(m_inputs.back());
     }
     inline void openTabBox(const char* label){};
     inline void openHorizontalBox(const char* label){};

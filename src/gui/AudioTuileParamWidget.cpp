@@ -29,7 +29,7 @@ AudioTuileParamWidget::AudioTuileParamWidget(TuileWidget* widget,
     m_volumeSlider->bounds(0, 2);
     m_volumeSlider->value(1);
     m_volumeSlider->labelsize(12);
-    add(m_volumeSlider);
+    m_pack->add(m_volumeSlider);
 }
 
 AudioTuileParamWidget::~AudioTuileParamWidget() {}

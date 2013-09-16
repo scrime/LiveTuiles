@@ -21,8 +21,7 @@ class SeqWidget: public OpWidget {
     virtual void load(xmlNodePtr node);
 
     void drawComposition();
-    //virtual int handle(int event);
-    virtual void notifyUpdate();
+    virtual void updateChildrenPositions();
     int getSync1Y();
     int getSync2Y();
     virtual void setSync1Y(const int& y);

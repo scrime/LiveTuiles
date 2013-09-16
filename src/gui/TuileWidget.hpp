@@ -28,17 +28,30 @@ class TuileWidget: public tuiles::Observer {
     inline virtual void save(xmlNodePtr parentNode){}
     virtual void load(xmlNodePtr node);
     inline virtual void load(){}
-    virtual void notifyUpdate();
+    
     inline virtual void extract(){}
 
     inline virtual void drawComposition(){}
     inline virtual void drawExecution(const int& offset=0){}
-    inline virtual void refreshChildrenTuileWidgets(){}
+    inline virtual void updateWidget(const float& scrollX, const float& scrollY,
+                                        const float& zoom, const int& scoreX, 
+                                        const int& scoreY){}
+    inline virtual void updateChildrenPositions(){}
+    inline virtual void updateChildren(){}
+    inline virtual void notifyUpdate(){}
+
+    const float& getTuilePosX(){return m_tuilePosX;}
+    void setTuilePosX(const float& posX){m_tuilePosX=posX;}
+    const float& getTuilePosY(){return m_tuilePosY;}
+    void setTuilePosY(const float& posY){m_tuilePosY=posY;}
+    const float& getTuileHeight(){return m_tuileHeight;}
+    void setTuileHeight(const float& height){m_tuileHeight=height;}
+    const float& getTuileLength(){return m_tuileLength;}
 
     inline virtual int getSyncIn() {return m_sync1X;}
     inline virtual int getSyncOut() {return m_sync2X;}
-    inline virtual int getRealIn() {return m_real1X;}
-    inline virtual int getRealOut(){return m_real2X;}
+    inline virtual int getRealIn() {return 0;}
+    inline virtual int getRealOut(){return 0;}
     inline virtual int getCenterReal(){return 0;}
     inline virtual void setSync1Y(const int& y){m_sync1Y=y;}
     inline virtual void setSync2Y(const int& y){m_sync2Y=y;}
@@ -66,8 +79,11 @@ class TuileWidget: public tuiles::Observer {
 
     bool m_muted;
 
-	float m_height;
-    float m_width;
+    float m_tuilePosX;
+    float m_tuilePosY;
+    float m_tuileHeight;
+    float m_tuileLength;
+    float m_minTuileHeight;
 
 	int m_sync1X;
     int m_sync1Y;
@@ -75,8 +91,6 @@ class TuileWidget: public tuiles::Observer {
     int m_sync2Y;
     int m_syncWidth;
     int m_syncHeight;
-	int m_real1X;
-	int m_real2X;
     Fl_Color m_sync1Color;
     Fl_Color m_sync2Color;
     Fl_Color m_syncLColor;
@@ -90,7 +104,8 @@ class TuileWidget: public tuiles::Observer {
 
 	int m_dragPosX;
 	int m_dragPosY;
-    float m_dragFrame;
+    float m_dragBeginX;
+    float m_dragBeginY;
 	int m_magnetSize;
 	int m_measureDiv;
     bool m_connecting;

@@ -42,7 +42,6 @@ void LoopWidget::drawComposition() {
 void LoopWidget::drawExecution(const int& offset) {
     int maxPosX=TreeWidget::getInstance()->x()
                     +TreeWidget::getInstance()->w();
-                    //+TreeWidget::getInstance()->xposition();
     int posX=offset;
     while(posX<maxPosX) {
         vector<TuileWidget*>::iterator itChild=m_childrenTuileWidgets.begin();
@@ -53,25 +52,16 @@ void LoopWidget::drawExecution(const int& offset) {
     }
 }
 
-void LoopWidget::notifyUpdate() {
-    TuileWidget::notifyUpdate();
+void LoopWidget::updateChildrenPositions() {
     if(m_childrenTuileWidgets.size()>=1) {
-        m_childrenTuileWidgets[0]->notifyUpdate();
-        float pixPerFrame=TreeWidget::getInstance()->getPixelsPerFrame();
-        float childPos=-m_loopTuile->getChildPositionAtPos(0, 0);
-        Fl_Widget* wid = m_childrenTuileWidgets[0]->getWidget();
-        wid->resize(x()+childPos*pixPerFrame, 
-                    wid->y(),
-                    wid->w(),
-                    wid->h());
-        Fl_Widget::resize(x(), 
-                            m_childrenTuileWidgets[0]->getWidget()->y(), 
-                            m_width, 
-                            m_childrenTuileWidgets[0]->getWidget()->h());
+        m_childrenTuileWidgets[0]->setTuilePosX(m_tuilePosX
+                                    -m_loopTuile->getChildPositionAtPos(0, 0));
+        m_tuilePosY=m_childrenTuileWidgets[0]->getTuilePosY();
+        m_tuileHeight=m_childrenTuileWidgets[0]->getTuileHeight();
+        m_childrenTuileWidgets[0]->updateChildrenPositions();
     }
     redraw();
 }
-
 
 bool LoopWidget::testMagnetWithTuile(const int& inX, const int& inY,
                                     int& outX, int& outY,     
@@ -90,9 +80,11 @@ bool LoopWidget::testMagnetWithTuile(const int& inX, const int& inY,
                 if(newWidget) {
                     newWidget->getTuile()->setName(tuileName);
                     newWidget->load();
-                    newWidget->getWidget()->position(x(), y());
+                    newWidget->setTuilePosY(m_tuilePosY);
+                    newWidget->getTuile()->setLeftOffset(
+                                        m_loopTuile->getLeftOffset());
                     m_loopTuile->setChild(newWidget->getTuile());
-                    tree->refreshChildrenTuileWidgets();
+                    tree->updateChildren();
                 }
             }
             return true;
@@ -147,3 +139,4 @@ void LoopWidget::setSync2Y(const int& sync2Y) {
         m_childrenTuileWidgets[0]->setSync2Y(sync2Y);
     }
 }
+

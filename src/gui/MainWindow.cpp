@@ -17,6 +17,7 @@
 #include "TreeWidget.hpp"
 #include "TuilesBank.hpp"
 #include "TuileParamGroup.hpp"
+#include "ScrollZoomWidget.hpp"
 
 #include "../audio/AudioManager.hpp"
 
@@ -41,17 +42,17 @@ MainWindow* MainWindow::getInstance() {
 void MainWindow::init() {
 	Fl::add_idle(idle, this);
 
-	//GUI
 	Fl::set_color(FL_BACKGROUND_COLOR,240,240,240);
 	Fl::set_color(FL_BACKGROUND2_COLOR,220,220,220);
 	Fl::set_color(FL_FOREGROUND_COLOR,0,0,0);
 	Fl::set_color(FL_INACTIVE_COLOR,40,40,40);
 	Fl::set_color(FL_SELECTION_COLOR,150,150,150);
-	m_controlHeight=20;
+	m_controlHeight=50;
 	m_editHeight=160;
-	m_treeHeight=360;
+	m_treeHeight=390;
 	m_editScoreButtonsHeight=20;
 	m_browserWidth=240;
+    m_paramWidth=360;
     m_spacing=10;
 
     //CONTROL
@@ -71,21 +72,23 @@ void MainWindow::init() {
     m_stopButton = new Fl_Button(30, m_spacing, 20, 30, "@|<");
     m_stopButton->callback(statStop, this);
 	m_stopButton->clear_visible_focus();
-    m_treeZoomSlider= new Fl_Slider(0,0,100,20,"Zoom");
-    m_treeZoomSlider->align(FL_ALIGN_LEFT);
-    m_treeZoomSlider->type(FL_HOR_NICE_SLIDER);
-    m_treeZoomSlider->callback(statZoomTree, this);
-	m_treeZoomSlider->clear_visible_focus();
+    HitPack* controlButtonsPack = new HitPack(0, 0, 50, 20,"");
+    controlButtonsPack->add(m_stopButton);
+    controlButtonsPack->add(m_playPauseButton);
+    controlButtonsPack->add(m_bpmInput);
+    HitPack* controlLevelsPack = new HitPack(0, 0, 50, 20,"");
+    controlLevelsPack->type(Fl_Pack::VERTICAL);
+    Fl_Box* sep1 = new Fl_Box(0, 0, w()-270, 20, "");
+    controlLevelsPack->add(controlButtonsPack);
+    controlLevelsPack->add(sep1);
+    m_treeZoomSlider = new ScrollZoomWidget(0, 0, 500, 20, "Zoom/Scroll");
 	m_controlPart = new HitPack(20, 0, w()-40, m_controlHeight, "");
-    m_controlPart->end();
-	m_controlPart->type(HitPack::HORIZONTAL);
-    m_controlPart->add(m_stopButton);
-    m_controlPart->add(m_playPauseButton);
-    m_controlPart->add(m_bpmInput);
-    Fl_Group* sep = new Fl_Group(0,0,w()-270,0,"");
-    m_controlPart->add(sep);
+	m_controlPart->type(Fl_Pack::HORIZONTAL);
+    Fl_Box* sep2 = new Fl_Box(0, 0, w()-270, 20, "");
+    m_controlPart->add(controlLevelsPack);
+    m_controlPart->add(sep2);
     m_controlPart->add(m_treeZoomSlider);
-    m_controlPart->resizable(sep);
+    m_controlPart->resizable(sep2);
 
     //TREE/SCORE
 	m_tuilesTree = TreeWidget::getInstance();
@@ -99,11 +102,10 @@ void MainWindow::init() {
             fl_width(std::string(" Save ").c_str()), 20, "Save");
     m_saveTreeButton->callback(statTreeButtons, this);
     m_editScoreButtonsPart = new HitPack(0, 0, 80, m_editHeight, "Edit Score");
-    m_editScoreButtonsPart->end();
     m_editScoreButtonsPart->color(fl_darker(FL_BACKGROUND2_COLOR));
     m_editScoreButtonsPart->box(FL_DOWN_BOX);
     m_editScoreButtonsPart->align(FL_ALIGN_LEFT|FL_ALIGN_TOP);
-	m_editScoreButtonsPart->type(HitPack::VERTICAL);
+	m_editScoreButtonsPart->type(Fl_Pack::VERTICAL);
 	m_editScoreButtonsPart->externalYSpacing(5);
 	m_editScoreButtonsPart->externalXSpacing(5);
 	m_editScoreButtonsPart->internalSpacing(5);
@@ -111,45 +113,42 @@ void MainWindow::init() {
 	m_editScoreButtonsPart->add(m_clearTreeButton);
 	
 	m_tuilesBank = new TuilesBank(0, 0, m_browserWidth, m_editHeight);
-	m_tuilesBank->open("","{*.wav,*.dsp,*.tui}",".");
+	m_tuilesBank->open("", "{*.wav,*.dsp,*.tui}", ".");
     m_tuilesBank->setTreeWidget(m_tuilesTree);
 
     m_tuileParamGroup= TuileParamGroup::getInstance();
-    m_tuileParamGroup->resize(0, 15, w(), m_editHeight);
+    m_tuileParamGroup->resize(0, 0, m_paramWidth, m_editHeight);
     m_tuileParamGroup->color(fl_darker(FL_BACKGROUND2_COLOR));
     m_tuileParamGroup->box(FL_DOWN_BOX);
     m_tuilesTree->setParamGroup(m_tuileParamGroup);
 
 	m_editPart = new HitPack(0, 0, w(), m_editHeight, "");
-    m_editPart->end();
-	m_editPart->type(HitPack::HORIZONTAL);
+	m_editPart->type(Fl_Pack::HORIZONTAL);
 	m_editPart->add(m_editScoreButtonsPart);
 	m_editPart->add(m_tuilesBank);
     m_editPart->add(m_tuileParamGroup);
-    m_editPart->internalSpacing(10);
-    m_editPart->externalYSpacing(10);
+    m_editPart->internalSpacing(m_spacing);
+    m_editPart->externalYSpacing(m_spacing);
 
     //MAIN
-	m_pack = new HitPack(0,0,w(),h(),"");
+	m_pack = new HitPack(0, 0, w(), h(), "");
     m_pack->externalXSpacing(m_spacing);
     m_pack->externalYSpacing(m_spacing);
     m_pack->internalSpacing(m_spacing);
-    m_pack->end();
-	m_pack->type(HitPack::VERTICAL);
+	m_pack->type(Fl_Pack::VERTICAL);
 	m_pack->add(m_controlPart);
 	m_pack->add(m_tuilesTree);
 	m_pack->add(m_editPart);
-	this->add(m_pack);
+	add(m_pack);
 
     resizable(m_pack);
     m_pack->resizable(m_tuilesTree);
     m_editPart->resizable(m_tuileParamGroup);
 
-    //clear to add first leaf and loop tuile 
-    clearAll();
+    m_pack->repositionWidgets();
 
 	//show window
-	this->show();
+	show();
 }
 
 void MainWindow::idle(void* pnt) {
@@ -249,9 +248,5 @@ void MainWindow::clearAll() {
     AudioManager::getInstance()->clearTrees();
     m_tuilesTree->clear();
     redraw();
-}
-
-void MainWindow::cbZoomTree(Fl_Widget*) {
-    m_tuilesTree->zoom(m_treeZoomSlider->value());
 }
 

@@ -19,11 +19,13 @@ TuileWidget::TuileWidget(Tuile* tuile):
                                     Observer(),
                                     m_tuile(tuile),
                                     m_muted(false),
-                                    m_height(20),
+                                    m_tuilePosX(0),
+                                    m_tuilePosY(0),
+                                    m_tuileHeight(10000),
+                                    m_tuileLength(10000),
                                     m_sync1X(0), m_sync1Y(0),
                                     m_sync2X(0), m_sync2Y(0),
                                     m_syncWidth(10), m_syncHeight(10),
-                                    m_real1X(0), m_real2X(0),
                                     m_sync1Color(FL_FOREGROUND_COLOR), 
                                     m_sync2Color(FL_FOREGROUND_COLOR), 
                                     m_syncLColor(FL_FOREGROUND_COLOR), 
@@ -40,20 +42,10 @@ TuileWidget::TuileWidget(Tuile* tuile):
         m_id=m_tuile->getID();
         m_tuile->addObserver(this);
     }
+    m_minTuileHeight=20000;
 }
 
 TuileWidget::~TuileWidget() {}
-
-void TuileWidget::notifyUpdate() {
-    DEBUG("TuileWidget "<<m_id<<" modified, "
-            <<" left offset: "<<m_tuile->getLeftOffset()
-            <<" right offset: "<<m_tuile->getRightOffset()
-            <<" length: "<<m_tuile->getLength());
-    float pixPerFrame=TreeWidget::getInstance()->getPixelsPerFrame();
-    m_width=m_tuile->getLength()*pixPerFrame;
-    m_sync1X=m_tuile->getLeftOffset()*pixPerFrame;
-    m_sync2X=m_width-m_tuile->getRightOffset()*pixPerFrame;
-}
 
 void TuileWidget::load(xmlNodePtr node) {
     m_tuile->load(node);

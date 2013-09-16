@@ -35,7 +35,7 @@
 class TuileWidget;
 namespace tuiles{class Tuile;}
 
-class TuileParamWidget : public HitPack, public tuiles::Observer {
+class TuileParamWidget : public Fl_Group, public tuiles::Observer {
   public:
 	TuileParamWidget(TuileWidget*, tuiles::Tuile*);
 	virtual ~TuileParamWidget();
@@ -58,6 +58,7 @@ class TuileParamWidget : public HitPack, public tuiles::Observer {
     tuiles::Tuile* m_tuile;
     TuileWidget* m_tuileWidget;
 
+    HitPack* m_pack;
     HitPack* m_tuilePack;
     Fl_Input* m_nameInput;
     Fl_Value_Input* m_lengthInput;

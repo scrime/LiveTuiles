@@ -14,6 +14,7 @@ TuileParamGroup::TuileParamGroup(): Fl_Scroll(0, 0, 100, 100, "Edit Tuile"),
                                     m_childWidget(NULL) { 
     align(FL_ALIGN_TOP|FL_ALIGN_LEFT);
     type(Fl_Scroll::VERTICAL_ALWAYS);
+    resizable(this);
     end();
 }
 
@@ -36,4 +37,10 @@ void TuileParamGroup::setWidget(TuileParamWidget* widget) {
     redraw();
 }
 
+void TuileParamGroup::resize(int x, int y, int w, int h) {
+    Fl_Group::resize(x, y, w, h);
+    if(m_childWidget) {
+        m_childWidget->resize(x, y, w, m_childWidget->h());
+    }
+}
 
