@@ -37,8 +37,6 @@ void ScrollZoomWidget::draw() {
     draw_box();
 
     TreeWidget* tree = TreeWidget::getInstance();
-    fl_rectf(x(), y(), 
-                m_treeZoomX*tree->getTotalWidth(), h(), fl_darker(color()));
 
     //for each tile in the tree widget, draw a rectangle 
     TreeWidget* man = TreeWidget::getInstance();
@@ -53,8 +51,9 @@ void ScrollZoomWidget::draw() {
     }
 
     //draw the zoom panel
-    fl_color(FL_RED);
-    fl_rect(x()+m_panelPosX, y()+m_panelPosY, m_panelWidth, m_panelHeight);
+    fl_draw_box(FL_DOWN_FRAME, 
+                x()+m_panelPosX, y()+m_panelPosY, 
+                m_panelWidth, m_panelHeight, FL_BACKGROUND2_COLOR);
 }
 
 void ScrollZoomWidget::update() {
