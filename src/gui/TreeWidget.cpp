@@ -71,6 +71,9 @@ void TreeWidget::update() {
             m_scrollX=playingPos-(float(w())/2.0)/m_zoom;
             updateZoom();
         } 
+        else {
+            m_scrollX=0;
+        }
     }
 
     //remove connections
