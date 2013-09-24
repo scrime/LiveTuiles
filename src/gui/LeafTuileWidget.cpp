@@ -309,7 +309,7 @@ bool LeafTuileWidget::testMagnetWithTuile(const int& inX, const int& inY,
 void LeafTuileWidget::save(xmlNodePtr parentNode) {
     xmlNodePtr node = m_tuile->save(parentNode);
     ostringstream oss;
-    oss<<y();
+    oss<<m_tuilePosY;
     xmlNewProp(node, BAD_CAST "widget_y_offset", BAD_CAST oss.str().c_str());
 }
 
@@ -319,7 +319,7 @@ void LeafTuileWidget::load(xmlNodePtr node) {
     value=NULL;
     value = (char*)xmlGetProp(node,(xmlChar*)"widget_y_offset");
     if(value) {
-        position(x(), atoi(value));
+        m_tuilePosY=atoi(value);
     }
 }
 
