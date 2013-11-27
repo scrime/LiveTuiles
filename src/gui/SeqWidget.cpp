@@ -10,6 +10,8 @@
 #include <iostream>
 #include <math.h>
 #include <cassert>
+#include <unistd.h>
+#include <limits>
 #include <Fl/fl_draw.H>
 
 #include <tuiles/SeqTuile.hpp>

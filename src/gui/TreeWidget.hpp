@@ -16,7 +16,7 @@
 #include <map>
 #include <list>
 
-#include "TuileWidget.hpp";
+#include "TuileWidget.hpp"
 
 class TuileParamGroup;
 class TuileWidget;

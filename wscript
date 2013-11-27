@@ -3,22 +3,30 @@
 import sys, os
 
 def options(opt):
+    opt.load('compiler_c')
     opt.load('compiler_cxx')
 
 def configure(conf):
     #generic configuration
+    conf.load('compiler_c')
     conf.load('compiler_cxx')
-    conf.check_cfg(path='llvm-config', args='--cflags --libs --ldflags',
+    conf.check_cfg(path='llvm-config', args='--cxxflags --libs --ldflags all',
                     package='', uselib_store='LLVM')
-    conf.env.STLIB_COMMON    =['faust', 'm', 'jack', 'sndfile',
-                                'samplerate', 'fltk', 'xml2', 'fltk_gl']
     conf.env.STLIBPATH_COMMON = ['/usr/local/lib/faust']
-    conf.env.INCLUDES =['/usr/include','/usr/local/include', 
-                        '../libTuiles/']
+    conf.env.INCLUDES_COMMON =['/usr/include','/usr/local/include', 
+                                '../libTuiles/', '/usr/include/libxml2']
 
     #platform specific
     if sys.platform == 'darwin':
         conf.env.FRAMEWORK_OS = ['Cocoa','OpenGL','AGL']
+        conf.env.STLIB_OS     =['faust', 'm', 'jack', 'sndfile',
+                                'samplerate', 'fltk', 'xml2', 'fltk_gl']
+    else: 
+        conf.env.LIB_OS   =['faust', 'm', 'sndfile',
+                            'samplerate', 'fltk', 'xml2', 'fltk_gl',
+                            'jack', 'X11', 'Xxf86vm', 'dl', 'Xext', 'Xft', 
+                            'fontconfig', 'Xinerama', 'z', 'LLVM-3.2']
+        conf.env.CXXFLAGS_OS=['-fexceptions']
 
     #release specific
     conf.env.STLIBPATH = [os.path.join(os.getcwd(),'../libTuiles/build')]

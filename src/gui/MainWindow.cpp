@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <unistd.h>
 #include <iostream>
 #include <FL/fl_ask.H>
 
@@ -173,7 +174,7 @@ void MainWindow::update() {
     if(AudioManager::getInstance()->isPlaying()) {
         m_tuilesBank->drawDraggedTuile();
     }
-	usleep(1000);
+	usleep(5000);
 }
 
 int MainWindow::handle(int event) {
